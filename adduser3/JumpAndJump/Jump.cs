@@ -223,6 +223,10 @@ namespace JumpAndJump
                     ele.Id == "ctl00_MainContent_ContentTable_RegularandLumpSumSpecialVoluntaryContribution" ||
                     ele.Id == "ctl00_MainContent_ContentTable_VoluntaryContribution")
                 {
+                    if (this.modify == true)
+                    {
+                        this.eeinvestrebalClickFillDataDangerousCodeStart(ele.GetElementsByTagName("tr"));
+                    }
                     this.eeinvestrebalClickFillDataDangerousCode(ele.GetElementsByTagName("tr"));
                 }
             }
@@ -234,10 +238,10 @@ namespace JumpAndJump
         /// </summary>
         private void eeinvestrebalClickConfirm()
         {
-            //this.webBrowser1.Document.GetElementById("ctl00_MainContent_btn_Confirm").InvokeMember("click");
-         //   this.fileWriter(this.userInformation[this.Needle_]["id"].ToString().Trim());
+            this.webBrowser1.Document.GetElementById("ctl00_MainContent_btn_Confirm").InvokeMember("click");
+            this.fileWriter(this.userInformation[this.Needle_]["id"].ToString().Trim());
             //this.eeinvestrebalClickLogOut();
-            eeinvestrebalClickLogOut();
+            //eeinvestrebalClickLogOut();
 
         }
 
@@ -250,7 +254,52 @@ namespace JumpAndJump
             this.Needle_++;
             this.logout = 0;
         }
+        void eeinvestrebalClickFillDataDangerousCodeStart(HtmlElementCollection collecitons)
+        {
+            int i = 0, j = 0;
+            // 循环整个列表区域
+            foreach (HtmlElement ele in collecitons)
+            {
 
+                /*  取出中间输入 区域 
+                 *  i---------------------
+                 *  i 代表了头部 5 TR 区域
+                 * j---------------------
+                 * j 代表15个输入框所在区域，所以在超过了15 后将跳出整个循环区块。
+                */
+
+                i++;
+                if (i <= 5)
+                {
+                    continue;
+                }
+                else if (j >= 15)
+                {
+                    break;
+                }
+                else
+                {
+                    int x = 0;
+                    HtmlElementCollection collecitontd = ele.GetElementsByTagName("td");
+                    foreach (HtmlElement eletd in collecitontd)
+                    {
+                        if (x >= 4)
+                        {
+
+                            HtmlElementCollection collecitontdinput = eletd.GetElementsByTagName("input");
+                            foreach (HtmlElement eleinput in collecitontdinput)
+                            {
+                                eleinput.SetAttribute("value", "");
+                                eleinput.InvokeMember("onBlur");
+                            }
+                        }
+                        x++;
+                    }
+                    j++;
+
+                }
+            }
+        }
         /// <summary>
         /// 正式填写投资单域
         /// </summary>

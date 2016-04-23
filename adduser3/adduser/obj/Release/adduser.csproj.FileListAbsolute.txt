@@ -12,3 +12,15 @@ C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\adduser.Propert
 C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\adduser.csproj.GenerateResource.Cache
 C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\BOC Automatic.exe
 C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\BOC Automatic.pdb
+E:\work\sagai\adduser3\adduser\bin\Release\BOC Automatic.exe.config
+E:\work\sagai\adduser3\adduser\obj\Release\BOC Automatic.exe
+E:\work\sagai\adduser3\adduser\obj\Release\BOC Automatic.pdb
+E:\work\sagai\adduser3\adduser\bin\Release\BOC Automatic.exe
+E:\work\sagai\adduser3\adduser\bin\Release\BOC Automatic.pdb
+E:\work\sagai\adduser3\adduser\bin\Release\JumpAndJump.dll
+E:\work\sagai\adduser3\adduser\bin\Release\Newtonsoft.Json.dll
+E:\work\sagai\adduser3\adduser\bin\Release\JumpAndJump.pdb
+E:\work\sagai\adduser3\adduser\obj\Release\adduser.csprojResolveAssemblyReference.cache
+E:\work\sagai\adduser3\adduser\obj\Release\adduser.Form1.resources
+E:\work\sagai\adduser3\adduser\obj\Release\adduser.Properties.Resources.resources
+E:\work\sagai\adduser3\adduser\obj\Release\adduser.csproj.GenerateResource.Cache
