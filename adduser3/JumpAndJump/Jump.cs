@@ -234,10 +234,10 @@ namespace JumpAndJump
         /// </summary>
         private void eeinvestrebalClickConfirm()
         {
-            //this.webBrowser1.Document.GetElementById("ctl00_MainContent_btn_Confirm").InvokeMember("click");
-         //   this.fileWriter(this.userInformation[this.Needle_]["id"].ToString().Trim());
+            this.webBrowser1.Document.GetElementById("ctl00_MainContent_btn_Confirm").InvokeMember("click");
+            this.fileWriter(this.userInformation[this.Needle_]["id"].ToString().Trim());
             //this.eeinvestrebalClickLogOut();
-            eeinvestrebalClickLogOut();
+          //  eeinvestrebalClickLogOut();
 
         }
 
