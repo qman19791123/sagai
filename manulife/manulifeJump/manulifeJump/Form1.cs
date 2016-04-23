@@ -70,11 +70,34 @@ namespace manulifeJump
             h = e.Url.ToString().IndexOf("wps/myportal/CwsHome/CwsPortfolio");
             if (h > 0)
             {
-                this.webBrowser1.Navigate(" https://www.mymanulife.com.hk//ebs/cws_main.jsp?action=empf_cw008_01_init&amp;locale=zh_TW");
+                this.webBrowser1.Navigate(" https://www.mymanulife.com.hk/ebs/cws_main.jsp?action=empf_cw008_01_init&amp;locale=zh_TW");
             }
             // var text = this.webBrowser1.Document.get("user_id");
+            //<input type="radio" name="selectedFunc" value="1">
+            h = e.Url.ToString().IndexOf("init");
+            if (h > 0)
+            {
 
+                foreach (HtmlElement j in webBrowser1.Document.GetElementsByTagName("input"))
+                {
+                    if (j.GetAttribute("type") == "radio" && j.Name.ToString() == "selectedFunc" && int.Parse(j.GetAttribute("value")) == 1)
+                    {
+                        j.SetAttribute("checked", "true");
 
+                    }
+                }
+
+                foreach (HtmlElement j in webBrowser1.Document.GetElementById("buttonsty").GetElementsByTagName("a"))
+                {
+                    j.InvokeMember("click");
+                }
+            }
+            h = e.Url.ToString().IndexOf("go");
+
+            if (h > 0)
+            {
+
+            }
         }
     }
 }
