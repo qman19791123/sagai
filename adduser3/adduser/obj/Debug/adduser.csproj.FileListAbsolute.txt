@@ -1,0 +1,27 @@
+C:\Users\Administrator\Desktop\test\adduser\adduser\bin\Debug\adduser.exe.config
+C:\Users\Administrator\Desktop\test\adduser\adduser\bin\Debug\adduser.exe
+C:\Users\Administrator\Desktop\test\adduser\adduser\bin\Debug\adduser.pdb
+C:\Users\Administrator\Desktop\test\adduser\adduser\obj\Debug\adduser.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Desktop\test\adduser\adduser\obj\Debug\adduser.Form1.resources
+C:\Users\Administrator\Desktop\test\adduser\adduser\obj\Debug\adduser.Properties.Resources.resources
+C:\Users\Administrator\Desktop\test\adduser\adduser\obj\Debug\adduser.csproj.GenerateResource.Cache
+C:\Users\Administrator\Desktop\test\adduser\adduser\obj\Debug\adduser.exe
+C:\Users\Administrator\Desktop\test\adduser\adduser\obj\Debug\adduser.pdb
+C:\Users\Administrator\Desktop\test\adduser\adduser\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Administrator\Desktop\test\adduser\adduser\bin\Debug\Newtonsoft.Json.pdb
+C:\Users\Administrator\Desktop\test\adduser\adduser\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Administrator\Desktop\test\adduser\adduser\obj\Debug\adduser.Form2.resources
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Debug\Newtonsoft.Json.pdb
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Debug\adduser.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Debug\adduser.Form1.resources
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Debug\adduser.Properties.Resources.resources
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Debug\adduser.csproj.GenerateResource.Cache
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Debug\JumpAndJump.dll
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Debug\JumpAndJump.pdb
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Debug\BOC Automatic.exe.config
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Debug\BOC Automatic.exe
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Debug\BOC Automatic.pdb
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Debug\BOC Automatic.exe
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Debug\BOC Automatic.pdb

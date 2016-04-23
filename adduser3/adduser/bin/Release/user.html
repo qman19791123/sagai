@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible"  content="IE=EmulateIE8,chrome=1" />
+	<title>Document</title>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<style type="text/css">
+		html,body{
+			margin: 0;
+			padding: 0;
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+			
+		}
+		*{
+			margin: 0;
+			padding: 0;
+			box-sizing:border-box;
+
+		}
+
+		.userinfo{
+			width: 95%;
+			margin: auto;
+			
+			height: 78%;
+			overflow-y: hidden;
+		}
+		
+		.userinfo .top{
+			width: 98%;
+			border-left: 1px #ccc solid;
+		}
+		.userinfo .top li{
+			border-color: #ccc;
+			border-style: solid;
+			border-width:1px 1px 1px 0px;
+			display: table-cell;
+			width: 25%;
+			line-height: 30px;
+			text-align: center;
+			background-color: #454545;
+			color: #fff;
+		}
+		.userinfo .duserinfo{
+			width: 100%;
+			height: 90%;
+			overflow-y: scroll;
+			border: 1px solid #ccc;
+			border-top: 0;
+		}
+		.userinfo ul{
+			width: 100%;
+			display: inline-table;
+
+		}
+		.userinfo .duserinfo>ul li{
+			border-color: #ccc;
+			border-style: solid;
+			border-width:1px 1px 1px 0px;
+			display: table-cell;
+			width: 25%;
+			text-align: center;
+			line-height: 30px;			
+		}
+		.userinfo ul:nth-child(even) {
+			background: #efefee;
+		}
+		
+		.userinfo ul:nth-child(even) li{
+			border-color: #ccc;
+			border-style: solid;
+			border-width:0px 1px 0px 0px;
+		}
+
+		.userinfo .duserinfo .upspan span{
+			display: inline-block;
+			margin: 0 10px;
+		}
+
+		.classify{
+			width: inherit;
+			font-size: 0;
+			text-align: center;
+			margin-bottom: 1%;
+		}
+		.classify span{
+			display: inline-block;
+			font-size: 20px;
+			padding: 1%;
+			border:1px solid #ccc;
+			margin: 0.2%;
+		}
+		.apu{
+			width: 95%;
+			text-align: center;
+			font-size: 0;
+			margin: auto;
+			margin-bottom: 10px;
+		}
+		.apu *{
+			display: inline-block;
+		}
+		.apu .query{
+			width: 75%;
+			text-align: left;
+			
+		}
+		.apu .query #query{
+			padding: 5px;
+			width: 85%;
+			font-size: 14px;
+			border:0;
+			border-bottom: 1px solid #ccc;
+		}
+		.apu .query #buttonquery{
+			width: 15%;
+			font-size: 14px;
+			padding: 4px;
+			display: inline-block;
+			background-color: #fff;
+			text-align: center;
+			border: 1px solid #ccc;
+		}
+
+
+		.apu .auser{
+			width: 25%;
+			font-size: 14px;
+			text-align: right;
+			
+		}
+		.apu .auser span{
+			
+			width: 100px;
+			display: inline-block;
+			text-align: center;
+			padding: 5px;
+			border:1px solid #ccc;
+		}
+		.userinfo .del,
+		.userinfo .updata,
+		.apu .auser,
+		.classify span,
+		.query #buttonquery
+		{
+			cursor:pointer ;
+			
+		}
+
+		
+		.classify span:hover,
+		.query #buttonquery:hover,
+		.apu .auser span:hover
+		{
+			background: #eeeefe;
+			border:1px solid #ccc;
+			resize:none;
+			outline:none;
+			filter:chroma(color=#ffffff);
+
+		}
+	</style>
+</head>
+<body >
+	<div class="log"></div>
+	<div class="classify"></div>
+	<div class="apu">
+		<p class="query">
+			<input id="query" type="text" />
+			<span id="buttonquery">查询</span>
+		</p>
+		<span class="auser"><span>添加用户</span></span>
+
+	</div>
+	<dir class="userinfo">
+		<ul class="top">
+			<li>用户</li>
+			<li>用户名</li>
+			<li>密码</li>
+
+			<li class="upmess">修改信息</li>
+		</ul>
+		<div class="duserinfo"></div>
+	</dir>
+
+
+
+
+	<script type="text/javascript">
+		function values(data) {
+			var html="";
+			var _isdata = data[0] 
+			for(var a in _isdata){
+				html+= "<ul>";
+				if(window.external._isAdminLogIn){
+					html+="<li>"+_isdata[a]["name"]+"</li><li>"+_isdata[a]["userName"]+"</li><li>"+_isdata[a]["userPasswd"]+"</li><li class='upspan'><span data-id='"+_isdata[a]["id"]+"' class='updata'>修改</span> <span class='del' data-id='"+_isdata[a]["id"]+"'>删除</span></li>";
+				}
+				else
+				{
+					html+="<li>"+_isdata[a]["name"]+"</li><li>"+_isdata[a]["userName"]+"</li><li>"+_isdata[a]["userPasswd"]+"</li>";
+					$(".upmess").hide();
+					$(".auser span").hide();
+				}
+				html+= "</ul>";
+			}
+			return html;
+		}
+		$(function (argument) {
+			
+			$("html")[0].onselectstart=function() {
+				return false
+			};
+
+			$("#query").dblclick(function(){
+				$(this).val("");
+			});
+			
+			/**
+			*
+			* 获取数据
+			*
+			*/
+			
+			$(".userinfo .duserinfo").append(function(){
+				try{
+					var data = window.external._iswindata("select * from boc_user where class=1");
+					data = $.parseJSON(data);
+					return values(data);
+				}catch(e){
+					alert("程序错误")
+				}
+
+			})
+			/**
+			*
+			* 建立分类栏目
+			* 
+			*/
+			$(".classify").append(function(){
+				try{
+					var a = 97,tmp,html="";
+					for(var i = 26,j=1;i>0;i--,j++){
+						//输出
+						tmp = String.fromCharCode(a++);
+							//alert(tmp+"->"+tmp.toUpperCase());
+							html +="<span data-id='"+j+"'>"+tmp+"</span>";
+						}
+						return html;
+					}catch(e)
+					{
+						alert("程序错误")
+					}
+
+
+				})
+
+			$(".upspan .del").on("click",function(){
+				if(confirm("是否删除")){
+					var data_id = $(this).attr("data-id");
+					var b = window.external._isWindel(data_id);
+				}
+			})
+
+			$(".upspan .updata").on("click",function(){
+
+				var data_id = $(this).attr("data-id");
+
+				window.external._isWinup(data_id);
+				
+			})
+
+			$(".auser span").on("click",function(){
+				window.external._isWinadduser();
+			})
+			/*
+			* 选择分类
+			*/
+			$(".classify span:eq(0)").css({"background":"#ccc","color":"#fff","text-transform":"Uppercase"});
+			$(".classify span").on("click",function(){
+				var data_id = $(this).attr("data-id")
+				$(".classify span").removeAttr("style");
+				$(this).css({"background":"#ccc","color":"#fff","text-transform":"Uppercase"});
+
+				var data = window.external._iswindata("select * from boc_user where class="+data_id+"order by id ");
+				data = $.parseJSON(data);
+				$(".userinfo .duserinfo").empty()
+
+
+				$(".userinfo .duserinfo").append(values(data))
+				window.external._isWinGroup($(this).text(),data_id)
+
+
+				$(".upspan .updata").on("click",function(){
+					var data_id = $(this).attr("data-id");
+					window.external._isWinup(data_id);
+
+				})
+
+				$(".upspan .del").on("click",function(){
+					if(confirm("是否删除")){
+						var data_id = $(this).attr("data-id");
+						var b = window.external._isWindel(data_id);
+					}
+				})
+
+
+				$(".auser span").on("click",function(){
+					window.external._isWinadduser();
+				})
+			})
+
+			/*查询*/
+			$("#buttonquery").on("click",function(argument) {
+
+				var where = $("#query").val();
+
+				sql = "SELECT * FROM boc_user WHERE USERNAME LIKE '%"+where+"%' or name  like '%"+where+"%';";
+				var data = window.external._iswindata(sql);
+				
+				data = $.parseJSON(data);
+				$(".userinfo .duserinfo").empty()
+
+
+				$(".userinfo .duserinfo").append(values(data))
+
+				window.external._isWinGroup($(this).text(),data_id)
+
+
+				$(".upspan .updata").on("click",function(){
+
+					var data_id = $(this).attr("data-id");
+					window.external._isWinup(data_id);
+
+				})
+
+				$(".upspan .del").on("click",function(){
+					if(confirm("是否删除")){
+						var data_id = $(this).attr("data-id");
+						var b = window.external._isWindel(data_id);
+					}
+				})
+
+
+				$(".auser span").on("click",function(){
+					window.external._isWinadduser();
+				})
+			})
+
+
+
+		})
+
+		//setTimeout(function(){location.reload()},10000);
+	</script>
+
+</body>
+</html>  

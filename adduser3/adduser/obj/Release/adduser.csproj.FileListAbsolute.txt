@@ -1,0 +1,14 @@
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\BOC Automatic.exe.config
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\BOC Automatic.exe
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\BOC Automatic.pdb
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\JumpAndJump.dll
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\Newtonsoft.Json.dll
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\JumpAndJump.pdb
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\Newtonsoft.Json.pdb
+C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\Newtonsoft.Json.xml
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\adduser.csprojResolveAssemblyReference.cache
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\adduser.Form1.resources
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\adduser.Properties.Resources.resources
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\adduser.csproj.GenerateResource.Cache
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\BOC Automatic.exe
+C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\BOC Automatic.pdb

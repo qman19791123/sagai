@@ -1,0 +1,7 @@
+C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\bin\Release\JumpAndJump.dll
+C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\bin\Release\JumpAndJump.pdb
+C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\obj\Release\JumpAndJump.Jump.resources
+C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\obj\Release\JumpAndJump.csproj.GenerateResource.Cache
+C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\obj\Release\JumpAndJump.dll
+C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\obj\Release\JumpAndJump.pdb
+C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\obj\Release\JumpAndJump.csprojResolveAssemblyReference.cache
