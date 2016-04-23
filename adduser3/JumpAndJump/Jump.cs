@@ -244,13 +244,12 @@ namespace JumpAndJump
             //eeinvestrebalClickLogOut();
 
         }
-
         /// <summary>
         /// 退出项单
         /// </summary>
         private void eeinvestrebalClickLogOut()
         {
-            this.webBrowser1.Document.GetElementById("ctl00_btnLogOut").InvokeMember("click");
+           this.webBrowser1.Document.GetElementById("ctl00_btnLogOut").InvokeMember("click");
             this.Needle_++;
             this.logout = 0;
         }
