@@ -1,0 +1,85 @@
+@bj:#0e6eb8;
+@width: 1240px;
+@main{
+    width: 100%;
+    height: inherit;
+    display: inline-block;
+    text-align: center;
+}
+html,body,ul,li,h1,h2,h3,h4,h5,h6,dl,dd,dt,p{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+html,body{
+    background: #fff-15;
+    overflow:hidden;
+}
+*{
+    box-sizing: border-box;
+    font-family: Verdana;
+    outline:0px;
+}
+
+@admin{
+    @main;
+    .login:before {
+            content: 'Administrators';
+            font-size: 20px;
+            color: #ccc-2;
+            text-align: left;
+            display: inline-block;
+            width: 100%;
+            margin: 0 0 10px 0 ;
+    }
+    .login{
+        width: 400px;
+        padding: 5px;
+        display: inline-block;
+        margin: 150px 0;
+        font-size: 0;
+        p{
+            width: 80%;
+            vertical-align:middle;
+            display: inline-block;
+        }
+        input{
+            color: #999;
+            width: 100%;
+            display: inline-block;
+            margin: 5px 0 ;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 8px 20px;
+        }
+        button{
+            color: #999;
+            display: inline-block;
+            vertical-align: middle;
+            border: none;
+            background: #f0f0f0;
+            width: 20%;
+            text-align: right;
+            margin:0;
+            outline:0px;
+            font-size: 16px;
+        }
+    }
+}
+
+@media screen and (min-width: 1240px){
+    .admin{
+        @admin;
+    }
+}
+@media screen and (max-width: 500px) {
+    .admin{
+        @admin;
+        .login{
+            width:80%;
+            text-align: center;
+            
+        }
+    }
+    
+}
