@@ -1,0 +1,380 @@
+@charset "utf-8";
+@bj:#0e6eb8;
+@width: 1240px;
+@main{
+    width: 100%;
+    height: inherit;
+    display: inline-block;
+    text-align: center;
+}
+html,body,ul,li,h1,h2,h3,h4,h5,h6,dl,dd,dt,p,div,menu{
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+html,body{
+    background: #fff-15;
+}
+*{
+    box-sizing: border-box;
+    font-family: Verdana;
+    outline:0px;
+}
+
+@admin{
+    @main;
+    form{
+        display: inline-block;
+    }
+    .login:before {
+            content: 'Administrators';
+            font-size: 20px;
+            color: #ccc-2;
+            text-align: left;
+            display: inline-block;
+            width: 100%;
+            margin: 0 0 10px 0 ;
+    }
+    .login{
+        width: 400px;
+        padding: 5px;
+        display: inline-block;
+        margin: 50% 0;
+        font-size: 0;
+        p{
+            width: 80%;
+            vertical-align:middle;
+            display: inline-block;
+        }
+        input{
+            color: #999;
+            width: 100%;
+            display: inline-block;
+            margin: 5px 0 ;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 8px 20px;
+        }
+        button{
+            color: #999;
+            display: inline-block;
+            vertical-align: middle;
+            border: none;
+            background: #f0f0f0;
+            width: 20%;
+            text-align: right;
+            margin:0;
+            outline:0px;
+            font-size: 16px;
+        }
+    }
+}
+@adminMain{
+    font-size: 0px;
+    .top{
+        font-family: '微软雅黑';
+        width: 100%;
+        padding: 25px 5px ;
+        background: #ccc;
+        font-size: 20px;
+        vertical-align: top;
+        line-height: 0;
+        font-weight: 700;
+    }
+    .content1
+    {
+        @fun{
+            background: rgba(250, 250, 250, 0.95);
+            padding: 10px;
+            margin: 5px 0;
+            width: 100%;
+        }
+        width: 15%;
+        display: inline-block;
+        font-size: 12px;
+        vertical-align: top;
+         menu{
+               
+                width: 90%;
+                margin:25px auto;
+                li{
+                    @fun;
+                    font-weight: 700;
+                    &:before{
+                        content: '';
+                        padding-right: 7px;
+                    }
+                    p{
+                       @fun;
+                       display: none;
+                        a{
+                            width: 100%;
+                            display: inline-block;
+                            text-decoration:none;
+                            color: #333;
+                            &:before{
+                                content: '';
+                                padding-right: 7px;
+                            }
+                        }
+                    }
+                }
+            }
+    }
+    .content2{
+        width: 80%;
+        display: inline-block;
+        font-size: 12px;
+        margin: 25px 2.5%;
+        text-align: center;
+        
+        height: 85%;
+        .contentiframe
+        {
+            width: 100%;
+            border: none;
+            margin: 0;
+            padding: 0;
+            overflow: scroll;
+        }
+    }
+}
+
+@adminContent{
+    font-size: 0;
+    line-height: 0;
+    .addLink{
+        display: inline-block;
+        float: right;
+        a{
+            color: #444;
+        }
+    }
+    dl{
+        width: 100%;
+        dt{
+            background: #ccc;
+            font-size: 12px;
+            padding: 20px;
+            // position: fixed;
+            width: 100%;
+            margin-bottom: 10px;
+            top: 0;
+        }
+        dd{
+            padding: 10px;
+            // margin-top:50px;
+        }
+    }
+    .list{
+
+        width: 100%;
+        font-size: 0;
+        border-style: solid;
+        border-color: #ccc;
+        border-width: 1px 0 0 1px;
+        margin-bottom: 1px;
+        li{
+            letter-spacing:2px;
+            display: inline-block;
+            font-size: 12px;
+            padding: 5px;
+            line-height: 20px;
+            border-style: solid;
+            border-color: #ccc;
+            border-width: 0 1px 1px 0;
+            vertical-align: middle;
+            a{
+                color: #444;
+                text-decoration:none;
+                &:after{
+                    content: "|";
+                }
+                &.nopt:after{
+                    content: "";
+                }
+            }
+            input{
+                padding: 5px;
+                border: 1px solid #bbb;
+                &:-webkit-autofill{
+                    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+                }
+            }
+            &.top{
+                vertical-align: top;
+            }
+        }
+        #no{
+            background:#ccc*0.6;
+        }
+        &:nth-of-type(odd){
+            background:#bbb+#000005;
+        }
+
+        &.atable{
+            display:  table;
+            background: #fff-15;
+            li{
+                display: table-cell;
+            }
+        }
+        &.atr{
+            display:  table-row;
+            ul{
+                display: table-cell;
+            }
+        }
+        &.a20_80{
+            display:  table-row;
+            ul{
+                display: table-cell;
+            }
+            li:nth-of-type(odd){
+                width: 20%;
+                background:#bbb+#000005;
+            }
+            li:nth-of-type(even){
+                width: 80%;
+                background: #fff-15;
+            }
+        }
+        &.a20_30{
+            li:nth-of-type(odd){
+                background:#bbb+#000005;
+                width: 15%;
+            }
+            li:nth-of-type(even){
+                width: 35%;
+                background: #fff-15;
+            }
+        }
+    }
+    .page{
+        width: 95%;
+        margin: auto;
+        text-align: center;
+        padding: 5px 0;
+        a,span{
+            display: inline-block;
+            padding: 10px;
+            color: #444;
+            font-size: 13px;
+            text-decoration:none;
+        }
+       button{
+            a;
+            background: inherit;
+            border: none;
+            line-height: 0;
+       }
+    }
+    .menu{
+        font-size: 12px;
+        display: inline-block;
+        line-height: 0;
+        a{
+            display: inline-block;
+            width: 100px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px auto;
+            text-align: center;
+            //cursor:pointer;
+            text-decoration:none;
+            color: #444;
+        }
+        .color{
+            background: #565;
+            color: #fff;
+        }
+    }
+    .tijiao{
+        width: 100%;
+        text-align: center;
+        padding: 10px;
+        button{
+            margin: 10px;
+            border: none;
+            background: inherit;
+        }
+    }
+}
+
+@media screen and (min-width: 801px){
+    .admin{
+        @admin;
+    }
+    .adminMain{
+        @adminMain;
+    }
+    .adminContent{
+        @adminContent;
+    }
+}
+@media screen and (max-width: 800px) {
+    .admin{
+        @admin;
+        .login{
+            width:80%;
+            text-align: center;
+        }
+    }
+    .adminMain{
+        @adminMain;
+        height: 98%;
+        .top span{
+            float: right;
+            display: inline-block;
+            line-height: 0;
+            &:after{
+                content: "";
+            }
+        }
+        .content1{
+            width: 100%;
+            height: 92.5%;
+            position: absolute;
+            top: 50px;
+            background: rgba(50, 50, 50, 1);
+            transform: translateX(-100%);
+            overflow: hidden;
+            menu{
+                li{
+                    background: rgba(250, 250, 250, 0.95);
+                }
+            }
+        }
+        .content2{
+           display: block;
+           width: 95%;
+        }
+    }
+    .adminContent {
+        @adminContent;
+        .list{
+            li{
+                a{
+                    display: inline-block;
+                    width: 100%;
+                    text-align: center;
+                    &:after{
+                        content: " ";
+                        display: inline-block;
+                        padding: 10px 0;
+                    }
+                }
+            }
+            &.a20_80,&.a20_30,&.a2,&.a{
+                li:nth-of-type(odd){
+                    width: 35%;
+                }
+                li:nth-of-type(even){
+                    width: 65%;
+                }
+            }
+        }
+
+    }
+}

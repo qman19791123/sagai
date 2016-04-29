@@ -1,0 +1,11 @@
+<script type="text/javascript">
+<?php if($url && $message):?>
+    alert('<?php echo $message;?>');
+    self.location.href = '<?php echo $url;?>';
+<?php elseif ($url):?>
+    self.location.href = '<?php echo $url;?>';
+<?php else:?>
+    alert('<?php echo $message;?>');
+    self.history.go(-1);
+<?php endif?>
+</script>
