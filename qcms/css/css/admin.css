@@ -284,15 +284,14 @@ body {
     display: inline-block;
     width: 100px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 5px 5px 0 0;
     padding: 15px;
-    margin: 10px auto;
     text-align: center;
     text-decoration: none;
     color: #444;
   }
   .adminContent .menu .color {
-    background: #565;
+    background: #555;
     color: #fff;
   }
   .adminContent .tijiao {
@@ -591,15 +590,14 @@ body {
     display: inline-block;
     width: 100px;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 5px 5px 0 0;
     padding: 15px;
-    margin: 10px auto;
     text-align: center;
     text-decoration: none;
     color: #444;
   }
   .adminContent .menu .color {
-    background: #565;
+    background: #555;
     color: #fff;
   }
   .adminContent .tijiao {

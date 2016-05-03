@@ -47,11 +47,15 @@ class conn
     }
    /**
      * 格式化sql 语句
-     * @param unknown $sql
+     * @param unknown $Content
      * @return string
      */
-    public function pd($sql){
-        return addslashes($p);
+    public function pd($Content){
+        $patterns = array();
+        $patterns[0] = '"';
+        $replacements = array();
+        $replacements[0] = '""';
+        return str_replace($patterns, $replacements, $Content);
     }
 
 }

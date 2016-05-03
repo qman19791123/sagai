@@ -83,7 +83,7 @@ define('cacheFloder' ,install.$cachedPath);
 //是否开启静态
 define('StaticOpen' , $StaticOpen);
 //静态目录
-define('staticFloder' , install.$staticFloder);
+define('staticFloder' , $staticFloder);
 
 if(cacheOpen && !is_dir(cacheFloder)){
     @mkdir(cacheFloder,0777);

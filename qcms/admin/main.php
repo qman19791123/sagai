@@ -60,8 +60,9 @@ $conn = $tfunction->conn;
             if(ifm != null && subWeb != null) {
                 ifm.height=0;
                 ifm.width=0;
-                ifm.height = subWeb.body.scrollHeight;
-                ifm.width = subWeb.body.scrollWidth;
+                ifm.height = 770;
+                //ifm.height = subWeb.body.scrollHeight;
+                //ifm.width = subWeb.body.scrollWidth;
             }
         }
         $(function (argument) {
