@@ -1,0 +1,41 @@
+* {
+    box-sizing: content-box;
+    margin: 0;
+    padding: 0;
+    line-height: 30px;
+}
+
+body, html {
+    background: #fff;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+#userList {
+    width: 100%;
+    font-size: 0;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+    #userList li {
+        font-size: 12px;
+        display: inline-block;
+        padding: 0 1.7%;
+        border: 1px #ccc solid;
+    }
+
+    #userList #id1 {
+        width: 5%;
+    }
+    #userList #id2 {
+        width: 35%;
+    }
+    #userList #id3 {
+        width: 35%;
+    }
+.lick {
+    display: inline-block;
+    padding: 0 10px;
+}
