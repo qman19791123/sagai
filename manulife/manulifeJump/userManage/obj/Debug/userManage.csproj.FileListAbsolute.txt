@@ -1,0 +1,12 @@
+E:\work\sagai\manulife\manulifeJump\userManage\obj\Debug\userManage.csprojResolveAssemblyReference.cache
+E:\work\sagai\manulife\manulifeJump\userManage\obj\Debug\userManage.Form1.resources
+E:\work\sagai\manulife\manulifeJump\userManage\obj\Debug\userManage.Properties.Resources.resources
+E:\work\sagai\manulife\manulifeJump\userManage\obj\Debug\userManage.csproj.GenerateResource.Cache
+E:\work\sagai\manulife\manulifeJump\userManage\bin\Debug\userManage.exe.config
+E:\work\sagai\manulife\manulifeJump\userManage\bin\Debug\userManage.exe
+E:\work\sagai\manulife\manulifeJump\userManage\bin\Debug\userManage.pdb
+E:\work\sagai\manulife\manulifeJump\userManage\bin\Debug\Newtonsoft.Json.dll
+E:\work\sagai\manulife\manulifeJump\userManage\bin\Debug\Newtonsoft.Json.pdb
+E:\work\sagai\manulife\manulifeJump\userManage\bin\Debug\Newtonsoft.Json.xml
+E:\work\sagai\manulife\manulifeJump\userManage\obj\Debug\userManage.exe
+E:\work\sagai\manulife\manulifeJump\userManage\obj\Debug\userManage.pdb

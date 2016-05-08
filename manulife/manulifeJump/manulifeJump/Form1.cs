@@ -36,7 +36,7 @@ namespace manulifeJump
             if (h > 0)
             {
 
-                bool isclick = false;
+               // bool isclick = false;
                 foreach (HtmlElement j in webBrowser1.Document.GetElementsByTagName("input"))
                 {
 

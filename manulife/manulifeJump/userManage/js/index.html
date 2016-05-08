@@ -1,0 +1,71 @@
+﻿
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <ul id="userList"></ul>
+    </div>
+    <script type="text/javascript">
+        document.onkeydown = function (e) {
+            var ev = window.event || e;
+            var code = ev.keyCode || ev.which;
+            if (code == 116) {
+                if (ev.preventDefault) {
+                    ev.preventDefault();
+                } else {
+                    ev.keyCode = 0;
+                    ev.returnValue = false;
+                }
+            }
+        }
+
+        var Jquery = window.external._Jquery;
+        eval(Jquery);
+        $("html")[0].onselectstart = function () {
+            return false
+        };
+        var css = window.external._Css;
+        $("html head").html('<style type="text/css" >' + css + '</style>');
+        $(function () {
+            var whereQuery = "classify=1";
+            if (window.external.Query_)
+            {
+
+                whereQuery = "user like '%" + window.external.Query_ + "%' ";
+            }
+            if (window.external.Class_) {
+                whereQuery = 'classify = ' + window.external.Class_
+            }
+            var m = window.external._SQl('select id,user,password from [user] where ' + whereQuery);
+            //var m = window.external._SQL("SELECT id,user,password FROM [user] where user like '%z4%';")
+            m = $.parseJSON(m);
+            $.each(m[0], function (i, p) {
+                var xi = 0;
+                for (var pi in p) {
+                    var li = document.createElement('li');
+                    li.innerHTML = p[pi];
+                    li.id = "id"+(++xi);
+                    $('#userList').append(li);
+                }
+                var li = document.createElement('li');
+                li.innerHTML = "<a class='lick edit' data-id='" + p['id'] + "'>修改</a>";
+                li.innerHTML += "<a class='lick del' data-id='" + p['id'] + "'>刪除</a>";
+                $('#userList').append(li);
+            })
+
+            $('#userList').on('click', 'li .edit', function () {
+                window.external.showWin($(this).attr('data-id'));
+            })
+
+            $('#userList').on('click', 'li .del', function () {
+                window.external.del($(this).attr('data-id'));
+            })
+        })
+    </script>
+</body>
+</html>
