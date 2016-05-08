@@ -93,10 +93,9 @@ namespace manulifeJump
                 }
             }
             h = e.Url.ToString().IndexOf("go");
-
             if (h > 0)
             {
-
+                
             }
         }
     }
