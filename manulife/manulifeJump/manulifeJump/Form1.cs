@@ -38,6 +38,7 @@ namespace manulifeJump
             this.panel1.Top = this.panel1.Left = 0;
             this.panel1.Size = this.Size;
         }
+
         private void openurl()
         {
             webBrowser1.ScriptErrorsSuppressed = true; //禁用错误脚本提示  
@@ -58,14 +59,12 @@ namespace manulifeJump
             if (h > 0)
             {
 
-
                 foreach (HtmlElement j in webBrowser1.Document.GetElementsByTagName("input"))
                 {
                     if (j.GetAttribute("type") == "radio" && j.Id == userCard.isUserCard(userIdentity))
                     {
                         j.SetAttribute("checked", "true");
                     }
-
                     if (j.Id == "user_id")
                     {
                         j.SetAttribute("value", "g5315882");
@@ -76,8 +75,7 @@ namespace manulifeJump
                     }
 
                 }
-                //tabindex="3"
-
+          
                 foreach (HtmlElement j in webBrowser1.Document.GetElementsByTagName("a"))
                 {
 

@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{66A0B981-A18D-4840-8570-593772C0ECC9}</ProjectGuid>
+    <ProjectGuid>{A76128F8-9F67-4619-A185-09DAC90C3191}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>userManage</RootNamespace>
@@ -56,10 +56,13 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form1Order.Designer.cs" />
     <Compile Include="From1UI.Designer.cs" />
     <Compile Include="From1WebWork.Designer.cs" />
+    <Compile Include="IniClass.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="xmldb.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -93,6 +96,12 @@
     <EmbeddedResource Include="js\index.html" />
     <EmbeddedResource Include="js\jquery.js" />
     <EmbeddedResource Include="js\jqueryUI.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JumpJump\JumpJump.csproj">
+      <Project>{f0ebb394-3612-445b-92ef-ddc7c73efec5}</Project>
+      <Name>JumpJump</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,13 +1,84 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+
 namespace userManage
 {
     partial class Form1
     {
+
+        public void addpo()
+        {
+            int i = 0;
+            int py = 0, pt = 50;
+            Dlists = Orders.Xmldata();
+            int Ptext = Dlists.Count();
+            TTAddUserSelect[2] = new ComboBox();
+            TTAddUserSelect[2].KeyPress += new KeyPressEventHandler(this.ComboBoxno);
+            TOrdersText = new TextBox[Ptext + 1];
+            TOrdersLabelText = new Label[Ptext + 2];
+
+            TOrdersLabelText[Ptext + 1] = new Label();
+            TOrdersLabelText[Ptext + 1].Text = "分组选择";
+            TOrdersLabelText[Ptext + 1].Location = new System.Drawing.Point(50, 30);
+            TOrdersLabelText[Ptext + 1].Width = 60;
+            this.groupBox2.Controls.Add(TOrdersLabelText[Ptext + 1]);
+
+
+            for (int zfi = 0; zfi < 26; zfi++)
+            {
+                int zf = 65 + zfi;
+                string word = char.ConvertFromUtf32(zf);
+                TTAddUserSelect[2].Items.Add(word);
+
+                TTAddUserSelect[2].Location = TOrdersLabelText[Ptext + 1].Location;
+                TTAddUserSelect[2].Left += TOrdersLabelText[Ptext + 1].Width + 3;
+                TTAddUserSelect[2].Top -= 4;
+            }
+
+
+            this.groupBox2.Controls.Add(TTAddUserSelect[2]);
+
+            foreach (xmldb.lists d in Dlists)
+            {
+                int pi = (i < 1 ? 0 : i - 1);
+                TOrdersLabelText[i] = new Label();
+
+                if (i % 3 == 0)
+                {
+                    pt = 50;
+                    py = (TOrdersLabelText[pi].Height + TOrdersLabelText[pi].Top) + 15;
+                    TOrdersLabelText[i].Location = new System.Drawing.Point(pt, py);
+                }
+                else
+                {
+                    pt += 300;
+                    TOrdersLabelText[i].Location = new System.Drawing.Point(pt, py);
+                }
+
+                TOrdersText[i] = new TextBox();
+                TOrdersText[i].Left = TOrdersLabelText[i].Width + TOrdersLabelText[i].Left;
+                TOrdersText[i].Top = TOrdersLabelText[i].Top - 4;
+                TOrdersText[i].Width = 150;
+
+                TOrdersText[i].KeyUp += new KeyEventHandler(this.mytextbok_KeyPress);
+                TOrdersText[i].KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.mytextbok_KeyPress);
+                TOrdersText[i].MaxLength = 3;
+                TOrdersLabelText[i].Text = d.Content.ToString();
+                this.groupBox3.Controls.Add(TOrdersText[i]);
+                this.groupBox3.Controls.Add(TOrdersLabelText[i]);
+                ++i;
+            }
+        }
 
         public void EditUI()
         {
@@ -17,6 +88,7 @@ namespace userManage
                 TAddUserTag[i] = new Label();
                 TAddUser[i] = new TextBox();
                 TTAddUserSelect[i] = new ComboBox();
+                //TTAddUserSelect[i].KeyPress += new KeyPressEventHandler(this.TTAddUserSelectNO);
                 if (i == 0)
                 {
                     TAddUserTag[i].Location = new System.Drawing.Point(50, 80);
@@ -39,6 +111,8 @@ namespace userManage
                         TTAddUserSelect[i].Items.Add(TAddUserIdentityConfig[1]);
                         TTAddUserSelect[i].Location = TAddUserTag[2].Location;
                         TTAddUserSelect[i].Left += TAddUserTag[2].Width + 15;
+
+                        
                         this.groupBox1.Controls.Add(TAddUserTag[2]);
                         break;
                     case 1:
