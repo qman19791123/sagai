@@ -54,7 +54,7 @@ namespace userManage
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            
 
             Color t = Color.FromArgb(255, 255, 255);
             this.BackColor = t;

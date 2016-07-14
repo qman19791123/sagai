@@ -22,6 +22,13 @@ namespace JumpJump
         //  private bool NotContributionType = true;
         private int[] cursor = new int[27];
 
+        private string File = Application.StartupPath;
+        private string FromConfig = "/Config.ini";
+        private IniClass ini_ = null;
+        private db db_ = null;
+        private int dbCount_,cpid_ =0 ;
+        DataRowCollection Data_ = null;
+
 
         private string ckUrl = "https://www.mymanulife.com.hk/ebs/cws_main.jsp?action=empf_cw008_01_init&amp;locale=zh_TW";
         private string coutUrl = "https://www.mymanulife.com.hk/wps/myportal/CwsHome/CwsAccountSetting/CwsUpdateContactInfo";
@@ -35,6 +42,25 @@ namespace JumpJump
         private void Form1_Load(object sender, EventArgs e)
         {
             this.Form1_Resize(sender, e);
+            db_ = new db();
+            ini_ = new IniClass(File + FromConfig);
+            string ini_IClass = ini_.IniReadValue("IClass", "class");
+
+            string sql = "select * from [user] where classify = {0}";
+            sql = string.Format(sql, ini_IClass);          
+            Data_ = db_.dbfile(string.Format(sql, ini_IClass)).Tables[0].Rows;
+            dbCount_ = Data_.Count;
+
+
+            for (int i = 0; i < cursor.Count(); ++i)
+            {
+                string F_ = ini_.IniReadValue("InputContent", string.Format("F_{0}", i));
+                if (!string.IsNullOrEmpty(F_))
+                {
+                    cursor[i] = Convert.ToInt16(F_);
+                }
+            }
+
             this.openurl();
         }
         private void Form1_Resize(object sender, EventArgs e)
@@ -57,11 +83,18 @@ namespace JumpJump
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
 
-            int userIdentity = 0;
+            int userIdentity = Convert.ToInt16(Data_[cpid_]["identity"]);
             int h = 0;
+
+
+
             /*测试代码*/
-            cursor[0] = 50;
-            cursor[1] = 50;
+
+
+
+            //cursor[0] = 50;
+            //cursor[1] = 50;
+
 
 
             #region 登出
@@ -87,6 +120,18 @@ namespace JumpJump
                 isClick = false;
                 isSetOk = false;
                 IsCout = false;
+                if (dbCount_-1 > cpid_)
+                {
+                    cpid_++;
+                }
+                else
+                {
+                    MessageBox.Show("订单处理完毕");
+                    this.Close();
+                    new System.Threading.Mutex(true, Application.ProductName).ReleaseMutex();
+                    Application.Restart();
+                    return;
+                }
                 this.webBrowser1.Navigate(Url);
             }
             #endregion
@@ -103,11 +148,11 @@ namespace JumpJump
                     }
                     if (j.Id == "user_id")
                     {
-                        j.SetAttribute("value", "C6334081");
+                        j.SetAttribute("value", Data_[cpid_]["user"].ToString().Trim());
                     }
                     if (j.Id == "mcnPin")
                     {
-                        j.SetAttribute("value", "92168214");
+                        j.SetAttribute("value", Data_[cpid_]["password"].ToString().Trim());
                     }
                 }
 
@@ -213,7 +258,7 @@ namespace JumpJump
                             }
                         }
                         if (isClick) { return; }
-                       
+
                     }
                     isClick = true;
                     foreach (HtmlElement j in webBrowser1.Document.GetElementsByTagName("input"))
@@ -235,7 +280,7 @@ namespace JumpJump
                     }
                 }
                 catch { }
-          
+
                 try
                 {
                     HtmlElement buttonsty = webBrowser1.Document.GetElementById("buttonsty");
@@ -243,7 +288,7 @@ namespace JumpJump
                     {
                         if (j.InnerText == "呈交")
                         {
-                            
+
                             j.InvokeMember("click");
                             return;
                         }
@@ -255,8 +300,9 @@ namespace JumpJump
                         }
                     }
                 }
-                catch {
-                    
+                catch
+                {
+
                 }
                 if (isSetOk)
                 {
