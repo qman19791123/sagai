@@ -7,8 +7,8 @@
     <title>Document</title>
 </head>
 <body>
-    <div>
-        <ul id="userList"></ul>
+    <div class="ttable">
+        
     </div>
     <script type="text/javascript">
         document.onkeydown = function (e) {
@@ -45,24 +45,26 @@
             //var m = window.external._SQL("SELECT id,user,password FROM [user] where user like '%z4%';")
             m = $.parseJSON(m);
             $.each(m[0], function (i, p) {
+                var phtml = "";
                 var xi = 0;
                 for (var pi in p) {
-                    var li = document.createElement('li');
-                    li.innerHTML = p[pi];
-                    li.id = "id"+(++xi);
-                    $('#userList').append(li);
+                    phtml += "<li id=id"+(++xi)+">"+ p[pi]+"</li>";
                 }
-                var li = document.createElement('li');
-                li.innerHTML = "<a class='lick edit' data-id='" + p['id'] + "'>修改</a>";
-                li.innerHTML += "<a class='lick del' data-id='" + p['id'] + "'>刪除</a>";
-                $('#userList').append(li);
+               
+                if (window.external.isadmin){
+                    phtml += "<li><a class='lick edit' data-id='" + p['id'] + "'>修改</a>";
+                    phtml += "<a class='lick del' data-id='" + p['id'] + "'>刪除</a></li>";
+                }
+                var hhtml = '<ul id="userList">' + phtml + '</ul>';
+               
+                $('.ttable').append(hhtml);
             })
 
-            $('#userList').on('click', 'li .edit', function () {
+            $('.ttable').on('click', 'li .edit', function () {
                 window.external.showWin($(this).attr('data-id'));
             })
 
-            $('#userList').on('click', 'li .del', function () {
+            $('.ttable').on('click', 'li .del', function () {
                 window.external.del($(this).attr('data-id'));
             })
         })

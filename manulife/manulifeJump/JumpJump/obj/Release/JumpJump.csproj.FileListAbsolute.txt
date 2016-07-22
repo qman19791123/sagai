@@ -1,0 +1,8 @@
+E:\work\sagai\manulife\manulifeJump\JumpJump\bin\Release\JumpJump.dll.config
+E:\work\sagai\manulife\manulifeJump\JumpJump\bin\Release\JumpJump.dll
+E:\work\sagai\manulife\manulifeJump\JumpJump\bin\Release\JumpJump.pdb
+E:\work\sagai\manulife\manulifeJump\JumpJump\obj\Release\JumpJump.JumpJump.resources
+E:\work\sagai\manulife\manulifeJump\JumpJump\obj\Release\JumpJump.csproj.GenerateResource.Cache
+E:\work\sagai\manulife\manulifeJump\JumpJump\obj\Release\JumpJump.dll
+E:\work\sagai\manulife\manulifeJump\JumpJump\obj\Release\JumpJump.pdb
+E:\work\sagai\manulife\manulifeJump\JumpJump\obj\Release\JumpJump.csprojResolveAssemblyReference.cache

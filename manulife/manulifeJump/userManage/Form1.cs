@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using JumpJump;
+using System.Diagnostics;
 
 namespace userManage
 {
@@ -22,18 +23,29 @@ namespace userManage
 
         public int Class_ = 0;
         public string Query_ = null;
+       
+
+        public bool isadmin = false;
 
         public Form1()
         {
+            
+           
+            this.isIcon();
             InitializeComponent();
         }
 
         Boolean TIsUpdate = false;
         WebBrowser TWebBrowser = new WebBrowser();
-        LinkLabel[] TButton = new LinkLabel[31];
+        LinkLabel[] TButton = new LinkLabel[32];
         TextBox TQuery = new TextBox();
         TextBox[] TAddUser = new TextBox[2];
+
+
+        TextBox[] Login = new TextBox[2];
         Label[] TAddUserTag = new Label[4];
+
+
         ComboBox[] TTAddUserSelect = new ComboBox[3];
         Button[] TSubmit = new Button[6];
         int TUserId = 0;
@@ -47,24 +59,33 @@ namespace userManage
         string[] TAddUserIdentityConfig = new string[] { "身份证", "用戶名" };
 
 
-        private string File = Application.StartupPath;
+        private string File_ = Application.StartupPath;
 
         JumpJump.JumpJump JumpJump_JumpJump = new JumpJump.JumpJump();
 
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+            this.Text = "manulife";
+            this.isIE();
+
+            string filePath = this.File_ + "/Errlog/System_Serious.log";
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+
+
 
             Color t = Color.FromArgb(255, 255, 255);
             this.BackColor = t;
             this.Size = new System.Drawing.Size(1024, 623);
-            this.panel3.Size = this.panel2.Size = this.panel1.Size = new System.Drawing.Size(this.Width - 20, this.Size.Height - 120);
+            this.panel6.Size = this.panel3.Size = this.panel2.Size = this.panel1.Size = new System.Drawing.Size(this.Width - 20, this.Size.Height - 120);
             this.panel4.Location = new System.Drawing.Point(0, 45);
             this.panel4.Size = new System.Drawing.Size(this.Width, 30);
-            this.panel3.Location = this.panel2.Location = this.panel1.Location = new System.Drawing.Point(0, 80);
+            this.panel6.Location = this.panel3.Location = this.panel2.Location = this.panel1.Location = new System.Drawing.Point(0, 80);
             this.groupBox1.Dock = DockStyle.Fill;
-            this.panel3.BackColor = this.panel2.BackColor = this.panel1.BackColor = t;
+            this.panel6.BackColor = this.panel3.BackColor = this.panel2.BackColor = this.panel1.BackColor = t;
 
             this.panel5.Location = new System.Drawing.Point(0, 0);
             this.panel5.Size = this.Size;
@@ -114,12 +135,22 @@ namespace userManage
             this.Controls.Add(TButton[27]);
 
             TButton[28] = new LinkLabel();
-            TButton[28].Text = "管理员登录";
-
+            TButton[28].Text = "Manulife 缓存 ";
+            TButton[28].Click += new System.EventHandler(this.TButton_Orders3);
             TButton[28].Top = 10;
             TButton[28].Left = 200;
-            TButton[28].Width = 80;
+            TButton[28].Width = 85;
             this.Controls.Add(TButton[28]);
+
+
+            TButton[31] = new LinkLabel();
+            TButton[31].Text = "管理员登录";
+            TButton[31].Click += new System.EventHandler(this.TButton_Orders2);
+            TButton[31].Top = 10;
+            TButton[31].Left = 300;
+            TButton[31].Width = 80;
+            this.Controls.Add(TButton[31]);
+
 
 
             TQuery = new TextBox();
@@ -135,16 +166,23 @@ namespace userManage
             TButton[29].Click += new System.EventHandler(this.TButton_Query_Click);
             this.panel4.Controls.Add(TButton[29]);
 
+
+
+
+
             TButton[30] = new LinkLabel();
             TButton[30].Text = "添加用户";
             TButton[30].Location = TButton[29].Location;
             TButton[30].Left += TButton[29].Width + 10;
             TButton[30].Click += new System.EventHandler(this.TButton_AddUser_Click);
+
             this.panel4.Controls.Add(TButton[30]);
 
+            TButton[30].Hide();
 
 
-           
+
+
 
             TSubmit[0] = new Button();
             TSubmit[0].Text = "返回";
@@ -170,10 +208,112 @@ namespace userManage
 
             this.EditUI();
             this.addpo();
-            
+            this.IsLogin();
+
+            filePath = this.File_ + "/overLog/over.log";
+            if (File.Exists(filePath))
+            {
+                var h = MessageBox.Show("发现前期人为停止数据是否需要继续", "提示", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);//
+                if (h.ToString().ToUpper() == "YES")
+                {
+                    this.JumpJump_JumpJump.FormBorderStyle = FormBorderStyle.None;
+                    this.JumpJump_JumpJump.TopLevel = false;
+                    this.JumpJump_JumpJump.Location = new System.Drawing.Point(0, 0);
+
+                    this.JumpJump_JumpJump.Size = this.Size;
+
+                    panel5.Controls.Add(this.JumpJump_JumpJump);
+                    this.JumpJump_JumpJump.Show();
+
+                    this.panel1.Hide();
+                    this.panel2.Hide();
+                    this.panel3.Hide();
+                    this.panel4.Hide();
+                    this.panel5.Show();
+                    this.panel6.Hide();
+                    return;
+                }
+                else
+                {
+                    File.Delete(filePath);
+                }
+            }
 
         }
 
+        private void TButton_Orders3(object sender, EventArgs e)
+        {
+            try
+            {
+                Process process = new Process();
+                process.StartInfo.FileName = "RunDll32.exe";
+                process.StartInfo.Arguments = "InetCpl.cpl,ClearMyTracksByProcess 2";
+                process.StartInfo.UseShellExecute = false;
+                process.StartInfo.RedirectStandardInput = true;
+                process.StartInfo.RedirectStandardOutput = true;
+                process.StartInfo.RedirectStandardError = true;
+                process.StartInfo.CreateNoWindow = false;
+                process.Start();
+                MessageBox.Show("清除完毕");
+            }
+            catch
+            {
+                MessageBox.Show("清除完毕");
+            }
+
+        }
+
+        private void TButton_Orders2(object sender, EventArgs e)
+        {
+
+            LinkLabel tt = (LinkLabel)sender;
+            if (tt.Text == "退出登录")
+            {
+                TButton[30].Hide();
+                this.isadmin = false;
+                TButton[28].Text = "管理员登录";
+                TWebBrowser.DocumentText = this.zy("js.index.html");
+                this.panel1.Show();
+                this.panel2.Hide();
+                this.panel3.Hide();
+                this.panel4.Show();
+                this.panel5.Hide();
+                this.panel6.Hide();
+                return;
+            }
+            this.panel6.Show();
+            this.panel1.Hide();
+            this.panel2.Hide();
+            this.panel3.Hide();
+            this.panel4.Show();
+            this.panel5.Hide();
+        }
+
+        private void TSubmit3_login(object sender, EventArgs e)
+        {
+            string FromConfig = "/admin.ini";
+            IniClass ini_ = new IniClass(File_ + FromConfig);
+
+            string name = ini_.IniReadValue("admin", "name");
+            string passwd = ini_.IniReadValue("admin", "passwd");
+            if (name == this.Login[0].Text && passwd == this.Login[1].Text)
+            {
+                this.isadmin = true;
+
+                MessageBox.Show("欢迎管理登录系统");
+
+                this.Login[0].Text = this.Login[1].Text = "";
+                TButton[30].Show();
+                TButton[28].Text = "退出登录";
+                TWebBrowser.DocumentText = this.zy("js.index.html");
+                this.panel1.Show();
+                this.panel2.Hide();
+                this.panel3.Hide();
+                this.panel4.Show();
+                this.panel5.Hide();
+                this.panel6.Hide();
+            }
+        }
 
         private void ComboBoxno(object sender, KeyPressEventArgs e)
         {
@@ -198,13 +338,13 @@ namespace userManage
         private void TButton_Orders(object sender, EventArgs e)
         {
             LinkLabel a = (LinkLabel)sender;
-          
+
             this.groupBox2.Text = a.Text;
             this.groupBox3.Text = "基金项";
             this.groupBox3.Top = 60;
             this.groupBox3.Height = this.groupBox2.Height - 60;
             this.groupBox3.Width = this.groupBox2.Width - 5;
-         
+
 
             TSubmit[0] = new Button();
             TSubmit[0].Text = "返回";
@@ -290,7 +430,7 @@ namespace userManage
         {
             string FromConfig = "/Config.ini";
             float p = 0;
-            IniClass ini_ = new IniClass(File + FromConfig);
+            IniClass ini_ = new IniClass(File_ + FromConfig);
             string[] k = new string[TOrdersText.Count()];
 
 

@@ -1,9 +1,12 @@
 E:\work\sagai\manulife\manulifeJump\manulifeJump\bin\Release\manulifeJump.exe.config
 E:\work\sagai\manulife\manulifeJump\manulifeJump\bin\Release\manulifeJump.exe
 E:\work\sagai\manulife\manulifeJump\manulifeJump\bin\Release\manulifeJump.pdb
-E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Release\manulifeJump.csprojResolveAssemblyReference.cache
 E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Release\manulifeJump.Form1.resources
 E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Release\manulifeJump.Properties.Resources.resources
 E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Release\manulifeJump.csproj.GenerateResource.Cache
-E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Release\manulifeJump.exe
-E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Release\manulifeJump.pdb
+E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Release\manulifeJump.csprojResolveAssemblyReference.cache
+E:\work\sagai\manulife\manulifeJump\userManage\bin\Release\manulife Automatic.exe.config
+E:\work\sagai\manulife\manulifeJump\userManage\bin\Release\manulife Automatic.exe
+E:\work\sagai\manulife\manulifeJump\userManage\bin\Release\manulife Automatic.pdb
+E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Release\manulife Automatic.exe
+E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Release\manulife Automatic.pdb

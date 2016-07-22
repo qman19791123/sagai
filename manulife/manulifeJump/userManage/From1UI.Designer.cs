@@ -80,6 +80,68 @@ namespace userManage
             }
         }
 
+        public void IsLogin()
+        {
+
+            Label[] LoginTag = new Label[2];
+
+            this.Login[1] = new TextBox();
+            this.Login[0] = new TextBox();
+
+            this.Login[1].PasswordChar = char.Parse("*");
+            this.TSubmit[3] = new Button();
+            this.TSubmit[3].Text = "提交";
+
+
+
+            LoginTag[0] = new Label();
+            LoginTag[1] = new Label();
+
+            LoginTag[0].Text = "用户名 ";
+            LoginTag[1].Text = "密码 ";
+
+            Login[0].Width = Login[1].Width = 350;
+            LoginTag[0].Location = Login[0].Location = new Point(this.Width / 3, 80);
+            LoginTag[1].Location = Login[1].Location = new Point(this.Width / 3, 130);
+           
+            LoginTag[0].Left = LoginTag[1].Left -= 100;
+
+            TSubmit[3].Location = new Point(Login[0].Left + Login[0].Width / 2 - TSubmit[3].Width / 2, 180);
+
+
+            TSubmit[3].Click += new EventHandler(this.TSubmit3_login);
+            this.panel6.Controls.Add(Login[1]);
+            this.panel6.Controls.Add(Login[0]);
+            this.panel6.Controls.Add(LoginTag[1]);
+            this.panel6.Controls.Add(LoginTag[0]);
+            this.panel6.Controls.Add(TSubmit[3]);
+        }
+
+      
+
+
+
+
+        //private void Login1_Leave(object sender, EventArgs e)
+        //{
+        //    Login[1].PasswordChar = char.Parse("*"); //设置密码框显示字符为*
+        //    if (Login[1].Text == "请输入密码")
+        //    {
+        //        Login[1].Text = "";
+        //    }
+        //}
+
+        //private void Login1_Enter(object sender, EventArgs e)
+        //{
+        //    if (Login[1].Text == "")
+        //    {
+        //        Login[1].Text = "请输入密码";
+        //        Login[1].PasswordChar = '\0'; //清空PasswordChar设置
+        //    }
+
+        //}
+
+
         public void EditUI()
         {
             for (int i = 0; i <= 1; i++)
@@ -112,7 +174,7 @@ namespace userManage
                         TTAddUserSelect[i].Location = TAddUserTag[2].Location;
                         TTAddUserSelect[i].Left += TAddUserTag[2].Width + 15;
 
-                        
+
                         this.groupBox1.Controls.Add(TAddUserTag[2]);
                         break;
                     case 1:

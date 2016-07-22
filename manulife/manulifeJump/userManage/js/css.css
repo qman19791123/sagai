@@ -11,12 +11,17 @@ body, html {
     margin: 0;
     padding: 0;
 }
-
+.ttable
+{
+    display:table;
+    width: 100%;
+}
 #userList {
     width: 100%;
     font-size: 0;
     box-sizing: border-box;
     text-align: center;
+    display:table-row;
 }
 
     #userList li {
@@ -24,16 +29,17 @@ body, html {
         display: inline-block;
         padding: 0 1.7%;
         border: 1px #ccc solid;
+        display:table-cell;
     }
 
     #userList #id1 {
         width: 5%;
     }
     #userList #id2 {
-        width: 35%;
+        width: 40%;
     }
     #userList #id3 {
-        width: 35%;
+        width: 40%;
     }
 .lick {
     display: inline-block;

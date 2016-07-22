@@ -10,7 +10,6 @@ C:\Users\Administrator\Desktop\test\manulife\manulifeJump\manulifeJump\obj\Debug
 E:\work\sagai\manulife\manulifeJump\manulifeJump\bin\Debug\manulifeJump.exe.config
 E:\work\sagai\manulife\manulifeJump\manulifeJump\bin\Debug\manulifeJump.exe
 E:\work\sagai\manulife\manulifeJump\manulifeJump\bin\Debug\manulifeJump.pdb
-E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Debug\manulifeJump.csprojResolveAssemblyReference.cache
 E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Debug\manulifeJump.Form1.resources
 E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Debug\manulifeJump.Properties.Resources.resources
 E:\work\sagai\manulife\manulifeJump\manulifeJump\obj\Debug\manulifeJump.csproj.GenerateResource.Cache
