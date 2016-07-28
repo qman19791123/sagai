@@ -11,9 +11,9 @@ class conn
         }
         else
         {
-             $dsn = sprintf('sqlite:%s/%s/%s',install,dataLocal,dataName);
-             $this->db = new PDO($dsn);
-             $this->db->query('SET NAMES '.dataCharset);
+            $dsn = sprintf('sqlite:%s/%s/%s',install,dataLocal,dataName);
+            $this->db = new PDO($dsn);
+            $this->db->query('SET NAMES '.dataCharset);
         }
         $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         #$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

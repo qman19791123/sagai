@@ -93,9 +93,9 @@ switch ($act) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $systemName?></title>
-    <link rel="stylesheet" type="text/css" href="<?php echo '../'.$tfunction->lessc('admin.less')?>
-    ">
-    <link rel="stylesheet" type="text/css" href="../css/Font-Awesome/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="<?php echo '../'.$tfunction->lessc('admin.less')?>"/>
+    <link rel="stylesheet" type="text/css" href="../css/Font-Awesome/font-awesome.min.css"/>
+
     <script type="text/javascript" src="../js/jquery.min.js"></script>
 
     </head>
@@ -148,10 +148,6 @@ switch ($act) {
             </dt>
             <dd>
             <form method="post" action="?act=1">
-              <!--   <div class="menu">
-                    <a data-id="1" class="color" href="javascript:void(0)">站内</a>
-                    <a data-id="2" href="javascript:void(0)">站外</a>
-                </div> -->
                 <div class="list atable">
                         <ul class="list a20_80">
                             <li>上级分类:</li>
@@ -223,40 +219,7 @@ switch ($act) {
                 </form>
             </dd>
         </dl>
-        <script type="text/javascript" src="../js/ckeditor/ckeditor.js"></script>
-        <script type="text/javascript">
-            CKEDITOR.editorConfig = function( config ) {
-                config.skin = 'office2013';
-                config.height='320';
-                config.toolbar = 'Full';
-                config.startupOutlineBlocks = true;
-                config.toolbar_Full =[
-                    { name: 'document',    items : [ 'Source','-','Save','Preview' ] },
-                    { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-                    { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','SpellChecker', 'Scayt' ] },
-                    '/',
-                    { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
-                    { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
-                    { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
-                    { name: 'insert',      items : [ 'Image','Flash','Table','HorizontalRule','SpecialChar','PageBreak' ] },
-                    '/',
-                    { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] },
-                    { name: 'colors',      items : [ 'TextColor','BGColor' ] },
-                    { name: 'tools',       items : [ 'Maximize', 'ShowBlocks' ] }
-                ];
-            };
-            var editor = CKEDITOR.replace( 'editor1' ,{  
-                filebrowserImageUploadUrl : 'uploadPic.do',
-            });
-            // editor.on("instanceReady", function (evt) { 
-            //         editor.addCommand("save", { modes: { wysiwyg: 1, source: 1 }, exec: function (editor) 
-            //         {
-            //             alert("asdasd");  
-            //             return false;
-            //         }
-            //     });  
-            // });  
-        </script>
+        
         <?php
             break;
             case 2:
@@ -280,16 +243,20 @@ switch ($act) {
                         <ul class="list a20_80">
                             <li>上级分类:</li>
                             <li>
-                                <select style ="width:180px" name="pid" disabled="disabled">
+                                <select style ="width:180px" >
                                     <option value="0"></option>
                                     <?php
                                     $classify = new tfunction($conn);
                                     $data = $classify->classify();
                                     foreach($data as $rsd):
                                     ?>
-                                    <option value="<?php echo $rsd['id']?>" <?php $t_id== $rsd['id'] && print('selected');?>><?php echo $rsd['className']?></option>
+                                    <option value="<?php echo $rsd['id']?>"
+                                     <?php print ($Rs[0]['pid'] == 0 && $t_id == $rsd['id'] ? 'selected' : $Rs[0]['pid']==$rsd['id'] ? 'selected':'');?>>
+                                     <?php echo $rsd['className']?>
+                                     </option>
                                     <?php endforeach?>
                                 </select>
+                                <input type="hidden" name="pid" value="<?php echo $Rs[0]['pid']?>" />
                             </li>
                         </ul>
                         <ul class="list a20_80">
@@ -348,89 +315,75 @@ switch ($act) {
                 </form>
             </dd>
         </dl>
-        <script type="text/javascript" src="../js/ckeditor/ckeditor.js"></script>
-
-        <script type="text/javascript">
-            $(function(){
-                $('.list .a20_80').show();
-                $("select[name='setting'] option").each(function(a,p){
-                    $(p).attr('selected' , $(p).val() == <?php echo $setting?>);
-                })
-                var pk = <?php echo $setting?>;
-                switch(pk){
-                    case 0:
-                        $('.list .a20_80:eq(-2)').hide();
-                    case 2:
-                        $('.list .a20_80:eq(-1)').hide();
-                    break;
-                    case 1:
-                        $('.list .a20_80').hide();
-                        $('.list .a20_80:eq(0),.list .a20_80:eq(1),.list .a20_80:eq(2),.list .a20_80:eq(3),.list .a20_80:eq(-1)').show();
-                        break;
-                }
-            })
-            CKEDITOR.editorConfig = function( config ) {
-                config.skin = 'office2013';
-                config.height='320';
-                config.toolbar = 'Full';
-                config.startupOutlineBlocks = true;
-                config.toolbar_Full =[
-                    { name: 'document',    items : [ 'Source','-','Save','Preview' ] },
-                    { name: 'clipboard',   items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
-                    { name: 'editing',     items : [ 'Find','Replace','-','SelectAll','-','SpellChecker', 'Scayt' ] },
-                    '/',
-                    { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
-                    { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
-                    { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
-                    { name: 'insert',      items : [ 'Image','Flash','Table','HorizontalRule','SpecialChar','PageBreak' ] },
-                    '/',
-                    { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] },
-                    { name: 'colors',      items : [ 'TextColor','BGColor' ] },
-                    { name: 'tools',       items : [ 'Maximize', 'ShowBlocks' ] }
-                ];
-            };
-            var editor = CKEDITOR.replace( 'editor1' ,{  
-                filebrowserImageUploadUrl : 'uploadPic.do',
-            });
-            // editor.on("instanceReady", function (evt) { 
-            //         editor.addCommand("save", { modes: { wysiwyg: 1, source: 1 }, exec: function (editor) 
-            //         {
-            //             alert("asdasd");  
-            //             return false;
-            //         }
-            //     });  
-            // });  
-        </script>
         <?php
         break;
         endswitch;
         ?>
     </div>
-    <script type="text/javascript">
 
-        $('.delmes').on('click',function(){
-            return confirm('是否真的删除');
-        });
-        $('.list .a20_80').show();
-        $('.list .a20_80:eq(-1) , .list .a20_80:eq(-2)').hide();
-        $('#fanhui').on('click',function(){
-                self.history.go(-1);
-        })
+    <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
+    <link rel="stylesheet" href="../js/KindEditor/plugins/code/prettify.css" />
+    <script charset="utf-8" src="../js/KindEditor/kindeditor-all-min.js"></script>
+    <script charset="utf-8" src="../js/KindEditor/plugins/code/prettify.js"></script>
 
-        $("select[name='setting']").change(function(a){
-            $('.list .a20_80').show();
-            switch($(this).val()){
-                case '0':
-                    $('.list .a20_80:eq(-2)').hide();
-                case '2':
-                    $('.list .a20_80:eq(-1)').hide();
-                break;
-                case '1':
-                    $('.list .a20_80').hide();
-                    $('.list .a20_80:eq(0),.list .a20_80:eq(1),.list .a20_80:eq(2),.list .a20_80:eq(3),.list .a20_80:eq(-1)').show();
-                break;
+<script>
+    KindEditor.ready(function(K) {
+        var editor1 = K.create('textarea[name="Content"]', {
+            cssPath : '../js/KindEditor/plugins/code/prettify.css',
+            uploadJson : '../js/KindEditor/php/upload_json.php',
+            fileManagerJson : '../js/KindEditor/php/file_manager_json.php',
+            width : '100%',
+            height:'430px',
+            resizeType:0,
+            items:[
+        'undo', 'redo', '|', 'preview', 'print', 'template','cut', 'copy', 'paste',
+        'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+        'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+        'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+        'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+        'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
+        'flash', 'media', 'insertfile', 'table', 'hr', 'baidumap', 'pagebreak',
+        'link', 'unlink'
+],
+            allowFileManager : true,
+            afterCreate : function() {
+                var self = this;
+                // K.ctrl(document, 13, function() {
+                //     self.sync();
+                //     K('form[name=example]')[0].submit();
+                // });
+                // K.ctrl(self.edit.doc, 13, function() {
+                //     self.sync();
+                //     K('form[name=example]')[0].submit();
+                // });
             }
-        })
-    </script>
+        });
+        prettyPrint();
+        $('.list .a20_80:eq(-1) , .list .a20_80:eq(-2)').hide();
+    });
+    $('.delmes').on('click',function(){
+        return confirm('是否真的删除');
+    });
+    $('.list .a20_80').show();
+    //
+    $('#fanhui').on('click',function(){
+            self.history.go(-1);
+    })
+
+    $("select[name='setting']").change(function(a){
+        $('.list .a20_80').show();
+        switch($(this).val()){
+            case '0':
+                $('.list .a20_80:eq(-2)').hide();
+            case '2':
+                $('.list .a20_80:eq(-1)').hide();
+            break;
+            case '1':
+                $('.list .a20_80').hide();
+                $('.list .a20_80:eq(0),.list .a20_80:eq(1),.list .a20_80:eq(2),.list .a20_80:eq(3),.list .a20_80:eq(-1)').show();
+            break;
+        }
+})
+</script>
 </body>
 </html>

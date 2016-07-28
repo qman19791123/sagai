@@ -59,7 +59,7 @@ class tfunction{
     
     public function classify(){
         $rsd = array();
-        $sql = 'select id,px,className from classify where pid = 0';
+        $sql = 'select id,px,className,pid from classify where pid = 0';
         $rs = $this->conn->query($sql);
         foreach ($rs as $value) {
           $data='';
@@ -76,9 +76,10 @@ class tfunction{
     private function meun($id='',$t='　',&$data)
     {
         $t.='　　';
-        $sql = 'select id,px,className from classify where pid ='.$id.' order by px desc';
+        $sql = 'select id,px,className,pid from classify where pid ='.$id.' order by px desc';
         $rs = $this->conn->query($sql);
         foreach ($rs as $value) {
+            $data [$value['id']]['pid']= $value['pid'];
             $data [$value['id']]['id']= $value['id'];
             $data [$value['id']]['px']= $value['px'];
             $data [$value['id']]['className']= $t.'├'.$value['className'];

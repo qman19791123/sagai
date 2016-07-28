@@ -38,7 +38,7 @@ $conn = $tfunction->conn;
     $rs = $conn->query($sql);
     if(!empty($rs[0]['count'])){
         $_SESSION['admin'] = true;
-        echo tfunction::gotoUrl('main.php');
+        echo tfunction::gotoUrl('admin/main.php');
     }
     else{
        exit(tfunction::message('用户名或密码不正确'));
