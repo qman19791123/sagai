@@ -20,7 +20,24 @@ html,body{
     font-family: Verdana;
     outline:0px;
 }
-
+.msgdiv{
+            position:absolute;
+            margin: auto;
+            text-align: center;
+            display: inline-block;
+            width: 100%;
+            top:50%;
+        span{
+            display: inline-block;
+            vertical-align: middle;
+            width: 300px;
+            height: 150px;
+            border:  1px solid #ccc;
+            text-align: center;
+            margin-top: -150px;
+            line-height: 150px;
+        }
+}
 @admin{
     @main;
     form{
@@ -70,6 +87,7 @@ html,body{
     }
 }
 @adminMain{
+
     font-size: 0px;
     .top{
         font-family: '微软雅黑';
@@ -84,7 +102,6 @@ html,body{
     .content1
     {
         @fun{
-            background: rgba(250, 250, 250, 0.95);
             padding: 10px;
             margin: 5px 0;
             width: 100%;
@@ -98,7 +115,9 @@ html,body{
                 width: 90%;
                 margin:25px auto;
                 li{
+
                     @fun;
+                    background: rgba(250, 250, 250, 0.95);
                     font-weight: 700;
                     &:before{
                         content: '';
@@ -120,6 +139,25 @@ html,body{
                     }
                 }
             }
+        .webinfo{
+            width: 90%;
+            margin: 25px auto;
+            span{
+                 @fun;
+                font-weight: 700;
+                &:before{
+                            content: '';
+                            padding-right: 7px;
+                }
+            }
+            a{
+                display: inline-block;
+                width: 80%;
+                padding-left: 45px;
+                line-height: 25px;
+                color: #333;
+            }
+        }
     }
     .content2{
         width: 80%;

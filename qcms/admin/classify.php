@@ -8,7 +8,6 @@ $conn = $tfunction->conn;
 $act = (int)filter_input(INPUT_GET,'act',FILTER_VALIDATE_INT);
 switch ($act) {
     case 1:
-        $folder ='';
         $pid = (int)filter_input(INPUT_POST,'pid',FILTER_VALIDATE_INT);
         $px = (int)filter_input(INPUT_POST,'px',FILTER_VALIDATE_INT);
         $className = filter_input(INPUT_POST,'className',FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -18,17 +17,15 @@ switch ($act) {
         $url = filter_input(INPUT_POST,'url',FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $setting = (int)filter_input(INPUT_POST,'setting',FILTER_VALIDATE_INT);
         $Content = $conn->pd($Content);
-
+        $folder = $tfunction->py($className);
         if(StaticOpen){
-            $folder = staticFloder.'/'.$tfunction->py($className);
-            @mkdir(install.'/'.$folder,0777,true);
+            @mkdir(staticFloder.'/'.$folder,0777,true);
         }
-
         $sql = 'INSERT INTO';
         $sql .= ' `classify` (`pid`,`px`,`className`,`Content`,`ntmp`,`ctemp`,`url`,`setting`,`folder`) VALUES ' ;
         $sql .= sprintf('("%s","%s","%s","%s","%s","%s","%s","%s","%s");',$pid,$px,$className,$Content,$ntmp,$ctemp,$url,$setting,$folder);
         $Rs = $conn->aud($sql);
-        (is_numeric($Rs)) && die($tfunction->message('添加分类成功','classify.php'));
+       (is_numeric($Rs)) && die($tfunction->message('添加分类成功','classify.php'));
         break;
     case 2:
         $folder ='';
@@ -56,7 +53,6 @@ switch ($act) {
                 @mkdir($folder1,0777,true);
             }
         }
-
 
         $sql = 'UPDATE `classify` SET';
         $sql .='`pid` = "'.$pid.'",';
@@ -120,8 +116,7 @@ switch ($act) {
                         <li style="width: 30%">操作</li>
                     </ul>
                     <?php
-                        $classify = new tfunction($conn);
-                        $data = $classify->classify();
+                        $data = $tfunction->classify();
                         foreach($data as $rs):
                     ?>
                     <ul class="list atr">
@@ -272,7 +267,7 @@ switch ($act) {
                         <ul class="list a20_80">
                             <li>分类设置:</li>
                             <li>
-                                <select style ="width:180px" name="setting">
+                                <select style ="width:180px" name="setting" data-setting="<?php echo $Rs[0]['setting'];?>">
                                     <option value="0">站内</option>
                                     <option value="1">站外</option>
                                     <option value="2">单页</option>
@@ -359,7 +354,8 @@ switch ($act) {
             }
         });
         prettyPrint();
-        $('.list .a20_80:eq(-1) , .list .a20_80:eq(-2)').hide();
+        
+        
     });
     $('.delmes').on('click',function(){
         return confirm('是否真的删除');
@@ -368,22 +364,38 @@ switch ($act) {
     //
     $('#fanhui').on('click',function(){
             self.history.go(-1);
-    })
-
-    $("select[name='setting']").change(function(a){
-        $('.list .a20_80').show();
-        switch($(this).val()){
+    });
+    function srtting(p){
+        switch(p.toString()){
             case '0':
                 $('.list .a20_80:eq(-2)').hide();
             case '2':
                 $('.list .a20_80:eq(-1)').hide();
+                
             break;
             case '1':
                 $('.list .a20_80').hide();
                 $('.list .a20_80:eq(0),.list .a20_80:eq(1),.list .a20_80:eq(2),.list .a20_80:eq(3),.list .a20_80:eq(-1)').show();
             break;
         }
-})
+    }
+    var p = $('select[name="setting"]');
+    var psetting = p.attr('data-setting');
+    if(psetting != undefined){
+        p.find('option').each(function(i,x){
+            $(x).attr('selected',($(x).val() == p.attr('data-setting')));
+        });
+        srtting(psetting);
+    }
+    else
+    {
+        srtting(0);
+    }
+
+    $('select[name="setting"]').change(function(a){
+        $('.list .a20_80').show();
+        srtting($(this).val());
+    });
 </script>
 </body>
-</html>
+</html> 

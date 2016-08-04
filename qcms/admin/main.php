@@ -9,13 +9,32 @@ $conn = $tfunction->conn;
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo $systemName?></title>
-    <link rel="stylesheet" type="text/css" href="<?php echo '../'.$tfunction->lessc('admin.less')?>">
-    <link rel="stylesheet"  type="text/css" href="../css/Font-Awesome/font-awesome.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><?php echo $systemName?></title>
+<link rel="stylesheet" type="text/css" href="<?php echo '../'.$tfunction->lessc('admin.less')?>">
+<link rel="stylesheet"  type="text/css" href="../css/Font-Awesome/font-awesome.min.css">
+
+
+
 </head>
 <body>
+<?php
+$c = filter_input(INPUT_GET, 'c',FILTER_SANITIZE_STRING);
+switch ($c) {
+    case 'out':
+        setcookie($systemName,'cccc',time()-1);
+        session_unset();
+        header('refresh:3;url=index.php');
+        die('<div class="msgdiv"><span>准备提出系统请稍后</span></div>');
+        break;
+    default:
+        # code...
+        break;
+
+}
+?>
+
     <div class="adminMain">
         <div class="top "><?php echo $systemName?><span class="fa"></span></div>
         <div class="content1">
@@ -30,7 +49,7 @@ $conn = $tfunction->conn;
                     <p><a class="fa" href="./classify.php?cpage=1" target="contentiframe">添加分类</a></p>
                 </li>
                 <li class="fa">内容管理
-                    <p><a class="fa" href="" target="contentiframe">内容管理</a></p>
+                    <p><a class="fa" href="./news.php" target="contentiframe">内容管理</a></p>
                     <p><a class="fa" href="" target="contentiframe">添加内容</a></p>
                     <p><a class="fa" href="" target="contentiframe">批量替换</a></p>
                     <p><a class="fa" href="" target="contentiframe">信息采集</a></p>
@@ -45,6 +64,12 @@ $conn = $tfunction->conn;
                     <p><a class="fa" href="" target="contentiframe">数据导入</a></p>
                 </li>
             </menu>
+            <p class="webinfo">
+                <span class="fa">网站信息</span>
+                <a href="?c=out">退出后台</a>
+                <a href="?c=ContactUs">联系我们</a>
+                <a href="?c=Getnew">获取新版</a>
+            </p>
         </div>
         <div class="content2">
             <iframe src="./pagemain.php" id="iframepage" class="contentiframe" name="contentiframe" onload="iFrameHeight()" scrolling="no"></iframe>
@@ -53,6 +78,8 @@ $conn = $tfunction->conn;
     <script type="text/javascript" src="../js/jquery.min.js"></script>
     <script type="text/javascript" src="../js/move.js"></script>
     <script type="text/javascript">
+
+
 
         function iFrameHeight() {   
             var ifm= document.getElementById("iframepage");   

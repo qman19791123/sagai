@@ -79,23 +79,29 @@ define('compression' , $compression);
 //开启页面缓存
 define('cacheOpen' , $cacheOpen);
 //缓存目录
-define('cacheFloder' ,install.$cachedPath);
+define('cacheFloder' , install.$cachedPath);
 //是否开启静态
 define('StaticOpen' , $StaticOpen);
 //静态目录
-define('staticFloder' , $staticFloder);
+define('staticFloder' , install.$staticFloder);
 
+header("Content-type:text/html;charset=utf-8");
 if(cacheOpen && !is_dir(cacheFloder)){
     @mkdir(cacheFloder,0777);
 }
+
+
 if(StaticOpen && !is_dir(staticFloder)){
-    @mkdir(staticFloder,0777);
+
+    mkdir(staticFloder,0777);
 }
 //设置session
 if(empty($_COOKIE[$systemName])){
+    $p = 'qmancms'.md5(rand(10000,99999)+time()).uniqid(time());
     session_name($systemName);
-    session_id('qmancms'.md5(rand(10000,99999)+time()).uniqid(time()));
+    session_id($p);
     session_start();
+    setcookie($systemName,$p,0,'/');
 }
 else
 {

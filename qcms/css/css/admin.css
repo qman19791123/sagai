@@ -28,6 +28,24 @@ body {
   font-family: Verdana;
   outline: 0px;
 }
+.msgdiv {
+  position: absolute;
+  margin: auto;
+  text-align: center;
+  display: inline-block;
+  width: 100%;
+  top: 50%;
+}
+.msgdiv span {
+  display: inline-block;
+  vertical-align: middle;
+  width: 300px;
+  height: 150px;
+  border: 1px solid #ccc;
+  text-align: center;
+  margin-top: -150px;
+  line-height: 150px;
+}
 @media screen and (min-width: 801px) {
   .admin {
     width: 100%;
@@ -104,10 +122,10 @@ body {
     margin: 25px auto;
   }
   .adminMain .content1 menu li {
-    background: rgba(250,250,250,0.95);
     padding: 10px;
     margin: 5px 0;
     width: 100%;
+    background: rgba(250,250,250,0.95);
     font-weight: 700;
   }
   .adminMain .content1 menu li:before {
@@ -115,7 +133,6 @@ body {
     padding-right: 7px;
   }
   .adminMain .content1 menu li p {
-    background: rgba(250,250,250,0.95);
     padding: 10px;
     margin: 5px 0;
     width: 100%;
@@ -130,6 +147,27 @@ body {
   .adminMain .content1 menu li p a:before {
     content: '';
     padding-right: 7px;
+  }
+  .adminMain .content1 .webinfo {
+    width: 90%;
+    margin: 25px auto;
+  }
+  .adminMain .content1 .webinfo span {
+    padding: 10px;
+    margin: 5px 0;
+    width: 100%;
+    font-weight: 700;
+  }
+  .adminMain .content1 .webinfo span:before {
+    content: '';
+    padding-right: 7px;
+  }
+  .adminMain .content1 .webinfo a {
+    display: inline-block;
+    width: 80%;
+    padding-left: 45px;
+    line-height: 25px;
+    color: #333;
   }
   .adminMain .content2 {
     width: 80%;
@@ -386,10 +424,10 @@ body {
     margin: 25px auto;
   }
   .adminMain .content1 menu li {
-    background: rgba(250,250,250,0.95);
     padding: 10px;
     margin: 5px 0;
     width: 100%;
+    background: rgba(250,250,250,0.95);
     font-weight: 700;
   }
   .adminMain .content1 menu li:before {
@@ -397,7 +435,6 @@ body {
     padding-right: 7px;
   }
   .adminMain .content1 menu li p {
-    background: rgba(250,250,250,0.95);
     padding: 10px;
     margin: 5px 0;
     width: 100%;
@@ -412,6 +449,27 @@ body {
   .adminMain .content1 menu li p a:before {
     content: '';
     padding-right: 7px;
+  }
+  .adminMain .content1 .webinfo {
+    width: 90%;
+    margin: 25px auto;
+  }
+  .adminMain .content1 .webinfo span {
+    padding: 10px;
+    margin: 5px 0;
+    width: 100%;
+    font-weight: 700;
+  }
+  .adminMain .content1 .webinfo span:before {
+    content: '';
+    padding-right: 7px;
+  }
+  .adminMain .content1 .webinfo a {
+    display: inline-block;
+    width: 80%;
+    padding-left: 45px;
+    line-height: 25px;
+    color: #333;
   }
   .adminMain .content2 {
     width: 80%;

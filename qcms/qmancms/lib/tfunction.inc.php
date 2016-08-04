@@ -1,7 +1,8 @@
 <?php
 
 class tfunction{
-    public $conn,$less,$zd;
+    public $conn,$less;
+    private $zd;
     function __construct()
     {
         if(!class_exists('conn'))
@@ -10,12 +11,6 @@ class tfunction{
         }
         if(!class_exists('lessc')){
             include plus.'/lessc.inc.php';
-
-        }
-        if(!function_exists('zhconversion_hans')){
-            include plus."Zdian.php";
-            include plus."convert.php";
-            $this->zd = $zd;
         }
         $this->conn = new conn;
         $this->less = new lessc;
@@ -53,10 +48,16 @@ class tfunction{
     }
 
     public function py($string){
-      $string = zhconversion_hans($string);
-      return strtr($string , $this->zd);
+        if(!function_exists('zhconversion_hans')){
+            include plus."Zdian.php";
+            include plus."convert.php";
+            $this->zd = $zd;
+        }
+
+        $string = zhconversion_hans($string);
+        return strtr($string , $this->zd);
     }
-    
+
     public function classify(){
         $rsd = array();
         $sql = 'select id,px,className,pid from classify where pid = 0';
