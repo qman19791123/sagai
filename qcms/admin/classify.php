@@ -95,11 +95,11 @@ switch ($act) {
     </head>
     <body>
         <div class="adminContent">
-<?php
-$cpage = (int) filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
-switch ($cpage):
-    case 0:
-        ?>
+            <?php
+            $cpage = (int) filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
+            switch ($cpage):
+                case 0:
+                    ?>
                     <dl>
                         <dt>
                             分类管理
@@ -113,10 +113,10 @@ switch ($cpage):
                                     <li style="width: 47%">名称</li>
                                     <li style="width: 30%">操作</li>
                                 </ul>
-        <?php
-        $data = $tfunction->classify();
-        foreach ($data as $rs):
-            ?>
+                                <?php
+                                $data = $tfunction->classify();
+                                foreach ($data as $rs):
+                                    ?>
                                     <ul class="list atr">
                                         <li><?php echo $rs['id'] ?></li>
                                         <li><?php echo $rs['px'] ?></li>
@@ -126,14 +126,14 @@ switch ($cpage):
                                             <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?>">删除分类</a>
                                         </li>
                                     </ul>
-        <?php endforeach ?>
+                                <?php endforeach ?>
                             </div>
                         </dd>
                     </dl>
-        <?php
-        break;
-    case 1:
-        ?>
+                    <?php
+                    break;
+                case 1:
+                    ?>
                     <dl>
                         <dt>
                             分类管理
@@ -147,11 +147,11 @@ switch ($cpage):
                                         <li>
                                             <select style ="width:180px" name="pid">
                                                 <option value="0">主分类</option>
-        <?php
-        $classify = new tfunction($conn);
-        $data = $classify->classify();
-        foreach ($data as $rs):
-            ?>
+                                                <?php
+                                                $classify = new tfunction($conn);
+                                                $data = $classify->classify();
+                                                foreach ($data as $rs):
+                                                    ?>
                                                     <option value="<?php echo $rs['id'] ?>"><?php echo $rs['className'] ?></option>
                                                 <?php endforeach ?>
                                             </select>
@@ -161,7 +161,7 @@ switch ($cpage):
                                         <li>分类排序:</li>
                                         <li>
                                             <select style ="width:180px" name="px">
-        <?php for ($i = -10; $i < 10; $i++) : ?>
+                                                <?php for ($i = -10; $i < 10; $i++) : ?>
                                                     <option value="<?php echo $i ?>" <?php $i == 0 && print('selected'); ?> ><?php echo $i ?></option>
                                                 <?php endfor; ?>
                                             </select>
@@ -213,14 +213,14 @@ switch ($cpage):
                         </dd>
                     </dl>
 
-        <?php
-        break;
-    case 2:
-        $t_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-        $sql = 'select * from classify where id =' . $t_id;
-        $Rs = $conn->query($sql);
-        $setting = empty($Rs[0]['setting']) ? 0 : $Rs[0]['setting']
-        ?>
+                    <?php
+                    break;
+                case 2:
+                    $t_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+                    $sql = 'select * from classify where id =' . $t_id;
+                    $Rs = $conn->query($sql);
+                    $setting = empty($Rs[0]['setting']) ? 0 : $Rs[0]['setting']
+                    ?>
                     <dl>
                         <dt>
                             分类管理
@@ -238,16 +238,16 @@ switch ($cpage):
                                         <li>
                                             <select style ="width:180px" >
                                                 <option value="0"></option>
-        <?php
-        $classify = new tfunction($conn);
-        $data = $classify->classify();
-        foreach ($data as $rsd):
-            ?>
+                                                <?php
+                                                $classify = new tfunction($conn);
+                                                $data = $classify->classify();
+                                                foreach ($data as $rsd):
+                                                    ?>
                                                     <option value="<?php echo $rsd['id'] ?>"
-                                                    <?php print ($Rs[0]['pid'] == 0 && $t_id == $rsd['id'] ? 'selected' : $Rs[0]['pid'] == $rsd['id'] ? 'selected' : ''); ?>>
-                                                            <?php echo $rsd['className'] ?>
+                                                            <?php print ($Rs[0]['pid'] == 0 && $t_id == $rsd['id'] ? 'selected' : $Rs[0]['pid'] == $rsd['id'] ? 'selected' : ''); ?>>
+                                                                <?php echo $rsd['className'] ?>
                                                     </option>
-                                                            <?php endforeach ?>
+                                                <?php endforeach ?>
                                             </select>
                                             <input type="hidden" name="pid" value="<?php echo $Rs[0]['pid'] ?>" />
                                         </li>
@@ -256,7 +256,7 @@ switch ($cpage):
                                         <li>分类排序:</li>
                                         <li>
                                             <select style ="width:180px" name="px">
-        <?php for ($i = -10; $i < 10; $i++) : ?>
+                                                <?php for ($i = -10; $i < 10; $i++) : ?>
                                                     <option value="<?php echo $i ?>" <?php $i == $Rs[0]['px'] && print('selected'); ?> ><?php echo $i ?></option>
                                                 <?php endfor; ?>
                                             </select>
@@ -308,10 +308,10 @@ switch ($cpage):
                             </form>
                         </dd>
                     </dl>
-        <?php
-        break;
-endswitch;
-?>
+                    <?php
+                    break;
+            endswitch;
+            ?>
         </div>
 
         <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
