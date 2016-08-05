@@ -71,6 +71,8 @@ define('tempUrl' , install.'/'.$tempUrl.'/');
 //系统文件
 define('lib' , install.'qmancms/lib/');
 define('plus' , install.'qmancms/plus/');
+define('lang',install.'qmancms/language/');
+
 
 // 不可删除的管理员
 define('unableRemoveManager' , 'admin'); 
