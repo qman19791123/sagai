@@ -6,6 +6,7 @@ include 'isadmin.php';
 $tfunction = new tfunction();
 $conn = $tfunction->conn;
 $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
+$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
 ?>
 <html>
     <head>
@@ -27,7 +28,7 @@ $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
                     <dl>
                         <dt>
                             分类管理
-                            <span class="addLink">[<a href='?cpage=1'>添加新闻</a>]</span>
+                        <span class="addLink">[<a href='?cpage=1'>添加新闻</a>]</span>
                         </dt>
                         <dd>
                             <div class="list atable">
@@ -39,8 +40,12 @@ $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
                                     <li style="width: 10%">操作</li>
                                 </ul>
                                 <?php
-                                $sql = 'select * from `news_config` limit 10 Offset 0';
+                                $pagec = ($page - 1) * 10;
+                                $sql = 'select * from `news_config` limit 10 Offset ' . $pagec;
+                                echo $pagec;
                                 $data = $conn->query($sql);
+                                $sqlCount = 'select count(id) as cid from `news_config`';
+                                $dataCount = $conn->query($sqlCount);
                                 foreach ($data as $rs):
                                     ?>
                                     <ul class="list atr">
@@ -57,17 +62,31 @@ $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
                                     </ul>
                                 <?php endforeach; ?>
                             </div>
+                            <div class='page'>
+                                <a href='?page=<?php echo $page <= 1 ? 1 : $page-1?>'>上一页</a>
+                                <?php
+                                $p = $tfunction->Page($dataCount[0]['cid'], 1, 10, $page);
+                                for ($i = $p['pageStart']; $i <= $p['pageEnd']; $i++):
+                                    ?>
+                                    <a href="?page=<?php echo $i ?>"><span style="color:<?php echo $i == $page ? "#FF0000 " : "#000000" ?>"><?php echo $i ?></span></a>
+                                    <?php
+                                endfor;
+                                ?>
+                                <a href='?page=<?php echo ($page < $p['pageCount'] ? $page + 1 : $page) ?>'>下一页</a>
+                            </div>
                         </dd>
                     </dl>
 
                     <?php
                     break;
                 case 2:
+                case 1:
+                 
                     ?>
                     <dl>
                         <dt>
                             分类管理
-                            <span class="addLink">[ <a href='?cpage=1'>添加新闻</a>  ]</span>
+                        <span class="addLink">[ <a href='?cpage=1'>添加新闻</a>  ]</span>
                         </dt>
                         <dd>
                             <form method="post" action="?act=1">
@@ -131,80 +150,81 @@ $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
                             </form>
                         </dd>
                     </dl>
-
+                    <script>
+                    </script>
                     <?php
                     break;
             endswitch;
             ?>
         </div>
         <script type="text/javascript" src="../js/file.js"></script>
-        <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
-        <link rel="stylesheet" href="../js/KindEditor/plugins/code/prettify.css" />
-        <script charset="utf-8" src="../js/KindEditor/kindeditor-all-min.js"></script>
-        <script charset="utf-8" src="../js/KindEditor/plugins/code/prettify.js"></script>
-        <script>
-            KindEditor.ready(function (K) {
-                var editor1 = K.create('textarea[name="Content"]', {
-                    cssPath: '../js/KindEditor/plugins/code/prettify.css',
-                    uploadJson: '../js/KindEditor/php/upload_json.php',
-                    fileManagerJson: '../js/KindEditor/php/file_manager_json.php',
-                    width: '100%',
-                    height: '430px',
-                    resizeType: 0,
-                    items: [
-                        'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
-                        'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
-                        'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
-                        'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
-                        'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
-                        'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
-                        'flash', 'media', 'insertfile', 'table', 'hr', 'baidumap', 'pagebreak',
-                        'link', 'unlink'
-                    ],
-                    allowFileManager: true,
-                    afterCreate: function () {
-                        var self = this;
-                        // K.ctrl(document, 13, function() {
-                        //     self.sync();
-                        //     K('form[name=example]')[0].submit();
-                        // });
-                        // K.ctrl(self.edit.doc, 13, function() {
-                        //     self.sync();
-                        //     K('form[name=example]')[0].submit();
-                        // });
-                    }
-                });
-                prettyPrint();
-
-
-            });
-            
-            $(function () {
-                $('.file').hide();
-                $('.showfile').on('click', function () {
-                    var th = $(this);
-                    $('#file_input').click();
-                    $('#file_input').checkFileTypeAndSize({
-                        allowedExtensions: ['jpg', 'png', 'gif'],
-                        maxSize: 500,
-                        success: function () {
-                            th.val($('#file_input').val())
-                        },
-                        extensionerror: function () {
-                            alert('格式不正确或不能为空');
-                            return;
-                        },
-                        sizeerror: function () {
-                            alert('最大尺寸请在200kb以内');
-                            return;
+    <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
+    <link rel="stylesheet" href="../js/KindEditor/plugins/code/prettify.css" />
+    <script charset="utf-8" src="../js/KindEditor/kindeditor-all-min.js"></script>
+    <script charset="utf-8" src="../js/KindEditor/plugins/code/prettify.js"></script>
+    <script>
+                KindEditor.ready(function (K) {
+                    var editor1 = K.create('textarea[name="Content"]', {
+                        cssPath: '../js/KindEditor/plugins/code/prettify.css',
+                        uploadJson: '../js/KindEditor/php/upload_json.php',
+                        fileManagerJson: '../js/KindEditor/php/file_manager_json.php',
+                        width: '100%',
+                        height: '430px',
+                        resizeType: 0,
+                        items: [
+                            'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
+                            'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                            'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                            'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                            'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                            'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
+                            'flash', 'media', 'insertfile', 'table', 'hr', 'baidumap', 'pagebreak',
+                            'link', 'unlink'
+                        ],
+                        allowFileManager: true,
+                        afterCreate: function () {
+                            var self = this;
+                            // K.ctrl(document, 13, function() {
+                            //     self.sync();
+                            //     K('form[name=example]')[0].submit();
+                            // });
+                            // K.ctrl(self.edit.doc, 13, function() {
+                            //     self.sync();
+                            //     K('form[name=example]')[0].submit();
+                            // });
                         }
                     });
+                    prettyPrint();
 
 
                 });
 
-            });
-        </script>
-    </body>
+                $(function () {
+                    $('.file').hide();
+                    $('.showfile').on('click', function () {
+                        var th = $(this);
+                        $('#file_input').click();
+                        $('#file_input').checkFileTypeAndSize({
+                            allowedExtensions: ['jpg', 'png', 'gif'],
+                            maxSize: 500,
+                            success: function () {
+                                th.val($('#file_input').val())
+                            },
+                            extensionerror: function () {
+                                alert('格式不正确或不能为空');
+                                return;
+                            },
+                            sizeerror: function () {
+                                alert('最大尺寸请在200kb以内');
+                                return;
+                            }
+                        });
+
+
+                    });
+
+                });
+    </script>
+</body>
 
 </html>
