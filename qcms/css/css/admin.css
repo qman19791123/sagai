@@ -185,6 +185,8 @@ body {
     overflow: scroll;
   }
   .adminContent {
+    width: 100%;
+    display: inline-block;
     font-size: 0;
     line-height: 0;
   }
@@ -202,12 +204,14 @@ body {
     background: #ccc;
     font-size: 12px;
     padding: 20px;
+    position: fixed;
     width: 100%;
     margin-bottom: 10px;
     top: 0;
   }
   .adminContent dl dd {
     padding: 10px;
+    margin-top: 50px;
   }
   .adminContent .list {
     width: 100%;
@@ -511,6 +515,8 @@ body {
     width: 95%;
   }
   .adminContent {
+    width: 100%;
+    display: inline-block;
     font-size: 0;
     line-height: 0;
   }
@@ -528,12 +534,14 @@ body {
     background: #ccc;
     font-size: 12px;
     padding: 20px;
+    position: fixed;
     width: 100%;
     margin-bottom: 10px;
     top: 0;
   }
   .adminContent dl dd {
     padding: 10px;
+    margin-top: 50px;
   }
   .adminContent .list {
     width: 100%;

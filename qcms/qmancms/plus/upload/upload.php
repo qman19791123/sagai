@@ -540,7 +540,7 @@ class Upload {
 	protected function set_destination($destination) {
 
 		$this->destination = $destination . DIRECTORY_SEPARATOR;
-
+                
 		return $this->destination_exist() ? TRUE : $this->create_destination();
 
 	}

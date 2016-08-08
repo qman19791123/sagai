@@ -79,7 +79,6 @@ class tfunction {
      * </p>
      */
     public function message($message, $url = '') {
-        global $url;
         if (empty($message)) {
             return;
         }
@@ -296,4 +295,5 @@ class tfunction {
         }
         return ['pageEnd' => $pageEnd, 'pageStart' => $pageStart, 'pageCount' => $PageCount];
     }
+
 }
