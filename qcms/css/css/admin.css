@@ -308,11 +308,6 @@ body {
     text-decoration: none;
   }
   .adminContent .page button {
-    display: inline-block;
-    padding: 10px;
-    color: #444;
-    font-size: 13px;
-    text-decoration: none;
     background: inherit;
     border: none;
     line-height: 0;
@@ -638,11 +633,6 @@ body {
     text-decoration: none;
   }
   .adminContent .page button {
-    display: inline-block;
-    padding: 10px;
-    color: #444;
-    font-size: 13px;
-    text-decoration: none;
     background: inherit;
     border: none;
     line-height: 0;

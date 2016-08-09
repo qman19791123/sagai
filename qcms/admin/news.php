@@ -18,13 +18,14 @@ $sort = '0';
 /**
  * 数据添加 删除 修改 操作
  */
-$newTextINPUT = filter_input(INPUT_POST, 'newText');
+$newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_SANITIZE_MAGIC_QUOTES);
 $keywordsINPUT = filter_input(INPUT_POST, 'keywords', FILTER_SANITIZE_STRING);
 $descriptionINPUT = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
 
 $time = time();
 $classifyIdINPUT = filter_input(INPUT_POST, 'classifyId', FILTER_VALIDATE_INT);
-$sortINPUT = filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT);
+$sortINPUT = filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT, ['options' => ['min_range' => -10, 'max_range' => 10]]);
+
 $tagINPUT = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
 $subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_SANITIZE_STRING);
 $titleINPUT = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING);
@@ -38,20 +39,44 @@ $adminId = $_SESSION['adminId'];
 
 switch ($act) {
     case 1:
-        echo $act;
-        
-        
-        
-        break;
-    case 2:
-        if (!empty($id)) {
+        empty($newTextINPUT) && die($tfunction->message('信息不能为空'));
+        empty($classifyIdINPUT) && die($tfunction->message('分类不能为空'));
+        empty($subtitleINPUT) && $subtitleINPUT = mb_substr(filter_var($newTextINPUT, FILTER_SANITIZE_STRING), 0, 240);
+        empty($descriptionINPUT) && $descriptionINPUT = $subtitleINPUT;
+        !is_numeric($sortINPUT) && $sortINPUT = 0;
+        $path = '';
+        $file = $_FILES['file'];
+        if (!empty($file['name'])) {
             $upload = Upload::factory('/files');
-            $file = $_FILES['file'];
             $upload->set_filename(md5(time()));
             $upload->file($file);
             $upload->set_max_file_size(200);
             $results = $upload->upload();
             $path = $titlePhotoINPUT;
+        }
+        if (empty($results['errors'])) {
+            $path = $results['path'];
+        }
+
+        $sql = 'INSERT INTO `news_config` '
+                . '(`classifyId`,`userid`,`time`,`sort`,`tag`,`subtitle`,`title`,`titlePhoto`)'
+                . 'VALUE("%s","%s","%s","%s","%s","%s","%s","%s")';
+        $sql = sprintf($sql, $classifyIdINPUT, $adminId, $time, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path);
+        
+        $Rs = $conn->aud($sql);
+
+        break;
+    case 2:
+        if (!empty($id)) {
+            $path = $titlePhotoINPUT;
+            $file = $_FILES['file'];
+            if (!empty($file['name'])) {
+                $upload = Upload::factory('/files');
+                $upload->set_filename(md5(time()));
+                $upload->file($file);
+                $upload->set_max_file_size(200);
+                $results = $upload->upload();
+            }
             if (empty($results['errors'])) {
                 $path = $results['path'];
             }
@@ -80,7 +105,7 @@ switch ($act) {
                     . ' where id=%s';
             $sql = sprintf($sql, $classifyIdINPUT, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $id);
             $conn->aud($sql);
-            die($tfunction->message('修改内容成功','news.php'));
+            die($tfunction->message('修改内容成功', 'news.php'));
         }
         break;
     case 3:

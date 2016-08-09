@@ -1,7 +1,7 @@
 @charset "utf-8";
 @bj:#0e6eb8;
 @width: 1240px;
-@main{
+.main(){
     width: 100%;
     height: inherit;
     display: inline-block;
@@ -21,36 +21,36 @@ html,body{
     outline:0px;
 }
 .msgdiv{
-            position:absolute;
-            margin: auto;
-            text-align: center;
-            display: inline-block;
-            width: 100%;
-            top:50%;
-        span{
-            display: inline-block;
-            vertical-align: middle;
-            width: 300px;
-            height: 150px;
-            border:  1px solid #ccc;
-            text-align: center;
-            margin-top: -150px;
-            line-height: 150px;
-        }
+    position:absolute;
+    margin: auto;
+    text-align: center;
+    display: inline-block;
+    width: 100%;
+    top:50%;
+    span{
+        display: inline-block;
+        vertical-align: middle;
+        width: 300px;
+        height: 150px;
+        border:  1px solid #ccc;
+        text-align: center;
+        margin-top: -150px;
+        line-height: 150px;
+    }
 }
-@admin{
-    @main;
+.admin(){
+    .main();
     form{
         display: inline-block;
     }
     .login:before {
-            content: 'Administrators';
-            font-size: 20px;
-            color: #ccc-2;
-            text-align: left;
-            display: inline-block;
-            width: 100%;
-            margin: 0 0 10px 0 ;
+        content: 'Administrators';
+        font-size: 20px;
+        color: #ccc-2;
+        text-align: left;
+        display: inline-block;
+        width: 100%;
+        margin: 0 0 10px 0 ;
     }
     .login{
         width: 400px;
@@ -86,7 +86,7 @@ html,body{
         }
     }
 }
-@adminMain{
+.adminMain(){
 
     font-size: 0px;
     .top{
@@ -101,7 +101,7 @@ html,body{
     }
     .content1
     {
-        @fun{
+        .fun(){
             padding: 10px;
             margin: 5px 0;
             width: 100%;
@@ -110,44 +110,44 @@ html,body{
         display: inline-block;
         font-size: 12px;
         vertical-align: top;
-         menu{
-               
-                width: 90%;
-                margin:25px auto;
-                li{
+        menu{
 
-                    @fun;
-                    background: rgba(250, 250, 250, 0.95);
-                    font-weight: 700;
-                    &:before{
-                        content: '';
-                        padding-right: 7px;
-                    }
-                    p{
-                       @fun;
-                       display: none;
-                        a{
-                            width: 100%;
-                            display: inline-block;
-                            text-decoration:none;
-                            color: #333;
-                            &:before{
-                                content: '';
-                                padding-right: 7px;
-                            }
+            width: 90%;
+            margin:25px auto;
+            li{
+
+                .fun();
+                background: rgba(250, 250, 250, 0.95);
+                font-weight: 700;
+                &:before{
+                    content: '';
+                    padding-right: 7px;
+                }
+                p{
+                    .fun();
+                    display: none;
+                    a{
+                        width: 100%;
+                        display: inline-block;
+                        text-decoration:none;
+                        color: #333;
+                        &:before{
+                            content: '';
+                            padding-right: 7px;
                         }
                     }
                 }
             }
+        }
         .webinfo{
             width: 90%;
             margin: 25px auto;
             span{
-                 @fun;
+                .fun();
                 font-weight: 700;
                 &:before{
-                            content: '';
-                            padding-right: 7px;
+                    content: '';
+                    padding-right: 7px;
                 }
             }
             a{
@@ -165,7 +165,7 @@ html,body{
         font-size: 12px;
         margin: 25px 2.5%;
         text-align: center;
-        
+
         height: 85%;
         .contentiframe
         {
@@ -178,7 +178,7 @@ html,body{
     }
 }
 
-@adminContent{
+.adminContent(){
     width:100%;
     display: inline-block;
     font-size: 0;
@@ -302,12 +302,12 @@ html,body{
             font-size: 13px;
             text-decoration:none;
         }
-       button{
-            a;
+        button{
+            //a;
             background: inherit;
             border: none;
             line-height: 0;
-       }
+        }
     }
     .menu{
         font-size: 12px;
@@ -344,25 +344,25 @@ html,body{
 
 @media screen and (min-width: 801px){
     .admin{
-        @admin;
+        .admin();
     }
     .adminMain{
-        @adminMain;
+        .adminMain();
     }
     .adminContent{
-        @adminContent;
+        .adminContent();
     }
 }
 @media screen and (max-width: 800px) {
     .admin{
-        @admin;
+        .admin();
         .login{
             width:80%;
             text-align: center;
         }
     }
     .adminMain{
-        @adminMain;
+        .adminMain();
         height: 98%;
         .top span{
             float: right;
@@ -387,12 +387,12 @@ html,body{
             }
         }
         .content2{
-           display: block;
-           width: 95%;
+            display: block;
+            width: 95%;
         }
     }
     .adminContent {
-        @adminContent;
+        .adminContent();
         .list{
             li{
                 a{
