@@ -150,7 +150,7 @@ class tfunction {
             include plus . "convert.php";
             $this->zd = $zd;
         }
-        if (mb_strlen($ZNContent) < 20) {
+        if (mb_strlen($ZNContent,'utf-8') <= 20) {
             $string = zhconversion_hans($ZNContent);
             return strtr($string, $this->zd);
         } else {

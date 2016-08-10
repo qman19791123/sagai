@@ -13,12 +13,12 @@ $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $classifyId = '0';
 $sort = '0';
 
-
-
 /**
  * 数据添加 删除 修改 操作
  */
-$newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_SANITIZE_MAGIC_QUOTES);
+//$newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_SANITIZE_MAGIC_QUOTES);
+
+$newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_CALLBACK, ['options' => 'conn::encode']);
 $keywordsINPUT = filter_input(INPUT_POST, 'keywords', FILTER_SANITIZE_STRING);
 $descriptionINPUT = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
 
@@ -27,20 +27,23 @@ $classifyIdINPUT = filter_input(INPUT_POST, 'classifyId', FILTER_VALIDATE_INT);
 $sortINPUT = filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT, ['options' => ['min_range' => -10, 'max_range' => 10]]);
 
 $tagINPUT = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
-$subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_SANITIZE_STRING);
-$titleINPUT = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_STRING);
+$subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_CALLBACK, ['options' => 'conn::encode']);
+$titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => 'conn::dropQuote']);
 $titlePhotoINPUT = filter_input(INPUT_POST, 'titlePhoto', FILTER_SANITIZE_STRING);
 
-
-
+$checked = 1;
 $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 $adminId = $_SESSION['adminId'];
 
+$pinyin = $tfunction->py(mb_substr($titleINPUT, 0, 20, 'utf-8'));
 
 switch ($act) {
     case 1:
-        empty($newTextINPUT) && die($tfunction->message('信息不能为空'));
+        //添加部分代码
+        empty($titleINPUT) && die($tfunction->message('信息标题不能为空'));
+        empty($newTextINPUT) && die($tfunction->message('信息内容不能为空'));
         empty($classifyIdINPUT) && die($tfunction->message('分类不能为空'));
+
         empty($subtitleINPUT) && $subtitleINPUT = mb_substr(filter_var($newTextINPUT, FILTER_SANITIZE_STRING), 0, 240);
         empty($descriptionINPUT) && $descriptionINPUT = $subtitleINPUT;
         !is_numeric($sortINPUT) && $sortINPUT = 0;
@@ -57,16 +60,28 @@ switch ($act) {
         if (empty($results['errors'])) {
             $path = $results['path'];
         }
-
+        // 添加内容配置表信息
         $sql = 'INSERT INTO `news_config` '
-                . '(`classifyId`,`userid`,`time`,`sort`,`tag`,`subtitle`,`title`,`titlePhoto`)'
-                . 'VALUE("%s","%s","%s","%s","%s","%s","%s","%s")';
-        $sql = sprintf($sql, $classifyIdINPUT, $adminId, $time, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path);
-        
+                . '(`classifyId`,`userid`,`time`,`sort`,`tag`,`subtitle`,`title`,`titlePhoto`,`checked`,`pinyin`,`isdel`)'
+                . 'VALUES("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")';
+        $sql = sprintf($sql, $classifyIdINPUT, $adminId, $time, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $checked, $pinyin, 0);
         $Rs = $conn->aud($sql);
+        // 添加内容表信息
+        $sql = 'INSERT INTO'
+                . '`news_content`'
+                . '(`newsId`,`newText`,`keywords`,`description`) VALUES'
+                . '("%s","%s","%s","%s")';
+        $sql = sprintf($sql, $Rs, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
+        $conn->aud($sql);
 
+        //修改统计文章总数
+        $sql = 'UPDATE `classify` SET summary=summary+1 where id=' . $classifyIdINPUT;
+        $conn->aud($sql);
+
+        die($tfunction->message('添加内容成功', 'news.php'));
         break;
     case 2:
+        //修改部分代码
         if (!empty($id)) {
             $path = $titlePhotoINPUT;
             $file = $_FILES['file'];
@@ -109,19 +124,26 @@ switch ($act) {
         }
         break;
     case 3:
+        //删除部分代码
         echo $act;
+
         break;
 }
 ?>
 <html>
     <head>
+
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title><?php echo $systemName ?></title>
         <link rel="stylesheet" type="text/css" href="<?php echo '../' . $tfunction->lessc('admin.less') ?>"/>
+        <!--字体图标 css -->
         <link rel="stylesheet" type="text/css" href="../css/Font-Awesome/font-awesome.min.css"/>
-
+        <!--dialog css -->
+        <link rel="stylesheet" href="css/ui-dialog.css">
         <script type="text/javascript" src="../js/jquery.min.js"></script>
+        <!--dialog css -->
+        <script type="text/javascript" src="../js/artDialog/.js"></script>
 
     </head>
     <body>
@@ -142,12 +164,11 @@ switch ($act) {
                                     <li>排序</li>
                                     <li style="width: 50%">名称</li>
                                     <li style="width: 17%">时间</li>
-                                    <li style="width: 10%">操作</li>
+                                    <li style="width: 20%">操作</li>
                                 </ul>
                                 <?php
                                 $pagec = ($page - 1) * 10;
-                                $sql = 'select * from `news_config` limit 10 Offset ' . $pagec;
-                                echo $pagec;
+                                $sql = 'select * from `news_config` order by id desc limit 10 Offset ' . $pagec;
                                 $data = $conn->query($sql);
                                 $sqlCount = 'select count(id) as cid from `news_config`';
                                 $dataCount = $conn->query($sqlCount);
@@ -160,6 +181,8 @@ switch ($act) {
                                         <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
 
                                         <li>
+                                            <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked">审核</a>
+                                            <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked">阅览</a>
                                             <a href="?cpage=2&id=<?php echo $rs['id'] ?>">修改新闻</a>
                                             <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?>">删除新闻</a>
                                         </li>
@@ -238,7 +261,8 @@ switch ($act) {
                                         $tag = $Rs[0]['tag'];
                                         $title = $Rs[0]['title'];
                                         $titlePhoto = $Rs[0]['titlePhoto'];
-                                        $newText = $Rs[0]['newText'];
+                                        //解码内容返回带有HTML标签内容
+                                        $newText = conn::decode($Rs[0]['newText']);
                                         $keywords = $Rs[0]['keywords'];
                                         $description = $Rs[0]['description'];
                                         $subtitle = $Rs[0]['subtitle'];
@@ -298,12 +322,30 @@ switch ($act) {
             endswitch;
             ?>
         </div>
-        <script type="text/javascript" src="../js/file.js"></script>
+       
     <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
     <link rel="stylesheet" href="../js/KindEditor/plugins/code/prettify.css" />
     <script charset="utf-8" src="../js/KindEditor/kindeditor-all-min.js"></script>
     <script charset="utf-8" src="../js/KindEditor/plugins/code/prettify.js"></script>
+    <script type="text/javascript" src="../js/file.js"></script>
+
     <script>
+
+        var d = dialog({
+            title: '提示',
+            content: '按钮回调函数返回 false 则不许关闭',
+            okValue: '确定',
+            ok: function () {
+                this.title('提交中…');
+                return false;
+            },
+            cancelValue: '取消',
+            cancel: function () {}
+        });
+
+        /*
+         *  KindEditor 编辑器
+         */
         KindEditor.ready(function (K) {
             var editor1 = K.create('textarea[name="newText"]', {
                 cssPath: '../js/KindEditor/plugins/code/prettify.css',
