@@ -331,16 +331,35 @@ switch ($act) {
 
     <script>
 
-        var d = dialog({
-            title: '提示',
-            content: '按钮回调函数返回 false 则不许关闭',
-            okValue: '确定',
-            ok: function () {
-                this.title('提交中…');
-                return false;
-            },
-            cancelValue: '取消',
-            cancel: function () {}
+        $('.checked').on('click', function () {
+            var thiss = this;
+            var d = dialog({
+                title: '提示',
+                width: '500px',
+                height: '100px',
+                content: $('.checkedFun').html(),
+                okValue: '确定',
+                ok: function () {
+                    var tid = $(thiss).attr('data-id');
+                    this.title('提交中…');
+                    $.ajax({
+                        type: "POST",
+                        url: "news.php?act=4",
+                        data: {'id': tid, 'checked': $('.checkedlist').eq(1).find('select').val()},
+                        success: function (e) {
+                            consloe.log(e);
+                        }
+                    });
+//                    setTimeout(function () {
+//                        d.close().remove();
+//                    }, 1000);
+
+                    return false;
+                },
+                cancelValue: '取消',
+                cancel: function () {}
+            });
+            d.showModal();
         });
 
         /*
