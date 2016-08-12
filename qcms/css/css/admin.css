@@ -241,6 +241,27 @@ body {
     padding: 10px;
     margin-top: 50px;
   }
+  .adminContent dl dd .informationBar {
+    margin: 0 0 16px 0;
+    color: red;
+    display: block;
+    width: 100%;
+    font-weight: bolder;
+    background: #fff !important;
+    line-height: 30px;
+    border-radius: 10px;
+    padding: 0 20px;
+    border: 1px #ccc solid;
+  }
+  .adminContent dl dd .informationBar,
+  .adminContent dl dd .informationBar * {
+    color: red;
+    font-size: 12px;
+  }
+  .adminContent dl dd .informationBar a {
+    display: block;
+    float: right;
+  }
   .adminContent .list {
     width: 100%;
     font-size: 0;
@@ -565,6 +586,27 @@ body {
   .adminContent dl dd {
     padding: 10px;
     margin-top: 50px;
+  }
+  .adminContent dl dd .informationBar {
+    margin: 0 0 16px 0;
+    color: red;
+    display: block;
+    width: 100%;
+    font-weight: bolder;
+    background: #fff !important;
+    line-height: 30px;
+    border-radius: 10px;
+    padding: 0 20px;
+    border: 1px #ccc solid;
+  }
+  .adminContent dl dd .informationBar,
+  .adminContent dl dd .informationBar * {
+    color: red;
+    font-size: 12px;
+  }
+  .adminContent dl dd .informationBar a {
+    display: block;
+    float: right;
   }
   .adminContent .list {
     width: 100%;

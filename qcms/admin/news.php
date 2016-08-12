@@ -31,15 +31,28 @@ $subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_CALLBACK, ['options
 $titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => 'conn::dropQuote']);
 $titlePhotoINPUT = filter_input(INPUT_POST, 'titlePhoto', FILTER_SANITIZE_STRING);
 
-$checked = 1;
+$check = filter_input(INPUT_POST, 'checked', FILTER_VALIDATE_INT);
+$checked = $check == 999 || $check == 0 ? $check : 1;
+
 $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 $adminId = $_SESSION['adminId'];
 
 $pinyin = $tfunction->py(mb_substr($titleINPUT, 0, 20, 'utf-8'));
 
+/* 一个匿名方法 */
+$AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPUT)use($conn) {
+    $sqlNewsContentAddModele = 'INSERT INTO'
+            . '`news_content`'
+            . '(`newsId`,`newText`,`keywords`,`description`) VALUES'
+            . '("%s","%s","%s","%s")';
+    $sqlNewsContentAdd = sprintf($sqlNewsContentAddModele, $Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
+    $conn->aud($sqlNewsContentAdd);
+};
+
+
 switch ($act) {
     case 1:
-        //添加部分代码
+//添加部分代码
         empty($titleINPUT) && die($tfunction->message('信息标题不能为空'));
         empty($newTextINPUT) && die($tfunction->message('信息内容不能为空'));
         empty($classifyIdINPUT) && die($tfunction->message('分类不能为空'));
@@ -60,28 +73,24 @@ switch ($act) {
         if (empty($results['errors'])) {
             $path = $results['path'];
         }
-        // 添加内容配置表信息
-        $sql = 'INSERT INTO `news_config` '
+// 添加内容配置表信息
+        $sqlNewsConfigAddModele = 'INSERT INTO `news_config` '
                 . '(`classifyId`,`userid`,`time`,`sort`,`tag`,`subtitle`,`title`,`titlePhoto`,`checked`,`pinyin`,`isdel`)'
                 . 'VALUES("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")';
-        $sql = sprintf($sql, $classifyIdINPUT, $adminId, $time, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $checked, $pinyin, 0);
-        $Rs = $conn->aud($sql);
-        // 添加内容表信息
-        $sql = 'INSERT INTO'
-                . '`news_content`'
-                . '(`newsId`,`newText`,`keywords`,`description`) VALUES'
-                . '("%s","%s","%s","%s")';
-        $sql = sprintf($sql, $Rs, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
-        $conn->aud($sql);
+        $sqlNewsConfigAdd = sprintf($sqlNewsConfigAddModele, $classifyIdINPUT, $adminId, $time, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $checked, $pinyin, 0);
+        $Rs = $conn->aud($sqlNewsConfigAdd);
 
-        //修改统计文章总数
-        $sql = 'UPDATE `classify` SET summary=summary+1 where id=' . $classifyIdINPUT;
-        $conn->aud($sql);
+// 添加内容表信息
+        $AMNewsContent($Rs, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
+
+//修改统计文章总数
+        $sqlClassifyUpdate = 'UPDATE `classify` SET summary=summary+1 where id=' . $classifyIdINPUT;
+        $conn->aud($sqlClassifyUpdate);
 
         die($tfunction->message('添加内容成功', 'news.php'));
         break;
     case 2:
-        //修改部分代码
+//修改部分代码
         if (!empty($id)) {
             $path = $titlePhotoINPUT;
             $file = $_FILES['file'];
@@ -96,44 +105,41 @@ switch ($act) {
                 $path = $results['path'];
             }
 
-            $sql = 'select count(newsId) as C from news_content where newsId=' . $id;
-            $Rs = $conn->query($sql);
-            if (empty($Rs[0]['C'])) {
-                $sql = 'INSERT INTO'
-                        . '`news_content`'
-                        . '(`newsId`,`newText`,`keywords`,`description`) VALUES'
-                        . '("%s","%s","%s","%s")';
-                $sql = sprintf($sql, $id, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
+            $sqlNewsContentSeletCount = 'select count(newsId) as C from news_content where newsId=' . $id;
+            $Rsc = $conn->query($sqlNewsContentSeletCount);
+            if (empty($Rsc[0]['C'])) {
+                $AMNewsContent($id, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
             } else {
-                $sql = 'update `news_content` set `newText` = "%s",`keywords` = "%s", `description`="%s" where newsId=%s';
-                $sql = sprintf($sql, $newTextINPUT, $keywordsINPUT, $descriptionINPUT, $id);
+                $sqlNewsContentUpdateModele = 'update `news_content` set `newText` = "%s",`keywords` = "%s", `description`="%s" where newsId=%s';
+                $sqlNewsContentUpdate = sprintf($sqlNewsContentUpdateModele, $newTextINPUT, $keywordsINPUT, $descriptionINPUT, $id);
+                $conn->aud($sqlNewsContentUpdate);
             }
-            $conn->aud($sql);
-
-            $sql = 'update `news_config` set '
+            $sqlNewsConfigUpdateModele = 'update `news_config` set '
                     . '`classifyId` = "%s",'
                     . '`sort` = "%s", '
                     . '`tag`="%s" , '
                     . '`subtitle` = "%s" ,'
                     . '`title` = "%s" ,'
-                    . '`titlePhoto` = "%s"'
+                    . '`titlePhoto` = "%s" ,'
+                    . '`checked`="%s" '
                     . ' where id=%s';
-            $sql = sprintf($sql, $classifyIdINPUT, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $id);
-            $conn->aud($sql);
+            $sqlNewsConfigUpdate = sprintf($sqlNewsConfigUpdateModele, $classifyIdINPUT, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $checked, $id);
+            $conn->aud($sqlNewsConfigUpdate);
             die($tfunction->message('修改内容成功', 'news.php'));
         }
         break;
     case 3:
-        //删除部分代码
+//删除部分代码
         echo $act;
 
         break;
     case 4:
-        //特殊传值AJAx
+//特殊传值AJAx
         $ajaxT = filter_input(INPUT_POST, 't', FILTER_VALIDATE_INT);
         $ajaxId = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-        var_dump($ajaxId,$ajaxT);
-        exit();
+        $sql = 'update `news_config` set checked = ' . $ajaxT . ' where id=' . $ajaxId;
+        $conn->aud($sql);
+        die('true');
         break;
 }
 ?>
@@ -159,8 +165,12 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            分类管理
-                        <span class="addLink">[<a href='?cpage=1'>添加新闻</a>]</span>
+                            文章管理
+                        <span class="addLink">
+                            [<a href='?cpage=1'>添加文章</a>]
+                            [<a href='javascript:void(0)' id='classify'>分类</a>]
+                            [<a href='?cpage=1'>文章回收</a>]
+                        </span>
                         </dt>
                         <dd>
                             <div class="list atable">
@@ -168,6 +178,7 @@ switch ($act) {
                                     <li>编号</li>
                                     <li>排序</li>
                                     <li style="width: 50%">名称</li>
+                                    <li style="width: 5%">审核</li>
                                     <li style="width: 17%">时间</li>
                                     <li style="width: 20%">操作</li>
                                 </ul>
@@ -183,6 +194,19 @@ switch ($act) {
                                         <li><?php echo $rs['id'] ?></li>
                                         <li><?php echo $rs['sort'] ?></li>
                                         <li><?php echo $rs['title'] ?></li>
+                                        <li><?php
+                                            switch ($rs['checked']) {
+                                                case 0 :
+                                                    echo '未通过';
+                                                    break;
+                                                case 1:
+                                                    echo '等待';
+                                                    break;
+                                                case 999:
+                                                    echo '通过';
+                                                    break;
+                                            }
+                                            ?></li>
                                         <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
 
                                         <li>
@@ -214,112 +238,130 @@ switch ($act) {
                     break;
                 case 2:
                 case 1:
+
+                    $tag = '';
+                    $subtitle = '';
+                    $title = '';
+                    $titlePhoto = '';
+                    $newText = '';
+                    $keywords = '';
+                    $description = '';
+                    $checked = '';
+                    if (!empty($id)) {
+                        $sql = 'select classifyId,sort,tag,subtitle,title,titlePhoto,newText,keywords,description,checked from news_config left join news_content on news_config.id = news_content.newsId where id = ' . $id;
+                        $Rs = $conn->query($sql);
+                        $sort = $Rs[0]['sort'];
+                        $classifyId = $Rs[0]['classifyId'];
+                        $tag = $Rs[0]['tag'];
+                        $title = $Rs[0]['title'];
+                        $titlePhoto = $Rs[0]['titlePhoto'];
+                        //解码内容返回带有HTML标签内容
+                        $newText = conn::decode($Rs[0]['newText']);
+                        $keywords = $Rs[0]['keywords'];
+                        $description = $Rs[0]['description'];
+                        $subtitle = $Rs[0]['subtitle'];
+                        $checked = $Rs[0]['checked'];
+                    }
                     ?>
                     <dl>
                         <dt>
-                            分类管理
-                        <span class="addLink">[ <a href='?cpage=1'>添加新闻</a>  ]</span>
+                            文章管理
+                        <span class="addLink"></span>
                         </dt>
                         <dd>
-                            <form method="post"  enctype="multipart/form-data" action="?act=<?php echo $cpage ?><?php !empty($id) && print('&id=' . $id) ?>">
-                                <div class="list atable">
-                                    <ul class="list a20_80">
-                                        <li>
-                                            分类编号:
-                                        </li>
-                                        <li>
-                                            <select style ="width:180px" name="classifyId" class="classifyId">
-                                                <option value="0">主分类</option>
-                                                <?php
-                                                $classify = new tfunction($conn);
-                                                $data = $classify->classify();
-                                                foreach ($data as $rs):
-                                                    ?>
-                                                    <option value="<?php echo $rs['id'] ?>"><?php echo $rs['className'] ?></option>
-                                                <?php endforeach ?>
+                            <?php if ($checked == 1): ?>
+                            <span class="informationBar">
+                                <?php print('请通过审核') ?>
+                                <a href="javascript:void(0)" id='off' title="关闭">X</a>
+                            </span>
+                        <?php endif; ?>
+                        <form method="post"  enctype="multipart/form-data" action="?act=<?php echo $cpage ?><?php !empty($id) && print('&id=' . $id) ?>">
+                            <div class="list atable">
+                                <ul class="list a20_80">
+                                    <li>
+                                        分类编号:
+                                    </li>
+                                    <li>
+                                        <select style ="width:180px" name="classifyId" class="classifyId">
+                                            <option value="0">主分类</option>
+                                            <?php
+                                            $classify = new tfunction($conn);
+                                            $data = $classify->classify();
+                                            foreach ($data as $rs):
+                                                ?>
+                                                <option value="<?php echo $rs['id'] ?>"><?php echo $rs['className'] ?></option>
+                                            <?php endforeach ?>
 
-                                            </select>
-                                        </li>
-                                    </ul>
+                                        </select>
+                                    </li>
+                                </ul>
 
-                                    <ul class="list a20_80">
-                                        <li>排序</li>
-                                        <li>
-                                            <select name="sort" class="sort">
-                                            </select>
-                                        </li>
-                                    </ul>
-
-                                    <?php
-                                    $tag = '';
-                                    $subtitle = '';
-                                    $title = '';
-                                    $titlePhoto = '';
-                                    $newText = '';
-                                    $keywords = '';
-                                    $description = '';
-                                    if (!empty($id)) {
-                                        $sql = 'select classifyId,sort,tag,subtitle,title,titlePhoto,newText,keywords,description from news_config left join news_content on news_config.id = news_content.newsId where id = ' . $id;
-                                        $Rs = $conn->query($sql);
-                                        $sort = $Rs[0]['sort'];
-                                        $classifyId = $Rs[0]['classifyId'];
-                                        $tag = $Rs[0]['tag'];
-                                        $title = $Rs[0]['title'];
-                                        $titlePhoto = $Rs[0]['titlePhoto'];
-                                        //解码内容返回带有HTML标签内容
-                                        $newText = conn::decode($Rs[0]['newText']);
-                                        $keywords = $Rs[0]['keywords'];
-                                        $description = $Rs[0]['description'];
-                                        $subtitle = $Rs[0]['subtitle'];
-                                    }
-                                    ?>
-                                    <ul class="list a20_80">
-                                        <li>标签:</li>
-                                        <li><input style="width: 80%;" name="tag" value="<?php echo $tag; ?>"/></li>
-                                    </ul>
-
-                                    <ul class="list a20_80">
-                                        <li>标题:</li>
-                                        <li><input style="width: 80%;" name="title" value="<?php echo $title; ?>"/></li>
-                                    </ul>
-
-                                    <ul class="list a20_80">
-                                        <li>副标题:</li>
-                                        <li>
-                                            <textarea style="width: 80%;height: 100px;resize: none;" name="subtitle"><?php echo $subtitle; ?></textarea>
-                                        </li>   
-                                    </ul>
-                                    <ul class="list a20_80">
-                                        <li>标题图片:</li>
-                                        <li>
-                                            <input class="showfile" readonly style="width: 80%;" name="titlePhoto" value="<?php echo $titlePhoto; ?>">
-                                            <input type="file" id="file_input" class="file" name="file"/>
-                                        </li>
-                                    </ul>
-                                    <ul class="list a20_80">
-                                        <li>关键词 （SEO）:</li>
-                                        <li><input style="width: 80%;" name="keywords" value="<?php echo $keywords; ?>"/></li>
-                                    </ul>
-                                    <ul class="list a20_80">
-                                        <li>内容摘要（SEO）:</li>
-                                        <li><textarea style="width: 80%;height: 100px;resize: none;" name="description"><?php echo $description; ?></textarea></li>
-                                    </ul>
+                                <ul class="list a20_80">
+                                    <li>排序</li>
+                                    <li>
+                                        <select name="sort" class="sort">
+                                        </select>
+                                    </li>
+                                </ul>
 
 
-                                    <ul class="list a20_80">
-                                        <li>内容（SEO）:</li>
-                                        <li><textarea name="newText" style="width: 80%;height: 50px;resize: none;"><?php echo $newText; ?></textarea></li>   
-                                    </ul>
-                                </div>
+                                <ul class="list a20_80">
+                                    <li>标签:</li>
+                                    <li><input style="width: 80%;" name="tag" value="<?php echo $tag; ?>"/></li>
+                                </ul>
 
-                                <div class="tijiao">
+                                <ul class="list a20_80">
+                                    <li>标题:</li>
+                                    <li><input style="width: 80%;" name="title" value="<?php echo $title; ?>"/></li>
+                                </ul>
 
-                                    <button type="submit"><?php echo $lang['submit']; ?></button>
-                                    <button type="reset"><?php echo $lang['reset']; ?></button>
-                                    <button type="button" id='fanhui'><?php echo $lang['back']; ?></button>
-                                </div>
+                                <ul class="list a20_80">
+                                    <li>副标题:</li>
+                                    <li>
+                                        <textarea style="width: 80%;height: 100px;resize: none;" name="subtitle"><?php echo $subtitle; ?></textarea>
+                                    </li>   
+                                </ul>
+                                <ul class="list a20_80">
+                                    <li>标题图片:</li>
+                                    <li>
+                                        <input class="showfile" readonly style="width: 80%;" name="titlePhoto" value="<?php echo $titlePhoto; ?>">
+                                        <input type="file" id="file_input" class="file" name="file"/>
+                                    </li>
+                                </ul>
+                                <ul class="list a20_80">
+                                    <li>关键词 （SEO）:</li>
+                                    <li><input style="width: 80%;" name="keywords" value="<?php echo $keywords; ?>"/></li>
+                                </ul>
+                                <ul class="list a20_80">
+                                    <li>内容摘要（SEO）:</li>
+                                    <li><textarea style="width: 80%;height: 100px;resize: none;" name="description"><?php echo $description; ?></textarea></li>
+                                </ul>
 
-                            </form>
+
+                                <ul class="list a20_80">
+                                    <li>内容（SEO）:</li>
+                                    <li><textarea name="newText" style="width: 80%;height: 50px;resize: none;"><?php echo $newText; ?></textarea></li>   
+                                </ul>
+
+                                <ul class="list a20_80">
+                                    <li>
+                                        审核
+                                    </li>
+                                    <li>
+
+
+                                        通过:<input type="radio" <?php $checked == 999 && print('checked="checked"') ?>  name="checked" value="999"/>
+                                        未通过:<input type="radio" <?php $checked == 0 && print('checked="checked"') ?>  name="checked" value="0"/>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div class="tijiao">
+                                <button type="submit"><?php echo $lang['submit']; ?></button>
+                                <button type="reset"><?php echo $lang['reset']; ?></button>
+                                <button type="button" id='fanhui'><?php echo $lang['back']; ?></button>
+                            </div>
+                        </form>
                         </dd>
                     </dl>
                     <?php
@@ -336,16 +378,32 @@ switch ($act) {
                     </li>
                     <li class="l">
                         <select>
-                            <option readonly>选择</option>
-                            <option value="0">未通过审核</option>
-                            <option value="1">等待审核</option>
-                            <option value="999">审核</option>
+                            <option >选择</option>
+                            <option value="0">未通过</option>
+                            <option value="1">等待</option>
+                            <option value="999">通过</option>
                         </select>
                     </li>
                 </ul>
             </div>
         </div>
-
+        <div class='dialogMsg'>
+            <div class='dialogContent'>
+                <ul>
+                    <li class="r">
+                        分类
+                    </li>
+                    <li class="l">
+                        <select>
+                            <option >选择</option>
+                            <option value="0">未通过</option>
+                            <option value="1">等待</option>
+                            <option value="999">通过</option>
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </div>
 
     <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
     <link rel="stylesheet" href="../js/KindEditor/plugins/code/prettify.css" />
@@ -359,12 +417,19 @@ switch ($act) {
 
     <script type="text/javascript">
 
+        $('#classify').on('click', function () {
+            alert('111');
 
+        })
+
+        $('#off').on('click', function () {
+            $(this).parent('span').hide();
+        });
         $('.checked').on('click', function () {
 
             var id = $(this).attr('data-id');
             $('.dialogContent .l option').eq(0).css({'background': '#ccc', 'padding': '5px'});
-            dialog({
+            var dialog_ = dialog({
                 backdropBackground: '',
                 title: '提示',
                 content: $('.dialogMsg').html(),
@@ -381,7 +446,9 @@ switch ($act) {
                             url: '?act=4',
                             data: {"t": tt, "id": id},
                             success: function (e) {
-                                alert(e);
+                                if (e == 'true') {
+                                    history.go(0)
+                                }
                             }
                         });
                     }
@@ -401,7 +468,7 @@ switch ($act) {
                 uploadJson: '../js/KindEditor/php/upload_json.php',
                 fileManagerJson: '../js/KindEditor/php/file_manager_json.php',
                 width: '100%',
-                height: '280px',
+                height: '250px',
                 resizeType: 0,
                 items: [
                     'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
@@ -416,14 +483,6 @@ switch ($act) {
                 allowFileManager: true,
                 afterCreate: function () {
                     var self = this;
-                    // K.ctrl(document, 13, function() {
-                    //     self.sync();
-                    //     K('form[name=example]')[0].submit();
-                    // });
-                    // K.ctrl(self.edit.doc, 13, function() {
-                    //     self.sync();
-                    //     K('form[name=example]')[0].submit();
-                    // });
                 }
             });
             prettyPrint();
