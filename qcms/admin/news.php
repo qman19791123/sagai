@@ -128,6 +128,13 @@ switch ($act) {
         echo $act;
 
         break;
+    case 4:
+        //特殊传值AJAx
+        $ajaxT = filter_input(INPUT_POST, 't', FILTER_VALIDATE_INT);
+        $ajaxId = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        var_dump($ajaxId,$ajaxT);
+        exit();
+        break;
 }
 ?>
 <html>
@@ -139,11 +146,9 @@ switch ($act) {
         <link rel="stylesheet" type="text/css" href="<?php echo '../' . $tfunction->lessc('admin.less') ?>"/>
         <!--字体图标 css -->
         <link rel="stylesheet" type="text/css" href="../css/Font-Awesome/font-awesome.min.css"/>
-        <!--dialog css -->
-        <link rel="stylesheet" href="css/ui-dialog.css">
+
         <script type="text/javascript" src="../js/jquery.min.js"></script>
-        <!--dialog css -->
-        <script type="text/javascript" src="../js/artDialog/.js"></script>
+
 
     </head>
     <body>
@@ -182,7 +187,7 @@ switch ($act) {
 
                                         <li>
                                             <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked">审核</a>
-                                            <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked">阅览</a>
+                                            <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>">阅览</a>
                                             <a href="?cpage=2&id=<?php echo $rs['id'] ?>">修改新闻</a>
                                             <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?>">删除新闻</a>
                                         </li>
@@ -322,25 +327,69 @@ switch ($act) {
             endswitch;
             ?>
         </div>
-       
+
+        <div class='dialogMsg'>
+            <div class='dialogContent'>
+                <ul>
+                    <li class="r">
+                        审核
+                    </li>
+                    <li class="l">
+                        <select>
+                            <option readonly>选择</option>
+                            <option value="0">未通过审核</option>
+                            <option value="1">等待审核</option>
+                            <option value="999">审核</option>
+                        </select>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
     <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
     <link rel="stylesheet" href="../js/KindEditor/plugins/code/prettify.css" />
     <script charset="utf-8" src="../js/KindEditor/kindeditor-all-min.js"></script>
     <script charset="utf-8" src="../js/KindEditor/plugins/code/prettify.js"></script>
+    <!--dialog css -->
+    <link rel="stylesheet" href="../js/Dialog/css/ui-dialog.css">
+    <!--dialog js -->
+    <script type="text/javascript" src="../js/Dialog/dist/dialog-min.js"></script>
     <script type="text/javascript" src="../js/file.js"></script>
 
-    <script>
+    <script type="text/javascript">
 
-        var d = dialog({
-            title: '提示',
-            content: '按钮回调函数返回 false 则不许关闭',
-            okValue: '确定',
-            ok: function () {
-                this.title('提交中…');
-                return false;
-            },
-            cancelValue: '取消',
-            cancel: function () {}
+
+        $('.checked').on('click', function () {
+
+            var id = $(this).attr('data-id');
+            $('.dialogContent .l option').eq(0).css({'background': '#ccc', 'padding': '5px'});
+            dialog({
+                backdropBackground: '',
+                title: '提示',
+                content: $('.dialogMsg').html(),
+                okValue: '确定',
+                width: '300px',
+                height: '80px',
+                ok: function () {
+                    var tt = $('.dialogContent').eq(1).find('select').val();
+                    if (tt !== '选择') {
+                        console.log(tt);
+                        this.title('提交中…');
+                        $.ajax({
+                            type: "POST",
+                            url: '?act=4',
+                            data: {"t": tt, "id": id},
+                            success: function (e) {
+                                alert(e);
+                            }
+                        });
+                    }
+                    return false;
+                },
+                cancelValue: '取消',
+                cancel: function () {}
+            }).showModal();
         });
 
         /*

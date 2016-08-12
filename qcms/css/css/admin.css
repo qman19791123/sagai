@@ -28,6 +28,34 @@ body {
   font-family: Verdana;
   outline: 0px;
 }
+.dialogMsg {
+  display: none;
+}
+.dialogContent {
+  display: inline-table;
+  height: 100%;
+  width: 100%;
+}
+.dialogContent ul {
+  display: table-cell;
+  vertical-align: middle;
+  font-size: 0;
+  width: 100%;
+}
+.dialogContent ul li {
+  display: inline-block;
+  font-size: 12px;
+}
+.dialogContent ul li.r {
+  width: 20%;
+}
+.dialogContent ul li.l {
+  width: 80%;
+}
+.dialogContent ul li.l select {
+  width: 100%;
+  padding: 5px;
+}
 .msgdiv {
   position: absolute;
   margin: auto;
