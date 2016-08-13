@@ -5,3 +5,10 @@ C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\bin\Debug\JumpAndJump.p
 C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\obj\Debug\JumpAndJump.dll
 C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\obj\Debug\JumpAndJump.pdb
 C:\Users\Administrator\Desktop\test\adduser3\JumpAndJump\obj\Debug\JumpAndJump.csprojResolveAssemblyReference.cache
+E:\work\sagai\adduser3\JumpAndJump\bin\Debug\JumpAndJump.dll
+E:\work\sagai\adduser3\JumpAndJump\bin\Debug\JumpAndJump.pdb
+E:\work\sagai\adduser3\JumpAndJump\obj\Debug\JumpAndJump.csprojResolveAssemblyReference.cache
+E:\work\sagai\adduser3\JumpAndJump\obj\Debug\JumpAndJump.Jump.resources
+E:\work\sagai\adduser3\JumpAndJump\obj\Debug\JumpAndJump.csproj.GenerateResource.Cache
+E:\work\sagai\adduser3\JumpAndJump\obj\Debug\JumpAndJump.dll
+E:\work\sagai\adduser3\JumpAndJump\obj\Debug\JumpAndJump.pdb

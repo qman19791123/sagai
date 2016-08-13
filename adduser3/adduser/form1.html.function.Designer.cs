@@ -51,22 +51,22 @@ namespace adduser
         public void _isWinAddUpdate(string name, string userName, string userPasswd, string classs)
         {
 
-            if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
                 MessageBox.Show("用户名不能为空", "提示");
                 return;
             }
-            if (string.IsNullOrEmpty(userName))
+            if (string.IsNullOrWhiteSpace(userName))
             {
                 MessageBox.Show("账户名不能为空", "提示");
                 return;
             }
-            if (string.IsNullOrEmpty(userPasswd))
+            if (string.IsNullOrWhiteSpace(userPasswd))
             {
                 MessageBox.Show("账户密码不能为空", "提示");
                 return;
             }
-            if (string.IsNullOrEmpty(classs.Trim()))
+            if (string.IsNullOrWhiteSpace(classs.Trim()))
             {
                 MessageBox.Show("分组不能为空", "提示");
                 return;

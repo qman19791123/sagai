@@ -25,3 +25,15 @@ C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Debug\BOC Automatic.exe
 C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Debug\BOC Automatic.pdb
 C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Debug\BOC Automatic.exe
 C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Debug\BOC Automatic.pdb
+E:\work\sagai\adduser3\adduser\bin\Debug\BOC Automatic.exe.config
+E:\work\sagai\adduser3\adduser\obj\Debug\BOC Automatic.exe
+E:\work\sagai\adduser3\adduser\obj\Debug\BOC Automatic.pdb
+E:\work\sagai\adduser3\adduser\bin\Debug\BOC Automatic.exe
+E:\work\sagai\adduser3\adduser\bin\Debug\BOC Automatic.pdb
+E:\work\sagai\adduser3\adduser\bin\Debug\JumpAndJump.dll
+E:\work\sagai\adduser3\adduser\bin\Debug\Newtonsoft.Json.dll
+E:\work\sagai\adduser3\adduser\bin\Debug\JumpAndJump.pdb
+E:\work\sagai\adduser3\adduser\obj\Debug\adduser.csprojResolveAssemblyReference.cache
+E:\work\sagai\adduser3\adduser\obj\Debug\adduser.Form1.resources
+E:\work\sagai\adduser3\adduser\obj\Debug\adduser.Properties.Resources.resources
+E:\work\sagai\adduser3\adduser\obj\Debug\adduser.csproj.GenerateResource.Cache

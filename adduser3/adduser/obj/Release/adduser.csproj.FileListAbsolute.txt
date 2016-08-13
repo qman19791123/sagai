@@ -1,21 +1,6 @@
-C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\BOC Automatic.exe.config
-C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\BOC Automatic.exe
-C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\BOC Automatic.pdb
-C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\JumpAndJump.dll
-C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\Newtonsoft.Json.dll
-C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\JumpAndJump.pdb
-C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\Newtonsoft.Json.pdb
-C:\Users\Administrator\Desktop\test\adduser3\adduser\bin\Release\Newtonsoft.Json.xml
-C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\adduser.csprojResolveAssemblyReference.cache
-C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\adduser.Form1.resources
-C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\adduser.Properties.Resources.resources
-C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\adduser.csproj.GenerateResource.Cache
-C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\BOC Automatic.exe
-C:\Users\Administrator\Desktop\test\adduser3\adduser\obj\Release\BOC Automatic.pdb
 E:\work\sagai\adduser3\adduser\bin\Release\BOC Automatic.exe.config
 E:\work\sagai\adduser3\adduser\obj\Release\BOC Automatic.exe
 E:\work\sagai\adduser3\adduser\obj\Release\BOC Automatic.pdb
-<<<<<<< HEAD
 E:\work\sagai\adduser3\adduser\bin\Release\BOC Automatic.exe
 E:\work\sagai\adduser3\adduser\bin\Release\BOC Automatic.pdb
 E:\work\sagai\adduser3\adduser\bin\Release\JumpAndJump.dll
@@ -25,5 +10,3 @@ E:\work\sagai\adduser3\adduser\obj\Release\adduser.csprojResolveAssemblyReferenc
 E:\work\sagai\adduser3\adduser\obj\Release\adduser.Form1.resources
 E:\work\sagai\adduser3\adduser\obj\Release\adduser.Properties.Resources.resources
 E:\work\sagai\adduser3\adduser\obj\Release\adduser.csproj.GenerateResource.Cache
-=======
->>>>>>> 62525ac7685e8c8914749e12f24fa0c836461e6c

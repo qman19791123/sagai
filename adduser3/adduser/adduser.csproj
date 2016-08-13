@@ -51,7 +51,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>www.ico.la_e2b7a6cb186e18ec5b8961d0dd3782c6_256X256.ico</ApplicationIcon>
+    <ApplicationIcon>未标题-2.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <Win32Resource>
@@ -87,6 +87,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="form1.UI.function.Designer.cs" />
+    <Compile Include="Form1Order.Designer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
@@ -145,11 +146,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="未标题-2.ico" />
     <EmbeddedResource Include="tp\user.html" />
     <EmbeddedResource Include="tp\jquery.js" />
     <EmbeddedResource Include="tp\user_add_or_update.html" />
-    <Content Include="www.ico.la_e2b7a6cb186e18ec5b8961d0dd3782c6_256X256.ico" />
-    <Content Include="www.ico.la_fb86ab6309232840d86c88e72d14436e_128X128.ico" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

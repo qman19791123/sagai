@@ -338,7 +338,7 @@ namespace JumpAndJump
                             HtmlElementCollection collecitontdinput = eletd.GetElementsByTagName("input");
                             foreach (HtmlElement eleinput in collecitontdinput)
                             {
-                                if (!string.IsNullOrEmpty(this.gotoSum[j].ToString()))
+                                if (!string.IsNullOrWhiteSpace(this.gotoSum[j].ToString()))
                                 {
                                     eleinput.SetAttribute("value", this.gotoSum[j].ToString());
 
@@ -426,7 +426,7 @@ namespace JumpAndJump
             if (System.IO.File.Exists(this.FileErr))
             {
                 string Content = this.fileContent().Substring(1);
-                if (string.IsNullOrEmpty(Content))
+                if (string.IsNullOrWhiteSpace(Content))
                 {
                     sql = "select userPasswd,userName,id from boc_user where [class]=" + usergGroup + " and  id not in(" + Content + ")";
                 }

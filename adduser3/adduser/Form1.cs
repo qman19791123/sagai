@@ -21,7 +21,7 @@ namespace adduser
 
     public partial class Form1 : Form
     {
-
+       
         private JumpAndJump.Jump thisJump = null;
 
         TextBox[] T_ = new TextBox[15];
@@ -57,7 +57,12 @@ namespace adduser
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+            this.Icon = System.Drawing.Icon.ExtractAssociatedIcon("adduser");
+
             this.thisJump = new Jump();
+
+            this.isIE();
 
             string Errlog = System.Configuration.ConfigurationManager.AppSettings["Errlog"].ToString();
             string FileErr = this.File + @"\Errlog\Err.text";
@@ -130,7 +135,7 @@ namespace adduser
             float p = 0;
             for (int i = 0; i < T_.Count(); ++i)
             {
-                if (!string.IsNullOrEmpty(T_[i].Text.ToString()))
+                if (!string.IsNullOrWhiteSpace(T_[i].Text.ToString()))
                 {
                     //float
                     p += float.Parse(T_[i].Text.ToString());
@@ -210,7 +215,7 @@ namespace adduser
 
             string name = adminini_.IniReadValue("admin", "name");
 
-            if (string.IsNullOrEmpty(pass) && string.IsNullOrEmpty(name))
+            if (string.IsNullOrWhiteSpace(pass) && string.IsNullOrWhiteSpace(name))
             {
                 MessageBox.Show("用户名或密码不正确", "提示");
                 return;
