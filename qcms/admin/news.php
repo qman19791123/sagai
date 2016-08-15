@@ -55,7 +55,7 @@ switch ($act) {
 //添加部分代码
         empty($titleINPUT) && die($tfunction->message('信息标题不能为空'));
         empty($newTextINPUT) && die($tfunction->message('信息内容不能为空'));
-        empty($classifyIdINPUT) && die($tfunction->message('分类不能为空'));
+        empty($classifyIdINPUT) && die($tfunction->message('栏目不能为空'));
 
         empty($subtitleINPUT) && $subtitleINPUT = mb_substr(filter_var($newTextINPUT, FILTER_SANITIZE_STRING), 0, 240);
         empty($descriptionINPUT) && $descriptionINPUT = $subtitleINPUT;
@@ -141,6 +141,8 @@ switch ($act) {
         $conn->aud($sql);
         die('true');
         break;
+    case 5:
+        break;
 }
 ?>
 <html>
@@ -165,10 +167,13 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            文章管理
+                            文章管理-<?php echo '所有文章' ?>
                         <span class="addLink">
                             [<a href='?cpage=1'>添加文章</a>]
-                            [<a href='javascript:void(0)' id='classify'>分类</a>]
+                            [<a href='javascript:void(0)' id='retrievedArticles'>检索文章</a>]
+                            [<a href='javascript:void(0)' id='column'>栏目管理</a>]
+                            [<a href='?cpage=1'>更新列表</a>]
+                            [<a href='?cpage=1'>更新文档</a>]
                             [<a href='?cpage=1'>文章回收</a>]
                         </span>
                         </dt>
@@ -184,10 +189,46 @@ switch ($act) {
                                 </ul>
                                 <?php
                                 $pagec = ($page - 1) * 10;
-                                $sql = 'select * from `news_config` order by id desc limit 10 Offset ' . $pagec;
+                                $query = filter_input(INPUT_GET, 'query');
+                                $poUrl = '';
+                                if (!empty($query)) {
+                                    $where = '';
+                                    $timestart = filter_input(INPUT_GET, 'timestart', FILTER_SANITIZE_STRING);
+                                    $timeend = filter_input(INPUT_GET, 'timeend', FILTER_SANITIZE_STRING);
+                                    $queryselect = filter_input(INPUT_GET, 'queryselect', FILTER_VALIDATE_INT);
+                                    $content = filter_input(INPUT_GET, 'content', FILTER_SANITIZE_STRING);
+                                    
+                                    if (!empty($timestart)) {
+                                        $timestart = strtotime($timestart);
+                                        $where .= 'and time >' . $timestart;
+                                    }
+                                    if (!empty($timeend)) {
+                                        $timeend = strtotime($timeend);
+                                        $where .= ' and time <' . $timeend;
+                                    }
+
+                                    switch ($queryselect) {
+                                        case 1:
+                                            $where .= ' and title like "%' . $content . '%"';
+                                            break;
+                                        case 2:
+                                            $where .= ' and subtitle like "%' . $content . '%"';
+                                            break;
+                                    }
+
+                                    $arr = filter_input_array(INPUT_GET);
+                                    unset($arr['page']);
+                                    $poUrl = join('=%s&', array_keys($arr));
+
+                                    $poUrl = sprintf($poUrl . '=%s', $arr['query'], $arr['timestart'], $arr['timeend'], $arr['queryselect'], $arr['content']);
+                                }
+                                $sql = 'select time,id,sort,title from `news_config` where 1=1 ' . $where . ' order by id desc limit 10 Offset ' . $pagec;
                                 $data = $conn->query($sql);
-                                $sqlCount = 'select count(id) as cid from `news_config`';
+                                $sqlCount = 'select count(id) as cid from `news_config` where 1=1 ' . $where . '';
                                 $dataCount = $conn->query($sqlCount);
+
+
+
                                 foreach ($data as $rs):
                                     ?>
                                     <ul class="list atr">
@@ -220,16 +261,16 @@ switch ($act) {
                                 <?php endforeach; ?>
                             </div>
                             <div class='page'>
-                                <a href='?page=<?php echo $page <= 1 ? 1 : $page - 1 ?>'>上一页</a>
+                                <a href="?page=<?php echo $page <= 1 ? 1 : $page - 1 ?>&<?php echo $poUrl ?>">上一页</a>
                                 <?php
                                 $p = $tfunction->Page($dataCount[0]['cid'], 1, 10, $page);
                                 for ($i = $p['pageStart']; $i <= $p['pageEnd']; $i++):
                                     ?>
-                                    <a href="?page=<?php echo $i ?>"><span style="color:<?php echo $i == $page ? "#FF0000 " : "#000000" ?>"><?php echo $i ?></span></a>
+                                    <a href="?page=<?php echo $i ?>&<?php echo $poUrl ?>"><span style="color:<?php echo $i == $page ? "#FF0000 " : "#000000" ?>"><?php echo $i ?></span></a>
                                     <?php
                                 endfor;
                                 ?>
-                                <a href='?page=<?php echo ($page < $p['pageCount'] ? $page + 1 : $page) ?>'>下一页</a>
+                                <a href='?page=<?php echo ($page < $p['pageCount'] ? $page + 1 : $page) ?>&<?php echo $poUrl ?>'>下一页</a>
                             </div>
                         </dd>
                     </dl>
@@ -265,7 +306,7 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            文章管理
+                            文章管理 
                         <span class="addLink"></span>
                         </dt>
                         <dd>
@@ -279,11 +320,11 @@ switch ($act) {
                             <div class="list atable">
                                 <ul class="list a20_80">
                                     <li>
-                                        分类编号:
+                                        栏目:
                                     </li>
                                     <li>
                                         <select style ="width:180px" name="classifyId" class="classifyId">
-                                            <option value="0">主分类</option>
+                                            <option value="0">主栏目</option>
                                             <?php
                                             $classify = new tfunction($conn);
                                             $data = $classify->classify();
@@ -369,9 +410,9 @@ switch ($act) {
             endswitch;
             ?>
         </div>
-
-        <div class='dialogMsg'>
-            <div class='dialogContent'>
+        <!--审核 start-->
+        <div class='dialogMsg audit'>
+            <div class='dialogContent auditContent'>
                 <ul>
                     <li class="r">
                         审核
@@ -387,26 +428,51 @@ switch ($act) {
                 </ul>
             </div>
         </div>
-        <div class='dialogMsg'>
-            <div class='dialogContent'>
-                <ul>
-                    <li class="r">
-                        分类
-                    </li>
-                    <li class="l">
-                        <select>
-                            <option >选择</option>
-                            <option value="0">未通过</option>
-                            <option value="1">等待</option>
-                            <option value="999">通过</option>
-                        </select>
-                    </li>
-                </ul>
+        <!--审核 end-->
+        <!--检索 start-->
+        <div class='dialogMsg search'>
+            <div class='dialogContent searchContent'>
+                <form id='query'>
+                    <p>
+                    <span>添加时间：</span> <input name='timestart' class='timebox'/> - <input  name='timeend' class='timebox'/>
+                    </p>
+                    <p>
+                    <span>搜索：</span>
+                    <select name='queryselect'>
+                        <option value="0">选择</option>
+                        <option value="1">标题</option>
+                        <option value="2">副标题</option>
+                    </select>
+                    <input name='content' />
+                    </p>
+                </form>
             </div>
         </div>
+        <!--检索 end-->
+
+
+
+        <!--栏目 start-->
+        <div class='dialogMsg column'>
+            <div class='dialogContent columnContent'>
+                <form id='query'>
+                    <?php
+                    $classify = new tfunction($conn);
+                    $data = $classify->classify();
+                    foreach ($data as $rs):
+                        ?>
+                        <option value="<?php echo $rs['id'] ?>"><?php echo $rs['className'] ?></option>
+                    <?php endforeach ?>
+                </form>
+            </div>
+        </div>
+        <!--栏目 end-->
 
     <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
     <link rel="stylesheet" href="../js/KindEditor/plugins/code/prettify.css" />
+    <link rel="stylesheet" href="../js/JqueryEasyui/default/easyui.css" />
+    <script charset="utf-8" src="../js/JqueryEasyui/JqueryEasyui.js"></script>
+
     <script charset="utf-8" src="../js/KindEditor/kindeditor-all-min.js"></script>
     <script charset="utf-8" src="../js/KindEditor/plugins/code/prettify.js"></script>
     <!--dialog css -->
@@ -416,11 +482,44 @@ switch ($act) {
     <script type="text/javascript" src="../js/file.js"></script>
 
     <script type="text/javascript">
+        $('#column').on('click', function () {
+            dialog({
+                backdropBackground: '',
+                title: '提示',
+                content: $('.column').html(),
+                okValue: '确定',
+                width: '700px',
+                ok: function () {
+                    var query = $('.searchContent').eq(1).find('#query').serialize();
+                    self.location = ('?query=yes&' + query);
+                    return false;
+                },
+                cancelValue: '取消',
+                cancel: function () {}
+            }).showModal();
+        });
+        $('#retrievedArticles').on('click', function () {
+            dialog({
+                backdropBackground: '',
+                title: '提示',
+                content: $('.search').html(),
+                okValue: '确定',
+                width: '700px',
+                height: '180px',
+                ok: function () {
+                    var query = $('.searchContent').eq(1).find('#query').serialize();
+                    self.location = ('?query=yes&' + query);
+                    console.log(query);
+                    return false;
+                },
+                cancelValue: '取消',
+                cancel: function () {}
+            }).showModal();
 
-        $('#classify').on('click', function () {
-            alert('111');
+            $('.timebox').datebox({
+            });
 
-        })
+        });
 
         $('#off').on('click', function () {
             $(this).parent('span').hide();
@@ -428,16 +527,16 @@ switch ($act) {
         $('.checked').on('click', function () {
 
             var id = $(this).attr('data-id');
-            $('.dialogContent .l option').eq(0).css({'background': '#ccc', 'padding': '5px'});
+
             var dialog_ = dialog({
                 backdropBackground: '',
                 title: '提示',
-                content: $('.dialogMsg').html(),
+                content: $('.audit').html(),
                 okValue: '确定',
                 width: '300px',
                 height: '80px',
                 ok: function () {
-                    var tt = $('.dialogContent').eq(1).find('select').val();
+                    var tt = $('.auditContent').eq(1).find('select').val();
                     if (tt !== '选择') {
                         console.log(tt);
                         this.title('提交中…');

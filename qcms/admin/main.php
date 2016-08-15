@@ -44,15 +44,16 @@ $conn = $tfunction->conn;
                         <p><a class="fa" href="." target="contentiframe">更新缓存</a></p>
                         <p><a class="fa" href="" target="contentiframe">生成静态</a></p>
                     </li>
-                    <li class="fa">分类管理
-                        <p><a class="fa" href="./classify.php" target="contentiframe">分类管理</a></p>
-                        <p><a class="fa" href="./classify.php?cpage=1" target="contentiframe">添加分类</a></p>
+                    <li class="fa">栏目管理
+                        <p><a class="fa" href="./classify.php" target="contentiframe">栏目管理</a></p>
+                        <p><a class="fa" href="./classify.php?cpage=1" target="contentiframe">添加栏目</a></p>
                     </li>
                     <li class="fa">内容管理
-                        <p><a class="fa" href="./news.php" target="contentiframe">内容管理</a></p>
-                        <p><a class="fa" href="" target="contentiframe">添加内容</a></p>
+                        <p><a class="fa" href="./news.php" target="contentiframe">文章管理</a></p>
+                        <p><a class="fa" href="./news.php" target="contentiframe">专题管理</a></p>
+<!--                        <p><a class="fa" href="" target="contentiframe">添加内容</a></p>
                         <p><a class="fa" href="" target="contentiframe">批量替换</a></p>
-                        <p><a class="fa" href="" target="contentiframe">信息采集</a></p>
+                        <p><a class="fa" href="" target="contentiframe">信息采集</a></p>-->
                     </li>
                     <li class="fa">留言板
                         <p><a class="fa" href="" target="contentiframe">留言板</a></p>

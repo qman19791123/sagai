@@ -28,6 +28,35 @@ html,body{
     display: inline-table;
     height:100%;
     width:100%;
+
+    &.searchContent,&.columnContent{
+        p,input,select,span{
+            display: inline-block;
+        }
+        span.datebox {
+            border: 1px solid #bbb;
+            border-radius: 0;
+        }
+        p{
+            width: 100%;
+            padding: 1%;
+            span{
+                width: 80px;
+                text-align: right;
+            }
+            input{
+                padding: 5px;
+            }
+            select{
+                padding: 5px;
+            }
+            input[name='content']{
+                width: 65%;
+            }
+        }
+    }
+
+
     ul{
         display: table-cell;
         vertical-align:middle;

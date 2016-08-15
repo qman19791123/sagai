@@ -36,6 +36,43 @@ body {
   height: 100%;
   width: 100%;
 }
+.dialogContent.searchContent p,
+.dialogContent.searchContent input,
+.dialogContent.searchContent select,
+.dialogContent.searchContent span,
+.dialogContent.columnContent p,
+.dialogContent.columnContent input,
+.dialogContent.columnContent select,
+.dialogContent.columnContent span {
+  display: inline-block;
+}
+.dialogContent.searchContent span.datebox,
+.dialogContent.columnContent span.datebox {
+  border: 1px solid #bbb;
+  border-radius: 0;
+}
+.dialogContent.searchContent p,
+.dialogContent.columnContent p {
+  width: 100%;
+  padding: 1%;
+}
+.dialogContent.searchContent p span,
+.dialogContent.columnContent p span {
+  width: 80px;
+  text-align: right;
+}
+.dialogContent.searchContent p input,
+.dialogContent.columnContent p input {
+  padding: 5px;
+}
+.dialogContent.searchContent p select,
+.dialogContent.columnContent p select {
+  padding: 5px;
+}
+.dialogContent.searchContent p input[name='content'],
+.dialogContent.columnContent p input[name='content'] {
+  width: 65%;
+}
 .dialogContent ul {
   display: table-cell;
   vertical-align: middle;

@@ -1,21 +1,21 @@
 <?php
 
 $lang = [];
-/*分类*/
-$lang['classifyManagement'] = '分类管理';
-$lang['classifyDelSuccess'] = '删除分类成功';
-$lang['classifyDelFail'] = '请现删除其下的分类';
-$lang['classifyUpdateSuccess'] = '修改分类成功';
-$lang['classifyAddSuccess'] = '添加分类成功';
-$lang['classifyAdd'] = '添加分类';
-$lang['classifyUpdate'] = '修改分类';
-$lang['classifyDel'] = '删除分类';
-$lang['classifyUp'] = '上级分类';
-$lang['classifyMain']='主分类';
-$lang['classifySort']='分类排序';
-$lang['classifySet']='分类设置';
-$lang['classifyName']='分类名称';
-$lang['classifyBrief']='分类简介';
+/*栏目*/
+$lang['classifyManagement'] = '栏目管理';
+$lang['classifyDelSuccess'] = '删除栏目成功';
+$lang['classifyDelFail'] = '请现删除其下的栏目';
+$lang['classifyUpdateSuccess'] = '修改栏目成功';
+$lang['classifyAddSuccess'] = '添加栏目成功';
+$lang['classifyAdd'] = '添加栏目';
+$lang['classifyUpdate'] = '修改栏目';
+$lang['classifyDel'] = '删除栏目';
+$lang['classifyUp'] = '上级栏目';
+$lang['classifyMain']='主栏目';
+$lang['classifySort']='栏目排序';
+$lang['classifySet']='栏目设置';
+$lang['classifyName']='栏目名称';
+$lang['classifyBrief']='栏目简介';
 
 
 
