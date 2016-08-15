@@ -181,20 +181,21 @@ class tfunction {
      */
     public function classify() {
         $rsd = array();
-        $sql = 'select id,px,className,pid from classify where pid = 0';
-        $rs = $this->conn->query($sql);
-        foreach ($rs as $value) {
-            $data = '';
-            $rsd[] = $value;
-            $this->classifyAchieved($data, $value['id'], '　');
-            if (empty($data)) {
-                continue;
-            }
-            foreach ($data as $value1) {
-                $rsd[] = $value1;
-            }
-        }
-        return $rsd;
+          $this->classifyAchieved($data, 0);
+        // $sql = 'select id,px,className,pid from classify where pid = 0';
+        // $rs = $this->conn->query($sql);
+        // foreach ($rs as $value) {
+        //     $data = '';
+        //     $rsd[] = $value;
+        //     $this->classifyAchieved($data, $value['id'], '　');
+        //     if (empty($data)) {
+        //         continue;
+        //     }
+        //     foreach ($data as $value1) {
+        //         $rsd[] = $value1;
+        //     }
+        // }
+        return $data;
     }
 
     /**
@@ -209,19 +210,50 @@ class tfunction {
      * <b>递归格式(空格)</b>
      * </p>
      */
-    private function classifyAchieved(&$data, $id = '', $t = '　') {
+    private function classifyAchieved(&$data, $id = '', $t = '　',$v) {
         $t.='　　';
+        $rs =[];
         $sql = 'select id,px,className,pid from classify where pid =' . $id . ' order by px desc';
         $rs = $this->conn->query($sql);
         foreach ($rs as $value) {
+
             $data [$value['id']]['pid'] = $value['pid'];
             $data [$value['id']]['id'] = $value['id'];
             $data [$value['id']]['px'] = $value['px'];
             $data [$value['id']]['className'] = $t . '├' . $value['className'];
-            $this->classifyAchieved($data, $value['id'], $t);
+
+            if($value['pid']==0)
+            {
+                  $data [$value['id']]['className']  = str_replace("　　├" ,'', $data [$value['id']]['className'] );
+                   $t = str_replace("　　" ,'', $t);
+            }
+
+            $s=$this->classifyAchieved($data, $value['id'], $t,$rs);
+            if(!empty($s)){
+                 $data [$value['id']]['disabled'] = 'disabled';
+
+            }
         }
+        return $rs;
     }
 
+    public function  classifyArray($id = 0) {
+        $arr = array(); 
+        $sql = 'select id,className as text  from classify where pid =' . $id . ' order by px desc';
+        $rs = $this->conn->query($sql);
+        foreach ($rs as $value) {
+
+         
+           $rs =  $this-> classifyArray($value['id']); //调用函数，传入参数，继续查询下级 
+            if(!empty($rs)) {
+                   $value['state'] ='closed';
+                $value['children'] =$rs ;
+            }
+
+            $arr [] =  $value;
+        }
+          return $arr; 
+    }
     /**
      * <b>分页</b> 
      * <p>

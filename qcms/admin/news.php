@@ -328,9 +328,10 @@ switch ($act) {
                                             <?php
                                             $classify = new tfunction($conn);
                                             $data = $classify->classify();
+
                                             foreach ($data as $rs):
                                                 ?>
-                                                <option value="<?php echo $rs['id'] ?>"><?php echo $rs['className'] ?></option>
+                                                <option value="<?php echo $rs['id'] ?>"  <?php echo  $rs['disabled'] ;?>><?php echo $rs['className'] ?></option>
                                             <?php endforeach ?>
 
                                         </select>
@@ -456,13 +457,10 @@ switch ($act) {
         <div class='dialogMsg column'>
             <div class='dialogContent columnContent'>
                 <form id='query'>
-                    <?php
-                    $classify = new tfunction($conn);
-                    $data = $classify->classify();
-                    foreach ($data as $rs):
-                        ?>
-                        <option value="<?php echo $rs['id'] ?>"><?php echo $rs['className'] ?></option>
-                    <?php endforeach ?>
+               
+                    <div class='tree'></div>
+
+
                 </form>
             </div>
         </div>
@@ -497,6 +495,11 @@ switch ($act) {
                 cancelValue: '取消',
                 cancel: function () {}
             }).showModal();
+            $('.columnContent').eq(1).find('.tree').tree({
+
+ data: <?php echo json_encode( $tfunction->classifyArray())?>
+
+            });
         });
         $('#retrievedArticles').on('click', function () {
             dialog({
