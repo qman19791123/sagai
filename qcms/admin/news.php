@@ -9,7 +9,7 @@ $tfunction = new tfunction();
 $conn = $tfunction->conn;
 $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT); //新闻编号 (有时间修改此命名)
 $classifyId = '0';
 $sort = '0';
 
@@ -20,7 +20,6 @@ $classifyJson = [];
 /**
  * 数据添加 删除 修改 操作
  */
-//$newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_SANITIZE_MAGIC_QUOTES);
 
 $newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_CALLBACK, ['options' => 'conn::encode']);
 $keywordsINPUT = filter_input(INPUT_POST, 'keywords', FILTER_SANITIZE_STRING);
@@ -34,6 +33,7 @@ $tagINPUT = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
 $subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_CALLBACK, ['options' => 'conn::encode']);
 $titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => 'conn::dropQuote']);
 $titlePhotoINPUT = filter_input(INPUT_POST, 'titlePhoto', FILTER_SANITIZE_STRING);
+$updateImgINPUT = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
 
 $check = filter_input(INPUT_POST, 'checked', FILTER_VALIDATE_INT);
 $checked = $check == 999 || $check == 0 ? $check : 1;
@@ -41,13 +41,10 @@ $checked = $check == 999 || $check == 0 ? $check : 1;
 $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 $adminId = $_SESSION['adminId'];
 
-//FILTER_SANITIZE_FULL_SPECIAL_CHARS
-$updateImg = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
-
 
 $pinyin = $tfunction->py(mb_substr($titleINPUT, 0, 20, 'utf-8'));
 
-/* 一个匿名方法 */
+/* 一个匿名方法 作用发布文章 */
 $AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPUT)use($conn) {
     $sqlNewsContentAddModele = 'INSERT INTO'
             . '`news_content`'
@@ -57,7 +54,19 @@ $AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPU
     $conn->aud($sqlNewsContentAdd);
 };
 
+/* 一个匿名方法 作用记录此新闻使用过的图片 */
+$AMNewsImages = function($Rsid, $classifyIdINPUT, $updateImg)use($conn) {
+//图片地址存放 start
+    $jsonImagesSqlT = $jsonImagesSql = '';
+    $jsonImages = json_decode('[' . trim($updateImg, ',') . ']');
 
+    foreach ($jsonImages as $valueJsonImages) {
+        $jsonImagesSqlT .= sprintf('("%s","%s","%s","%s"),', $classifyIdINPUT, $Rsid, $valueJsonImages, time());
+    }
+    $jsonImagesSql = 'INSERT INTO `Images` (`classifyId`,`newId`,`images`,`time`) VALUES' . trim($jsonImagesSqlT, ',');
+    $conn->aud($jsonImagesSql);
+    //图片地址存放 end
+};
 switch ($act) {
     case 1:
 //添加部分代码
@@ -95,21 +104,14 @@ switch ($act) {
         $sqlClassifyUpdate = 'UPDATE `classify` SET summary=summary+1 where id=' . $classifyIdINPUT;
         $conn->aud($sqlClassifyUpdate);
 
+// 记录此新闻使用过的图片
+        $AMNewsImages($classifyIdINPUT, $Rs, $updateImgINPUT);
+
+
         die($tfunction->message('添加内容成功', 'news.php'));
         break;
     case 2:
         //修改部分代码
-        //图片地址存放 start
-        $jsonImagesSqlT = $jsonImagesSql = '';
-        $jsonImages = json_decode('[' . trim($updateImg, ',') . ']');
-        
-        foreach ($jsonImages as $valueJsonImages) {
-            $jsonImagesSqlT .= sprintf('("%s","%s","%s","%s"),', $classifyIdINPUT, $id, $valueJsonImages, time());
-        }
-        $jsonImagesSql = 'INSERT INTO `Images` (`classifyId`,`newId`,`images`,`time`) VALUES' . trim($jsonImagesSqlT, ',');
-        $conn->aud($jsonImagesSql);
-        //图片地址存放 end
-
 
         if (!empty($id)) {
             $path = $titlePhotoINPUT;
@@ -145,6 +147,10 @@ switch ($act) {
                     . ' where id=%s';
             $sqlNewsConfigUpdate = sprintf($sqlNewsConfigUpdateModele, $classifyIdINPUT, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $checked, $id);
             $conn->aud($sqlNewsConfigUpdate);
+
+            // 记录此新闻使用过的图片
+            $AMNewsImages($classifyIdINPUT, $Rs, $updateImgINPUT);
+
             die($tfunction->message('修改内容成功', 'news.php'));
         }
         break;
