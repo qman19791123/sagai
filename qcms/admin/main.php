@@ -39,10 +39,8 @@ $conn = $tfunction->conn;
             <div class="top "><?php echo $systemName ?><span class="fa"></span></div>
             <div class="content1">
                 <menu>
-                    <li class="fa"><span>系统管理</span>
+                    <li class="fa"><span>用户管理</span>
                         <p><a class="fa" href="./user.php" target="contentiframe">用户管理</a></p>
-                        <p><a class="fa" href="." target="contentiframe">更新缓存</a></p>
-                        <p><a class="fa" href="" target="contentiframe">生成静态</a></p>
                     </li>
                     <li class="fa"><span>栏目管理</span>
                         <p><a class="fa" href="./classify.php" target="contentiframe">栏目管理</a></p>
@@ -51,10 +49,27 @@ $conn = $tfunction->conn;
                     <li class="fa"><span>内容管理</span>
                         <p><a class="fa" href="./news.php" target="contentiframe">文章管理</a></p>
                         <p><a class="fa" href="./news.php" target="contentiframe">专题管理</a></p>
-<!--                        <p><a class="fa" href="" target="contentiframe">添加内容</a></p>
-                        <p><a class="fa" href="" target="contentiframe">批量替换</a></p>
-                        <p><a class="fa" href="" target="contentiframe">信息采集</a></p>-->
                     </li>
+                    <li class="fa"><span>商店管理</span>
+                        <p><a class="fa" href="./news.php" target="contentiframe">商品管理</a></p>
+                        <p><a class="fa" href="./news.php" target="contentiframe">支付入口</a></p>
+                    </li>
+                    <li class="fa"><span>论坛管理</span>
+                        <p><a class="fa" href="./news.php" target="contentiframe">论坛栏目管理</a></p>
+                        <p><a class="fa" href="./news.php" target="contentiframe">论坛内容管理</a></p>
+                    </li>
+
+                    <li class="fa"><span>广告管理</span>
+                        <p><a class="fa" href="" target="contentiframe">广告管理</a></p>
+                    </li>
+                    <li class="fa"><span>评论管理</span>
+                        <p><a class="fa" href="" target="contentiframe">评论管理</a></p>
+                    </li>
+                    <li class="fa"><span>友情链接</span>
+                        <p><a class="fa" href="" target="contentiframe">友情链接</a></p>
+                    </li>
+
+
                     <li class="fa"><span>附件管理</span>
                         <p><a class="fa" href="./news.php" target="contentiframe">附件管理</a></p>
                     </li>
@@ -66,9 +81,9 @@ $conn = $tfunction->conn;
                         <p><a class="fa" href="./news.php" target="contentiframe">更新专题HTML</a></p>
 
                     </li>
-                    <li class="fa"><span>留言板</span>
-                        <p><a class="fa" href="" target="contentiframe">留言板</a></p>
-                    </li>
+
+
+
                     <li class="fa"><span>其他设置</span>
                         <p><a class="fa" href="" target="contentiframe">插件中心</a></p>
                         <p><a class="fa" href="" target="contentiframe">模板管理</a></p>
