@@ -29,7 +29,7 @@ html,body{
     height:100%;
     width:100%;
 
-    &.searchContent,&.columnContent{
+    &.searchContent{
         p,input,select,span{
             display: inline-block;
         }
@@ -55,7 +55,12 @@ html,body{
             }
         }
     }
-
+    &.columnContent{
+        ul,li{
+            display: block;
+            width:100%;
+        } 
+    }
 
     ul{
         display: table-cell;
@@ -174,8 +179,10 @@ html,body{
             width: 90%;
             margin:25px auto;
             li{
-
                 .fun();
+                span{
+                    cursor:pointer;
+                }
                 background: rgba(250, 250, 250, 0.95);
                 font-weight: 700;
                 &:before{

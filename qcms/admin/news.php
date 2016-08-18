@@ -13,6 +13,10 @@ $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $classifyId = '0';
 $sort = '0';
 
+
+$classifyJson = [];
+
+
 /**
  * 数据添加 删除 修改 操作
  */
@@ -36,6 +40,10 @@ $checked = $check == 999 || $check == 0 ? $check : 1;
 
 $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 $adminId = $_SESSION['adminId'];
+
+//FILTER_SANITIZE_FULL_SPECIAL_CHARS
+$updateImg = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
+
 
 $pinyin = $tfunction->py(mb_substr($titleINPUT, 0, 20, 'utf-8'));
 
@@ -90,7 +98,19 @@ switch ($act) {
         die($tfunction->message('添加内容成功', 'news.php'));
         break;
     case 2:
-//修改部分代码
+        //修改部分代码
+        //图片地址存放 start
+        $jsonImagesSqlT = $jsonImagesSql = '';
+        $jsonImages = json_decode('[' . trim($updateImg, ',') . ']');
+        
+        foreach ($jsonImages as $valueJsonImages) {
+            $jsonImagesSqlT .= sprintf('("%s","%s","%s","%s"),', $classifyIdINPUT, $id, $valueJsonImages, time());
+        }
+        $jsonImagesSql = 'INSERT INTO `Images` (`classifyId`,`newId`,`images`,`time`) VALUES' . trim($jsonImagesSqlT, ',');
+        $conn->aud($jsonImagesSql);
+        //图片地址存放 end
+
+
         if (!empty($id)) {
             $path = $titlePhotoINPUT;
             $file = $_FILES['file'];
@@ -164,17 +184,86 @@ switch ($act) {
             <?php
             switch ($cpage) :
                 case 0:
+                    $pagec = ($page - 1) * 10;
+                    $query = filter_input(INPUT_GET, 'query');
+                    $poUrl = '';
+                    $dataClassifyClassName = '所有文章';
+                    if (!empty($query)) {
+                        $where = '';
+                        $timestart = filter_input(INPUT_GET, 'timestart', FILTER_SANITIZE_STRING);
+                        $timeend = filter_input(INPUT_GET, 'timeend', FILTER_SANITIZE_STRING);
+                        $queryselect = filter_input(INPUT_GET, 'queryselect', FILTER_VALIDATE_INT);
+                        $content = filter_input(INPUT_GET, 'content', FILTER_SANITIZE_STRING);
+                        $url = filter_input(INPUT_GET, 'url', FILTER_VALIDATE_INT);
+//                        $recovery = filter_input(INPUT_GET, 'recovery', FILTER_VALIDATE_BOOLEAN);
+
+                        if (!empty($timestart)) {
+                            $timestart = strtotime($timestart);
+                            $where .= 'and time >' . $timestart;
+                        }
+
+                        if (!empty($timeend)) {
+                            $timeend = strtotime($timeend);
+                            $where .= ' and time <' . $timeend;
+                        }
+
+                        switch ($queryselect) {
+                            case 1:
+                                $where .= ' and title like "%' . $content . '%"';
+                                break;
+                            case 2:
+                                $where .= ' and subtitle like "%' . $content . '%"';
+                                break;
+                        }
+
+//                        if ($recovery) {
+//                            $where .= ' and isdel = 1';
+//                        }
+
+                        if ($url) {
+                            //这个可能到后期需要更改
+
+                            $sqlClassify = 'select id,className from `classify` where pid=' . $url . ' or id=' . $url . ' order by id ';
+                            $dataClassify = $conn->query($sqlClassify);
+                            foreach ($dataClassify as $value) {
+                                $inlClassify.=',' . $value['id'];
+                                (int) $value['id'] === $url && $dataClassifyClassName = $value['className'];
+                            }
+                            $inlClassify = ltrim($inlClassify, ',');
+                            $where.=' and classifyId in (' . $inlClassify . ')';
+                        }
+
+                        $arr = filter_input_array(INPUT_GET);
+                        unset($arr['page']);
+                        $poUrl = 'query=yes&url=' . $url;
+                        if (empty($url)) {
+                            $poUrlModele = join('=%s&', array_keys($arr));
+                            $poUrl = sprintf($poUrlModele . '=%s', $arr['query'], $arr['timestart'], $arr['timeend'], $arr['queryselect'], $arr['content']);
+                        }
+                    }
+                    $classifyRsJson = [];
+                    $classifyRs = $conn->query('select id,className from `classify`');
+                    foreach ($classifyRs as $classifyValue) {
+                        $classifyRsJson['classify_' . $classifyValue['id']] = $classifyValue['className'];
+                    }
+
+                    $classifyJson = $classifyRsJson;
+
+                    $sql = 'select time,id,sort,title,classifyId from `news_config` where 1=1 ' . $where . ' order by id desc limit 10 Offset ' . $pagec;
+                    $data = $conn->query($sql);
+                    $sqlCount = 'select count(id) as cid from `news_config` where 1=1 ' . $where . '';
+                    $dataCount = $conn->query($sqlCount);
                     ?>
                     <dl>
                         <dt>
-                            文章管理-<?php echo '所有文章' ?>
+                            文章管理-<?php echo $dataClassifyClassName; ?>
                         <span class="addLink">
                             [<a href='?cpage=1'>添加文章</a>]
                             [<a href='javascript:void(0)' id='retrievedArticles'>检索文章</a>]
                             [<a href='javascript:void(0)' id='column'>栏目管理</a>]
                             [<a href='?cpage=1'>更新列表</a>]
                             [<a href='?cpage=1'>更新文档</a>]
-                            [<a href='?cpage=1'>文章回收</a>]
+                            [<a href='?query=yes&recovery=1'>文章回收</a>]
                         </span>
                         </dt>
                         <dd>
@@ -182,58 +271,19 @@ switch ($act) {
                                 <ul class="list atr" id="no">
                                     <li>编号</li>
                                     <li>排序</li>
-                                    <li style="width: 50%">名称</li>
+                                    <li style="width: 10%">栏目</li>
+                                    <li style="width: 40%">名称</li>
                                     <li style="width: 5%">审核</li>
                                     <li style="width: 17%">时间</li>
                                     <li style="width: 20%">操作</li>
                                 </ul>
                                 <?php
-                                $pagec = ($page - 1) * 10;
-                                $query = filter_input(INPUT_GET, 'query');
-                                $poUrl = '';
-                                if (!empty($query)) {
-                                    $where = '';
-                                    $timestart = filter_input(INPUT_GET, 'timestart', FILTER_SANITIZE_STRING);
-                                    $timeend = filter_input(INPUT_GET, 'timeend', FILTER_SANITIZE_STRING);
-                                    $queryselect = filter_input(INPUT_GET, 'queryselect', FILTER_VALIDATE_INT);
-                                    $content = filter_input(INPUT_GET, 'content', FILTER_SANITIZE_STRING);
-                                    
-                                    if (!empty($timestart)) {
-                                        $timestart = strtotime($timestart);
-                                        $where .= 'and time >' . $timestart;
-                                    }
-                                    if (!empty($timeend)) {
-                                        $timeend = strtotime($timeend);
-                                        $where .= ' and time <' . $timeend;
-                                    }
-
-                                    switch ($queryselect) {
-                                        case 1:
-                                            $where .= ' and title like "%' . $content . '%"';
-                                            break;
-                                        case 2:
-                                            $where .= ' and subtitle like "%' . $content . '%"';
-                                            break;
-                                    }
-
-                                    $arr = filter_input_array(INPUT_GET);
-                                    unset($arr['page']);
-                                    $poUrl = join('=%s&', array_keys($arr));
-
-                                    $poUrl = sprintf($poUrl . '=%s', $arr['query'], $arr['timestart'], $arr['timeend'], $arr['queryselect'], $arr['content']);
-                                }
-                                $sql = 'select time,id,sort,title from `news_config` where 1=1 ' . $where . ' order by id desc limit 10 Offset ' . $pagec;
-                                $data = $conn->query($sql);
-                                $sqlCount = 'select count(id) as cid from `news_config` where 1=1 ' . $where . '';
-                                $dataCount = $conn->query($sqlCount);
-
-
-
                                 foreach ($data as $rs):
                                     ?>
                                     <ul class="list atr">
                                         <li><?php echo $rs['id'] ?></li>
                                         <li><?php echo $rs['sort'] ?></li>
+                                        <li data-id="<?php echo $rs['classifyId'] ?>"></li>
                                         <li><?php echo $rs['title'] ?></li>
                                         <li><?php
                                             switch ($rs['checked']) {
@@ -331,7 +381,7 @@ switch ($act) {
 
                                             foreach ($data as $rs):
                                                 ?>
-                                                <option value="<?php echo $rs['id'] ?>"  <?php echo  $rs['disabled'] ;?>><?php echo $rs['className'] ?></option>
+                                                <option value="<?php echo $rs['id'] ?>"  <?php echo $rs['disabled']; ?>><?php echo $rs['className'] ?></option>
                                             <?php endforeach ?>
 
                                         </select>
@@ -381,7 +431,7 @@ switch ($act) {
 
 
                                 <ul class="list a20_80">
-                                    <li>内容（SEO）:</li>
+                                    <li>内容:</li>
                                     <li><textarea name="newText" style="width: 80%;height: 50px;resize: none;"><?php echo $newText; ?></textarea></li>   
                                 </ul>
 
@@ -397,7 +447,7 @@ switch ($act) {
                                     </li>
                                 </ul>
                             </div>
-
+                            <input type="hidden" value="" name="updateImg"/>
                             <div class="tijiao">
                                 <button type="submit"><?php echo $lang['submit']; ?></button>
                                 <button type="reset"><?php echo $lang['reset']; ?></button>
@@ -435,7 +485,7 @@ switch ($act) {
             <div class='dialogContent searchContent'>
                 <form id='query'>
                     <p>
-                    <span>添加时间：</span> <input name='timestart' class='timebox'/> - <input  name='timeend' class='timebox'/>
+                    <span>添加时间：</span> <input class="times" name='timestart'/> - <input class="times" name='timeend'/>
                     </p>
                     <p>
                     <span>搜索：</span>
@@ -443,7 +493,7 @@ switch ($act) {
                         <option value="0">选择</option>
                         <option value="1">标题</option>
                         <option value="2">副标题</option>
-                    </select>
+                    </select>  
                     <input name='content' />
                     </p>
                 </form>
@@ -457,7 +507,7 @@ switch ($act) {
         <div class='dialogMsg column'>
             <div class='dialogContent columnContent'>
                 <form id='query'>
-               
+
                     <div class='tree'></div>
 
 
@@ -480,6 +530,25 @@ switch ($act) {
     <script type="text/javascript" src="../js/file.js"></script>
 
     <script type="text/javascript">
+<?php printf('var classifyJson =%s;', json_encode($classifyJson)); ?>
+
+        //mouseover
+        $('.adminContent .atable ul').on('mouseover', function () {
+            $(this).css({'background': '#444', 'color': '#fff'});
+            $(this).find('a').css({'background': '', 'color': '#fff'});
+        }).on('mouseout', function () {
+            $(this).css({'background': '', 'color': ''});
+            $(this).find('a').css({'background': '', 'color': ''});
+        });
+
+
+        $('.atable ul li').each(function (i, p) {
+            if ($(p).attr('data-id'))
+            {
+                $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
+            }
+        });
+
         $('#column').on('click', function () {
             dialog({
                 backdropBackground: '',
@@ -495,13 +564,16 @@ switch ($act) {
                 cancelValue: '取消',
                 cancel: function () {}
             }).showModal();
+
             $('.columnContent').eq(1).find('.tree').tree({
-
- data: <?php echo json_encode( $tfunction->classifyArray())?>
-
+                data: <?php echo json_encode($tfunction->classifyArray()) ?>,
+                onClick: function (node) {
+                    self.location = ('?query=yes&url=' + node.id);
+                }
             });
         });
         $('#retrievedArticles').on('click', function () {
+            $('.combo').hide();
             dialog({
                 backdropBackground: '',
                 title: '提示',
@@ -511,17 +583,13 @@ switch ($act) {
                 height: '180px',
                 ok: function () {
                     var query = $('.searchContent').eq(1).find('#query').serialize();
-                    self.location = ('?query=yes&' + query);
-                    console.log(query);
+                    self.location = ('news.php?query=yes&' + query);
                     return false;
                 },
                 cancelValue: '取消',
                 cancel: function () {}
             }).showModal();
-
-            $('.timebox').datebox({
-            });
-
+            $('.searchContent .times').datebox({});
         });
 
         $('#off').on('click', function () {
@@ -548,8 +616,8 @@ switch ($act) {
                             url: '?act=4',
                             data: {"t": tt, "id": id},
                             success: function (e) {
-                                if (e == 'true') {
-                                    history.go(0)
+                                if (Boolean(e) === true) {
+                                    history.go(0);
                                 }
                             }
                         });
@@ -585,6 +653,10 @@ switch ($act) {
                 allowFileManager: true,
                 afterCreate: function () {
                     var self = this;
+                },
+                afterUpload: function (data) {
+                    var img = $('input[name="updateImg"]');
+                    img.val('"' + data + '",' + img.val());
                 }
             });
             prettyPrint();
@@ -592,45 +664,43 @@ switch ($act) {
 
         });
 
-        $(function () {
 
-            $('#fanhui').on('click', function () {
-                self.history.go(-1);
-            });
+        $('#fanhui').on('click', function () {
+            self.history.go(-1);
+        });
 
-            $('.sort').append(function () {
-                var html = '', t;
-                for (i = -10; i <= 10; ++i) {
-                    t = <?php echo $sort ?> == i ? 'selected' : '';
-                    html += '<option ' + t + '>' + i + '</option>';
+        $('.sort').append(function () {
+            var html = '', t;
+            for (i = -10; i <= 10; ++i) {
+                t = parseInt(<?php echo $sort ?>) === parseInt(i) ? 'selected' : '';
+                html += '<option ' + t + '>' + i + '</option>';
+            }
+            return html;
+        });
+
+        $('.classifyId option').each(function (i, v) {
+            t = (parseInt($(v).val()) === parseInt(<?php echo $classifyId ?>));
+            $(v).attr('selected', t);
+        });
+
+        $('.file').hide();
+        $('.showfile').on('click', function () {
+            var th = $(this);
+            $('#file_input').click();
+            $('#file_input').checkFileTypeAndSize({
+                allowedExtensions: ['jpg', 'png', 'gif'],
+                maxSize: 500,
+                success: function () {
+                    th.val($('#file_input').val());
+                },
+                extensionerror: function () {
+                    alert('格式不正确或不能为空');
+                    return;
+                },
+                sizeerror: function () {
+                    alert('最大尺寸请在200kb以内');
+                    return;
                 }
-                return html;
-            });
-
-            $('.classifyId option').each(function (i, v) {
-                t = ($(v).val() == <?php echo $classifyId ?>);
-                $(v).attr('selected', t);
-            });
-
-            $('.file').hide();
-            $('.showfile').on('click', function () {
-                var th = $(this);
-                $('#file_input').click();
-                $('#file_input').checkFileTypeAndSize({
-                    allowedExtensions: ['jpg', 'png', 'gif'],
-                    maxSize: 500,
-                    success: function () {
-                        th.val($('#file_input').val())
-                    },
-                    extensionerror: function () {
-                        alert('格式不正确或不能为空');
-                        return;
-                    },
-                    sizeerror: function () {
-                        alert('最大尺寸请在200kb以内');
-                        return;
-                    }
-                });
             });
         });
     </script>

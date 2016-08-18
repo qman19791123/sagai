@@ -39,26 +39,37 @@ $conn = $tfunction->conn;
             <div class="top "><?php echo $systemName ?><span class="fa"></span></div>
             <div class="content1">
                 <menu>
-                    <li class="fa">系统管理
+                    <li class="fa"><span>系统管理</span>
                         <p><a class="fa" href="./user.php" target="contentiframe">用户管理</a></p>
                         <p><a class="fa" href="." target="contentiframe">更新缓存</a></p>
                         <p><a class="fa" href="" target="contentiframe">生成静态</a></p>
                     </li>
-                    <li class="fa">栏目管理
+                    <li class="fa"><span>栏目管理</span>
                         <p><a class="fa" href="./classify.php" target="contentiframe">栏目管理</a></p>
                         <p><a class="fa" href="./classify.php?cpage=1" target="contentiframe">添加栏目</a></p>
                     </li>
-                    <li class="fa">内容管理
+                    <li class="fa"><span>内容管理</span>
                         <p><a class="fa" href="./news.php" target="contentiframe">文章管理</a></p>
                         <p><a class="fa" href="./news.php" target="contentiframe">专题管理</a></p>
 <!--                        <p><a class="fa" href="" target="contentiframe">添加内容</a></p>
                         <p><a class="fa" href="" target="contentiframe">批量替换</a></p>
                         <p><a class="fa" href="" target="contentiframe">信息采集</a></p>-->
                     </li>
-                    <li class="fa">留言板
+                    <li class="fa"><span>附件管理</span>
+                        <p><a class="fa" href="./news.php" target="contentiframe">附件管理</a></p>
+                    </li>
+
+                    <li class="fa"><span>更新HTML</span>
+                        <p><a class="fa" href="./news.php" target="contentiframe">更新主页HTML</a></p>
+                        <p><a class="fa" href="./news.php" target="contentiframe">更新栏目HTML</a></p>
+                        <p><a class="fa" href="./news.php" target="contentiframe">更新文档HTML</a></p>
+                        <p><a class="fa" href="./news.php" target="contentiframe">更新专题HTML</a></p>
+
+                    </li>
+                    <li class="fa"><span>留言板</span>
                         <p><a class="fa" href="" target="contentiframe">留言板</a></p>
                     </li>
-                    <li class="fa">其他设置
+                    <li class="fa"><span>其他设置</span>
                         <p><a class="fa" href="" target="contentiframe">插件中心</a></p>
                         <p><a class="fa" href="" target="contentiframe">模板管理</a></p>
                         <p><a class="fa" href="" target="contentiframe">JS调用</a></p>
@@ -80,15 +91,13 @@ $conn = $tfunction->conn;
         <script type="text/javascript" src="../js/move.js"></script>
         <script type="text/javascript">
 
-
-
                     function iFrameHeight() {
                         var ifm = document.getElementById("iframepage");
                         var subWeb = document.frames ? document.frames["iframepage"].document : ifm.contentDocument;
                         if (ifm != null && subWeb != null) {
                             ifm.height = 0;
                             ifm.width = 0;
-                            ifm.height = window.screen.height -210;
+                            ifm.height = window.screen.height - 210;
                             //ifm.height = subWeb.body.scrollHeight;
                             //ifm.width = subWeb.body.scrollWidth;
                         }

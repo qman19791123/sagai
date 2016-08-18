@@ -76,11 +76,7 @@ switch ($act) {
         <!--字体图标 css -->
         <link rel="stylesheet" type="text/css" href="../css/Font-Awesome/font-awesome.min.css"/>
         <!--dialog css -->
-        <link rel="stylesheet" href="css/ui-dialog.css">
         <script type="text/javascript" src="../js/jquery.min.js"></script>
-        <!--dialog css -->
-        <script type="text/javascript" src="../js/artDialog/.js"></script>
-
     </head>
     <body>
         <div class="adminContent">
@@ -309,6 +305,15 @@ switch ($act) {
         <script charset="utf-8" src="../js/KindEditor/plugins/code/prettify.js"></script>
 
         <script>
+            //mouseover
+            $('.adminContent .atable ul').on('mouseover',function(){
+                $(this).css({'background':'#444','color':'#fff'});
+                 $(this).find('a').css({'background':'','color':'#fff'});
+            }).on('mouseout',function(){
+                 $(this).css({'background':'','color':''});
+                 $(this).find('a').css({'background':'','color':''});
+            });
+            
             KindEditor.ready(function (K) {
                 var editor1 = K.create('textarea[name="Content"]', {
                     cssPath: '../js/KindEditor/plugins/code/prettify.css',

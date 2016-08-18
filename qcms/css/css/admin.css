@@ -39,39 +39,34 @@ body {
 .dialogContent.searchContent p,
 .dialogContent.searchContent input,
 .dialogContent.searchContent select,
-.dialogContent.searchContent span,
-.dialogContent.columnContent p,
-.dialogContent.columnContent input,
-.dialogContent.columnContent select,
-.dialogContent.columnContent span {
+.dialogContent.searchContent span {
   display: inline-block;
 }
-.dialogContent.searchContent span.datebox,
-.dialogContent.columnContent span.datebox {
+.dialogContent.searchContent span.datebox {
   border: 1px solid #bbb;
   border-radius: 0;
 }
-.dialogContent.searchContent p,
-.dialogContent.columnContent p {
+.dialogContent.searchContent p {
   width: 100%;
   padding: 1%;
 }
-.dialogContent.searchContent p span,
-.dialogContent.columnContent p span {
+.dialogContent.searchContent p span {
   width: 80px;
   text-align: right;
 }
-.dialogContent.searchContent p input,
-.dialogContent.columnContent p input {
+.dialogContent.searchContent p input {
   padding: 5px;
 }
-.dialogContent.searchContent p select,
-.dialogContent.columnContent p select {
+.dialogContent.searchContent p select {
   padding: 5px;
 }
-.dialogContent.searchContent p input[name='content'],
-.dialogContent.columnContent p input[name='content'] {
+.dialogContent.searchContent p input[name='content'] {
   width: 65%;
+}
+.dialogContent.columnContent ul,
+.dialogContent.columnContent li {
+  display: block;
+  width: 100%;
 }
 .dialogContent ul {
   display: table-cell;
@@ -192,6 +187,9 @@ body {
     width: 100%;
     background: rgba(250,250,250,0.95);
     font-weight: 700;
+  }
+  .adminMain .content1 menu li span {
+    cursor: pointer;
   }
   .adminMain .content1 menu li:before {
     content: '';
@@ -514,6 +512,9 @@ body {
     width: 100%;
     background: rgba(250,250,250,0.95);
     font-weight: 700;
+  }
+  .adminMain .content1 menu li span {
+    cursor: pointer;
   }
   .adminMain .content1 menu li:before {
     content: '';
