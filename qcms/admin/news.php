@@ -17,23 +17,21 @@ $sort = '0';
 $classifyJson = [];
 
 
-/**
- * 数据添加 删除 修改 操作
- */
-
+// 数据添加 删除 修改 操作
 $newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_CALLBACK, ['options' => 'conn::encode']);
 $keywordsINPUT = filter_input(INPUT_POST, 'keywords', FILTER_SANITIZE_STRING);
 $descriptionINPUT = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
 
 $time = time();
+
 $classifyIdINPUT = filter_input(INPUT_POST, 'classifyId', FILTER_VALIDATE_INT);
 $sortINPUT = filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT, ['options' => ['min_range' => -10, 'max_range' => 10]]);
-
 $tagINPUT = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
 $subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_CALLBACK, ['options' => 'conn::encode']);
 $titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => 'conn::dropQuote']);
 $titlePhotoINPUT = filter_input(INPUT_POST, 'titlePhoto', FILTER_SANITIZE_STRING);
 $updateImgINPUT = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
+
 
 $check = filter_input(INPUT_POST, 'checked', FILTER_VALIDATE_INT);
 $checked = $check == 999 || $check == 0 ? $check : 1;
@@ -41,10 +39,10 @@ $checked = $check == 999 || $check == 0 ? $check : 1;
 $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 $adminId = $_SESSION['adminId'];
 
-
+// 标题拼音化
 $pinyin = $tfunction->py(mb_substr($titleINPUT, 0, 20, 'utf-8'));
 
-/* 一个匿名方法 作用发布文章 */
+// 一个匿名方法 作用发布文章 
 $AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPUT)use($conn) {
     $sqlNewsContentAddModele = 'INSERT INTO'
             . '`news_content`'
@@ -54,9 +52,8 @@ $AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPU
     $conn->aud($sqlNewsContentAdd);
 };
 
-/* 一个匿名方法 作用记录此新闻使用过的图片 */
+// 一个匿名方法 作用记录此新闻使用过的图片
 $AMNewsImages = function($Rsid, $classifyIdINPUT, $updateImg)use($conn) {
-//图片地址存放 start
     $jsonImagesSqlT = $jsonImagesSql = '';
     $jsonImages = json_decode('[' . trim($updateImg, ',') . ']');
 
@@ -65,11 +62,29 @@ $AMNewsImages = function($Rsid, $classifyIdINPUT, $updateImg)use($conn) {
     }
     $jsonImagesSql = 'INSERT INTO `Images` (`classifyId`,`newId`,`images`,`time`) VALUES' . trim($jsonImagesSqlT, ',');
     $conn->aud($jsonImagesSql);
-    //图片地址存放 end
 };
+
+// 一个匿名方法 作用图片上传 
+$AMNewsUploadImage = function($path) {
+
+    $file = $_FILES['file'];
+
+    if (!empty($file['name'])) {
+        $upload = Upload::factory('/files');
+        $upload->set_filename(md5(time()));
+        $upload->file($file);
+        $upload->set_max_file_size(200);
+        $results = $upload->upload();
+    }
+    if (empty($results['errors'])) {
+        $path = $results['path'];
+    }
+    return $path;
+};
+
 switch ($act) {
     case 1:
-//添加部分代码
+// 添加部分限制代码
         empty($titleINPUT) && die($tfunction->message('信息标题不能为空'));
         empty($newTextINPUT) && die($tfunction->message('信息内容不能为空'));
         empty($classifyIdINPUT) && die($tfunction->message('栏目不能为空'));
@@ -77,19 +92,10 @@ switch ($act) {
         empty($subtitleINPUT) && $subtitleINPUT = mb_substr(filter_var($newTextINPUT, FILTER_SANITIZE_STRING), 0, 240);
         empty($descriptionINPUT) && $descriptionINPUT = $subtitleINPUT;
         !is_numeric($sortINPUT) && $sortINPUT = 0;
-        $path = '';
-        $file = $_FILES['file'];
-        if (!empty($file['name'])) {
-            $upload = Upload::factory('/files');
-            $upload->set_filename(md5(time()));
-            $upload->file($file);
-            $upload->set_max_file_size(200);
-            $results = $upload->upload();
-            $path = $titlePhotoINPUT;
-        }
-        if (empty($results['errors'])) {
-            $path = $results['path'];
-        }
+
+// 图片上传功能
+        $path = $AMNewsUploadImage('');
+
 // 添加内容配置表信息
         $sqlNewsConfigAddModele = 'INSERT INTO `news_config` '
                 . '(`classifyId`,`userid`,`time`,`sort`,`tag`,`subtitle`,`title`,`titlePhoto`,`checked`,`pinyin`,`isdel`)'
@@ -100,7 +106,7 @@ switch ($act) {
 // 添加内容表信息
         $AMNewsContent($Rs, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
 
-//修改统计文章总数
+// 修改统计文章总数
         $sqlClassifyUpdate = 'UPDATE `classify` SET summary=summary+1 where id=' . $classifyIdINPUT;
         $conn->aud($sqlClassifyUpdate);
 
@@ -111,31 +117,28 @@ switch ($act) {
         die($tfunction->message('添加内容成功', 'news.php'));
         break;
     case 2:
-        //修改部分代码
-
+// 修改部分代码
         if (!empty($id)) {
-            $path = $titlePhotoINPUT;
-            $file = $_FILES['file'];
-            if (!empty($file['name'])) {
-                $upload = Upload::factory('/files');
-                $upload->set_filename(md5(time()));
-                $upload->file($file);
-                $upload->set_max_file_size(200);
-                $results = $upload->upload();
-            }
-            if (empty($results['errors'])) {
-                $path = $results['path'];
-            }
-
+// 添加部分限制代码
+            empty($titleINPUT) && die($tfunction->message('信息标题不能为空'));
+            empty($newTextINPUT) && die($tfunction->message('信息内容不能为空'));
+            empty($classifyIdINPUT) && die($tfunction->message('栏目不能为空'));
+// 图片上传功能
+            $path = $AMNewsUploadImage($titlePhotoINPUT);
+// 查询文章是否存在
             $sqlNewsContentSeletCount = 'select count(newsId) as C from news_content where newsId=' . $id;
             $Rsc = $conn->query($sqlNewsContentSeletCount);
+// 不存在添加文章 存在修改文章
             if (empty($Rsc[0]['C'])) {
+// 添加文章内容
                 $AMNewsContent($id, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
             } else {
+// 修改文章内容
                 $sqlNewsContentUpdateModele = 'update `news_content` set `newText` = "%s",`keywords` = "%s", `description`="%s" where newsId=%s';
                 $sqlNewsContentUpdate = sprintf($sqlNewsContentUpdateModele, $newTextINPUT, $keywordsINPUT, $descriptionINPUT, $id);
                 $conn->aud($sqlNewsContentUpdate);
             }
+// 文章配置进行修改
             $sqlNewsConfigUpdateModele = 'update `news_config` set '
                     . '`classifyId` = "%s",'
                     . '`sort` = "%s", '
@@ -147,20 +150,19 @@ switch ($act) {
                     . ' where id=%s';
             $sqlNewsConfigUpdate = sprintf($sqlNewsConfigUpdateModele, $classifyIdINPUT, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $checked, $id);
             $conn->aud($sqlNewsConfigUpdate);
-
-            // 记录此新闻使用过的图片
+// 记录此新闻使用过的图片
             $AMNewsImages($classifyIdINPUT, $Rs, $updateImgINPUT);
 
             die($tfunction->message('修改内容成功', 'news.php'));
         }
         break;
     case 3:
-//删除部分代码
+// 删除部分代码
         echo $act;
 
         break;
     case 4:
-//特殊传值AJAx
+// 特殊传值AJAx （设置审核流程）
         $ajaxT = filter_input(INPUT_POST, 't', FILTER_VALIDATE_INT);
         $ajaxId = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
         $sql = 'update `news_config` set checked = ' . $ajaxT . ' where id=' . $ajaxId;
