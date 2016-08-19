@@ -192,12 +192,12 @@ switch ($act) {
             <?php
             switch ($cpage) :
                 case 0:
+                    $where = '';
                     $pagec = ($page - 1) * 10;
                     $query = filter_input(INPUT_GET, 'query');
                     $poUrl = '';
                     $dataClassifyClassName = '所有文章';
                     if (!empty($query)) {
-                        $where = '';
                         $timestart = filter_input(INPUT_GET, 'timestart', FILTER_SANITIZE_STRING);
                         $timeend = filter_input(INPUT_GET, 'timeend', FILTER_SANITIZE_STRING);
                         $queryselect = filter_input(INPUT_GET, 'queryselect', FILTER_VALIDATE_INT);
@@ -257,7 +257,7 @@ switch ($act) {
 
                     $classifyJson = $classifyRsJson;
 
-                    $sql = 'select time,id,sort,title,classifyId from `news_config` where 1=1 ' . $where . ' order by id desc limit 10 Offset ' . $pagec;
+                    $sql = 'select checked,time,id,sort,title,classifyId from `news_config` where 1=1 ' . $where . ' order by id desc limit 10 Offset ' . $pagec;
                     $data = $conn->query($sql);
                     $sqlCount = 'select count(id) as cid from `news_config` where 1=1 ' . $where . '';
                     $dataCount = $conn->query($sqlCount);
@@ -386,10 +386,9 @@ switch ($act) {
                                             <?php
                                             $classify = new tfunction($conn);
                                             $data = $classify->classify();
-
                                             foreach ($data as $rs):
                                                 ?>
-                                                <option value="<?php echo $rs['id'] ?>"  <?php echo $rs['disabled']; ?>><?php echo $rs['className'] ?></option>
+                                                <option value="<?php echo $rs['id'] ?>"  <?php !empty($rs['disabled']) && print($rs['disabled']); ?>><?php echo $rs['className'] ?></option>
                                             <?php endforeach ?>
 
                                         </select>

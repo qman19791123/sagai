@@ -180,21 +180,36 @@ class tfunction {
      * </p>
      */
     public function classify() {
-        $rsd = array();
-        $this->classifyAchieved($data, 0);
-        // $sql = 'select id,px,className,pid from classify where pid = 0';
-        // $rs = $this->conn->query($sql);
-        // foreach ($rs as $value) {
-        //     $data = '';
-        //     $rsd[] = $value;
-        //     $this->classifyAchieved($data, $value['id'], '　');
-        //     if (empty($data)) {
-        //         continue;
-        //     }
-        //     foreach ($data as $value1) {
-        //         $rsd[] = $value1;
-        //     }
-        // }
+        $data = [];
+        if (!is_file(install . '/cacheData/classifyStyleArray.php')) {
+            $this->classifyAchieved($data, 0);
+            $classifyArray = var_export($data, true);
+            file_put_contents(install . '/cacheData/classifyStyleArray.php', "<?php \n\r\$classifyStyleArray={$classifyArray} \r\n?>");
+        } else {
+            global $classifyStyleArray;
+            include install . '/cacheData/classifyStyleArray.php';
+            $data = $classifyStyleArray;
+        }
+
+        return $data;
+    }
+
+    /**
+     *  <b>分类递归</b> 
+     * @global type $classifyArray
+     * @return type
+     */
+    public function classifyArray() {
+        $data = [];
+        if (!is_file(install . '/cacheData/classifyArray.php')) {
+            $data = $this->classifyAchievedArray();
+            $classifyArray = var_export($data, true);
+            file_put_contents(install . '/cacheData/classifyArray.php', "<?php \n\r\$classifyArray={$classifyArray} \r\n?>");
+        } else {
+            global $classifyArray;
+            include install . '/cacheData/classifyArray.php';
+            $data = $classifyArray;
+        }
         return $data;
     }
 
@@ -210,11 +225,13 @@ class tfunction {
      * <b>递归格式(空格)</b>
      * </p>
      */
-    private function classifyAchieved(&$data, $id = '', $t = '　', $v) {
+    private function classifyAchieved(&$data, $id = '', $t = '　', $v = '') {
         $t.='　　';
         $rs = [];
+
         $sql = 'select id,px,className,pid from classify where pid =' . $id . ' order by px desc';
         $rs = $this->conn->query($sql);
+
         foreach ($rs as $value) {
 
             $data [$value['id']]['pid'] = $value['pid'];
@@ -235,13 +252,13 @@ class tfunction {
         return $rs;
     }
 
-    public function classifyArray($id = 0) {
+    public function classifyAchievedArray($id = 0) {
         $arr = array();
         $sql = 'select id,className as text ,pid from classify where pid =' . $id . ' order by px desc';
         $rs = $this->conn->query($sql);
         foreach ($rs as $value) {
 
-            $rs = $this->classifyArray($value['id']); //调用函数，传入参数，继续查询下级 
+            $rs = $this->classifyAchievedArray($value['id']); //调用函数，传入参数，继续查询下级 
             if (!empty($rs)) {
                 $value['state'] = 'closed';
                 $value['children'] = $rs;

@@ -23,16 +23,30 @@ $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_URL);
 $setting = (int) filter_input(INPUT_POST, 'setting', FILTER_VALIDATE_INT);
 $folder = $tfunction->py($className);
 
+// 一个匿名方法 作用删除栏目缓存数据
+$AMNewsCacheClassifty = function () use($conn) {
+    @unlink(install . '/cacheData/classifyArray.php');
+    @unlink(install . '/cacheData/classifyStyleArray.php');
+};
 switch ($act) {
     case 1:
-        if (StaticOpen) {
-            @mkdir(staticFloder . '/' . $folder, 0777, true);
+        $sql = 'select count(id) as count  from `classify` where  className = "' . $className . '"';
+        $Rs = $conn->query($sql);
+        if (empty($Rs[0]['count'])) {
+            $sql = 'INSERT INTO';
+            $sql .= ' `classify` (`pid`,`px`,`className`,`Content`,`ntmp`,`ctemp`,`url`,`setting`,`folder`) VALUES ';
+            $sql .= sprintf('("%s","%s","%s","%s","%s","%s","%s","%s","%s");', $pid, $px, $className, $Content, $ntmp, $ctemp, $url, $setting, $folder);
+            $Rs = $conn->aud($sql);
+            if ($Rs) {
+                if (StaticOpen) {
+                    @mkdir(staticFloder . '/' . $folder, 0777, true);
+                }
+                $AMNewsCacheClassifty();
+            }
+            (is_numeric($Rs)) && die($tfunction->message($lang['classifyAddSuccess'], 'classify.php'));
+        } else {
+            (is_numeric($Rs)) && die($tfunction->message($lang['classifyErr'], 'classify.php'));
         }
-        $sql = 'INSERT INTO';
-        $sql .= ' `classify` (`pid`,`px`,`className`,`Content`,`ntmp`,`ctemp`,`url`,`setting`,`folder`) VALUES ';
-        $sql .= sprintf('("%s","%s","%s","%s","%s","%s","%s","%s","%s");', $pid, $px, $className, $Content, $ntmp, $ctemp, $url, $setting, $folder);
-        $Rs = $conn->aud($sql);
-        (is_numeric($Rs)) && die($tfunction->message($lang['classifyAddSuccess'], 'classify.php'));
         break;
     case 2:
 
@@ -48,6 +62,7 @@ switch ($act) {
         $sql .=' where id=' . $id;
 
         $Rs = $conn->aud($sql);
+        $AMNewsCacheClassifty();
         die($tfunction->message($lang['classifyUpdateSuccess'], 'classify.php'));
         break;
     case 3:
@@ -58,6 +73,7 @@ switch ($act) {
             $sql = 'DELETE FROM `classify`';
             $sql .= ' where id = ' . $id;
             $Rs = $conn->aud($sql);
+            $AMNewsCacheClassifty();
             die($tfunction->message($lang['classifyDelSuccess'], 'classify.php'));
         } else {
             die($tfunction->message($lang['classifyDelFail'], 'classify.php'));
@@ -306,14 +322,14 @@ switch ($act) {
 
         <script>
             //mouseover
-            $('.adminContent .atable ul').on('mouseover',function(){
-                $(this).css({'background':'#444','color':'#fff'});
-                 $(this).find('a').css({'background':'','color':'#fff'});
-            }).on('mouseout',function(){
-                 $(this).css({'background':'','color':''});
-                 $(this).find('a').css({'background':'','color':''});
+            $('.adminContent .atable ul').on('mouseover', function () {
+                $(this).css({'background': '#444', 'color': '#fff'});
+                $(this).find('a').css({'background': '', 'color': '#fff'});
+            }).on('mouseout', function () {
+                $(this).css({'background': '', 'color': ''});
+                $(this).find('a').css({'background': '', 'color': ''});
             });
-            
+
             KindEditor.ready(function (K) {
                 var editor1 = K.create('textarea[name="Content"]', {
                     cssPath: '../js/KindEditor/plugins/code/prettify.css',

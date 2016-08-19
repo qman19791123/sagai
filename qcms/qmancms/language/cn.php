@@ -16,6 +16,7 @@ $lang['classifySort']='栏目排序';
 $lang['classifySet']='栏目设置';
 $lang['classifyName']='栏目名称';
 $lang['classifyBrief']='栏目简介';
+$lang['classifyErr']='栏目名冲突';
 
 
 
