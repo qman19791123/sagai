@@ -6,13 +6,13 @@ class tfunction {
     private $zd;
 
     function __construct() {
-        if (!class_exists('conn')) {
-            include lib . 'conn.inc.php';
+        if (!class_exists('activeRecord') && !class_exists('conn')) {
+            include lib . 'activeRecord.php';
         }
         if (!class_exists('lessc')) {
             include plus . '/lessc.inc.php';
         }
-        $this->conn = new conn;
+        $this->conn = new activeRecord();
         $this->less = new lessc;
     }
 
@@ -341,6 +341,31 @@ class tfunction {
             $pageEnd = $PageCount;
         }
         return ['pageEnd' => $pageEnd, 'pageStart' => $pageStart, 'pageCount' => $PageCount];
+    }
+
+    /**
+     * 格式化带有HTML标签内容
+     * @param string  $Content 内容
+     * @return string
+     */
+    function encode($Content) {
+        return htmlspecialchars($Content, ENT_QUOTES);
+    }
+
+    /**
+     * 解码内容返回带有HTML标签内容
+     * @param string $Content 内容
+     * @return string
+     */
+    public function decode($Content) {
+        return html_entity_decode($Content, ENT_QUOTES);
+    }
+
+    public function dropQuote($Content) {
+        $Content = str_replace('\'', '', $Content);
+        $Content = str_replace('"', '', $Content);
+        $Content = filter_var($Content, FILTER_SANITIZE_STRING);
+        return $Content;
     }
 
 }

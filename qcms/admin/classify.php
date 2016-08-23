@@ -1,21 +1,19 @@
 <?php
 include '../config.php';
 include lib . 'tfunction.inc.php';
-include lib . 'conn.inc.php';
 include 'isadmin.php';
 include lang . $language;
 
-
-
 $tfunction = new tfunction();
 $conn = $tfunction->conn;
+
 $act = (int) filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 $id = (int) filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $pid = (int) filter_input(INPUT_POST, 'pid', FILTER_VALIDATE_INT);
 $px = (int) filter_input(INPUT_POST, 'px', FILTER_VALIDATE_INT);
 $className = filter_input(INPUT_POST, 'className', FILTER_SANITIZE_STRING);
 //格式化带有HTML标签内容
-$Content = filter_input(INPUT_POST, 'Content', FILTER_CALLBACK, ['options' => 'conn::encode']);
+$Content = filter_input(INPUT_POST, 'Content', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
 
 $ntmp = filter_input(INPUT_POST, 'ntmp', FILTER_SANITIZE_STRING);
 $ctemp = filter_input(INPUT_POST, 'ctemp', FILTER_SANITIZE_STRING);
@@ -218,8 +216,7 @@ switch ($act) {
                     break;
                 case 2:
                     $t_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-                    $sql = 'select * from classify where id =' . $t_id;
-                    $Rs = $conn->query($sql);
+                    $Rs = $conn->where(['id'=>(int)$t_id])->get('classify');
                     $setting = empty($Rs[0]['setting']) ? 0 : $Rs[0]['setting']
                     ?>
                     <dl>
@@ -292,7 +289,7 @@ switch ($act) {
                                     <ul class="list a20_80" style="height: 450px">
                                         <li class="top"><?php echo $lang['classifyBrief'] ?>:</li>
                                         <li class="top">
-                                            <textarea name="Content" id="editor1" ><?php echo conn::decode($Rs[0]['Content']) ?></textarea>
+                                            <textarea name="Content" id="editor1" ><?php echo tfunction::decode($Rs[0]['Content']) ?></textarea>
                                         </li>
                                     </ul>
                                     <ul class="list a20_80">

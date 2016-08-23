@@ -6,16 +6,9 @@
 class conn {
 
     function __construct() {
-        if (strtolower(dataType) == 'mysql') {
-            $dsn = sprintf('mysql:host=%s;dbname=%s', dataLocal, dataName);
-            $this->db = new PDO($dsn, dataUser, dataPassword, array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . dataCharset));
-        } else {
-            $dsn = sprintf('sqlite:%s/%s/%s', install, dataLocal, dataName);
-            $this->db = new PDO($dsn);
-            $this->db->query('SET NAMES ' . dataCharset);
-        }
+    	$dsn = sprintf('mysql:host=%s;dbname=%s', dataLocal, dataName);
+        $this->db = new PDO($dsn, dataUser, dataPassword, array(PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES ' . dataCharset));
         $this->db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-        #$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     }
 
     /**

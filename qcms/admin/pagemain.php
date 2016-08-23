@@ -1,7 +1,6 @@
 <?php 
 include '../config.php';
 include lib.'tfunction.inc.php';
-include lib.'conn.inc.php';
 include 'isadmin.php';
 $tfunction  = new tfunction();
 $conn = $tfunction->conn;

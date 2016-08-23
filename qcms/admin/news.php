@@ -1,7 +1,6 @@
 <?php
 include '../config.php';
 include lib . 'tfunction.inc.php';
-include lib . 'conn.inc.php';
 include plus . 'upload/upload.php';
 include 'isadmin.php';
 include lang . $language;
@@ -18,7 +17,8 @@ $classifyJson = [];
 
 
 // 数据添加 删除 修改 操作
-$newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_CALLBACK, ['options' => 'conn::encode']);
+$newTextINPUT = filter_input(INPUT_POST, 'newText'); //, FILTER_CALLBACK, ['options' => 'tfunction::encode']);
+
 $keywordsINPUT = filter_input(INPUT_POST, 'keywords', FILTER_SANITIZE_STRING);
 $descriptionINPUT = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
 
@@ -27,8 +27,10 @@ $time = time();
 $classifyIdINPUT = filter_input(INPUT_POST, 'classifyId', FILTER_VALIDATE_INT);
 $sortINPUT = filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT, ['options' => ['min_range' => -10, 'max_range' => 10]]);
 $tagINPUT = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
-$subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_CALLBACK, ['options' => 'conn::encode']);
-$titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => 'conn::dropQuote']);
+$subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
+
+$titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => 'tfunction::dropQuote']);
+
 $titlePhotoINPUT = filter_input(INPUT_POST, 'titlePhoto', FILTER_SANITIZE_STRING);
 $updateImgINPUT = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
 
@@ -53,7 +55,7 @@ $AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPU
 };
 
 // 一个匿名方法 作用记录此新闻使用过的图片
-$AMNewsImages = function($Rsid, $classifyIdINPUT, $updateImg)use($conn) {
+$AMNewsImages = function($classifyIdINPUT, $Rsid, $updateImg)use($conn) {
     $jsonImagesSqlT = $jsonImagesSql = '';
     $jsonImages = json_decode('[' . trim($updateImg, ',') . ']');
 
@@ -67,6 +69,7 @@ $AMNewsImages = function($Rsid, $classifyIdINPUT, $updateImg)use($conn) {
 // 一个匿名方法 作用图片上传 
 $AMNewsUploadImage = function($path) {
 
+
     $file = $_FILES['file'];
 
     if (!empty($file['name'])) {
@@ -75,9 +78,9 @@ $AMNewsUploadImage = function($path) {
         $upload->file($file);
         $upload->set_max_file_size(200);
         $results = $upload->upload();
-    }
-    if (empty($results['errors'])) {
-        $path = $results['path'];
+        if (empty($results['errors'])) {
+            $path = $results['path'];
+        }
     }
     return $path;
 };
@@ -94,7 +97,7 @@ switch ($act) {
         !is_numeric($sortINPUT) && $sortINPUT = 0;
 
 // 图片上传功能
-        $path = $AMNewsUploadImage('');
+        $path = $AMNewsUploadImage();
 
 // 添加内容配置表信息
         $sqlNewsConfigAddModele = 'INSERT INTO `news_config` '
@@ -111,7 +114,7 @@ switch ($act) {
         $conn->aud($sqlClassifyUpdate);
 
 // 记录此新闻使用过的图片
-        $AMNewsImages($classifyIdINPUT, $Rs, $updateImgINPUT);
+        $AMNewsImages($classifyIdINPUT, $Rs, $path);
 
 
         die($tfunction->message('添加内容成功', 'news.php'));
@@ -151,7 +154,7 @@ switch ($act) {
             $sqlNewsConfigUpdate = sprintf($sqlNewsConfigUpdateModele, $classifyIdINPUT, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $checked, $id);
             $conn->aud($sqlNewsConfigUpdate);
 // 记录此新闻使用过的图片
-            $AMNewsImages($classifyIdINPUT, $Rs, $updateImgINPUT);
+            $AMNewsImages($classifyIdINPUT, $id, $path);
 
             die($tfunction->message('修改内容成功', 'news.php'));
         }
@@ -192,8 +195,9 @@ switch ($act) {
             <?php
             switch ($cpage) :
                 case 0:
+                    $inlClassify = '';
                     $where = '';
-                    $pagec = ($page - 1) * 10;
+                    $pagec = ($page - 1) < 0 ? 0 : ($page - 1) * 10;
                     $query = filter_input(INPUT_GET, 'query');
                     $poUrl = '';
                     $dataClassifyClassName = '所有文章';
@@ -233,6 +237,8 @@ switch ($act) {
 
                             $sqlClassify = 'select id,className from `classify` where pid=' . $url . ' or id=' . $url . ' order by id ';
                             $dataClassify = $conn->query($sqlClassify);
+
+
                             foreach ($dataClassify as $value) {
                                 $inlClassify.=',' . $value['id'];
                                 (int) $value['id'] === $url && $dataClassifyClassName = $value['className'];
@@ -244,9 +250,11 @@ switch ($act) {
                         $arr = filter_input_array(INPUT_GET);
                         unset($arr['page']);
                         $poUrl = 'query=yes&url=' . $url;
-                        if (empty($url)) {
+
+                        if (!empty($url)) {
                             $poUrlModele = join('=%s&', array_keys($arr));
-                            $poUrl = sprintf($poUrlModele . '=%s', $arr['query'], $arr['timestart'], $arr['timeend'], $arr['queryselect'], $arr['content']);
+                            $poUrl = sprintf($poUrlModele . '=%s', empty($arr['query']) ? '' : $arr['query'], empty($arr['timestart']) ? '' : $arr['timestart'], empty($arr['timeend']) ? '' : $arr['timeend'], empty($arr['queryselect']) ? '' : $arr['queryselect'], empty($arr['queryselect']) ? '' : $arr['queryselect'], empty($arr['content']) ? '' : $arr['content']
+                            );
                         }
                     }
                     $classifyRsJson = [];
@@ -257,8 +265,11 @@ switch ($act) {
 
                     $classifyJson = $classifyRsJson;
 
-                    $sql = 'select checked,time,id,sort,title,classifyId from `news_config` where 1=1 ' . $where . ' order by id desc limit 10 Offset ' . $pagec;
-                    $data = $conn->query($sql);
+                    //$sql = 'select checked,time,id,sort,title,classifyId from `news_config` where 1=1 ' . $where . ' order by id desc limit 10 Offset ' . $pagec;
+                    $data = $conn->set('checked,time,id,sort,title,classifyId')->where('1=1 ' . $where)->order_by('id desc')->limit(10)->offset($pagec)->get('news_config');
+
+                    // echo $sql;
+                    // $data = $conn->query($sql);
                     $sqlCount = 'select count(id) as cid from `news_config` where 1=1 ' . $where . '';
                     $dataCount = $conn->query($sqlCount);
                     ?>
@@ -294,16 +305,20 @@ switch ($act) {
                                         <li data-id="<?php echo $rs['classifyId'] ?>"></li>
                                         <li><?php echo $rs['title'] ?></li>
                                         <li><?php
-                                            switch ($rs['checked']) {
-                                                case 0 :
-                                                    echo '未通过';
-                                                    break;
-                                                case 1:
-                                                    echo '等待';
-                                                    break;
-                                                case 999:
-                                                    echo '通过';
-                                                    break;
+                                            if (is_numeric($rs['checked'])) {
+                                                switch ($rs['checked']) {
+                                                    case 0 :
+                                                        echo '未通过';
+                                                        break;
+                                                    case 1:
+                                                        echo '等待';
+                                                        break;
+                                                    case 999:
+                                                        echo '通过';
+                                                        break;
+                                                }
+                                            } else {
+                                                echo '等待';
                                             }
                                             ?></li>
                                         <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
@@ -347,15 +362,20 @@ switch ($act) {
                     $description = '';
                     $checked = '';
                     if (!empty($id)) {
-                        $sql = 'select classifyId,sort,tag,subtitle,title,titlePhoto,newText,keywords,description,checked from news_config left join news_content on news_config.id = news_content.newsId where id = ' . $id;
-                        $Rs = $conn->query($sql);
+
+                        $Rs = $conn
+                                ->select(['classifyId', 'sort', 'tag', 'subtitle', 'title', 'titlePhoto', 'newText', 'keywords', 'description', 'checked'])
+                                ->join('news_content', 'news_config.id = news_content.newsId', 'left')
+                                ->where(['id' => $id])
+                                ->get('news_config');
+
                         $sort = $Rs[0]['sort'];
                         $classifyId = $Rs[0]['classifyId'];
                         $tag = $Rs[0]['tag'];
                         $title = $Rs[0]['title'];
                         $titlePhoto = $Rs[0]['titlePhoto'];
                         //解码内容返回带有HTML标签内容
-                        $newText = conn::decode($Rs[0]['newText']);
+                        $newText = tfunction::decode($Rs[0]['newText']);
                         $keywords = $Rs[0]['keywords'];
                         $description = $Rs[0]['description'];
                         $subtitle = $Rs[0]['subtitle'];
