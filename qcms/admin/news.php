@@ -41,8 +41,7 @@ $checked = $check == 999 || $check == 0 ? $check : 1;
 $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 $adminId = $_SESSION['adminId'];
 
-// 标题拼音化
-$pinyin = $tfunction->py(mb_substr($titleINPUT, 0, 20, 'utf-8'));
+
 
 // 一个匿名方法 作用发布文章 
 $AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPUT)use($conn) {
@@ -95,6 +94,8 @@ switch ($act) {
         empty($subtitleINPUT) && $subtitleINPUT = mb_substr(filter_var($newTextINPUT, FILTER_SANITIZE_STRING), 0, 240);
         empty($descriptionINPUT) && $descriptionINPUT = $subtitleINPUT;
         !is_numeric($sortINPUT) && $sortINPUT = 0;
+// 标题拼音化
+        $pinyin = $tfunction->py(mb_substr($titleINPUT, 0, 20, 'utf-8')) . '-' . md5(microtime());
 
 // 图片上传功能
         $path = $AMNewsUploadImage();
