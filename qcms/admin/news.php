@@ -17,30 +17,27 @@ $classifyJson = [];
 
 
 // 数据添加 删除 修改 操作
-$newTextINPUT = filter_input(INPUT_POST, 'newText'); //, FILTER_CALLBACK, ['options' => 'tfunction::encode']);
-
+$newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_CALLBACK, ['options' => 'tfunction::encode']); //, FILTER_CALLBACK, ['options' => 'tfunction::encode']);
 $keywordsINPUT = filter_input(INPUT_POST, 'keywords', FILTER_SANITIZE_STRING);
 $descriptionINPUT = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
 
-$time = time();
+// $time = time();
 
 $classifyIdINPUT = filter_input(INPUT_POST, 'classifyId', FILTER_VALIDATE_INT);
 $sortINPUT = filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT, ['options' => ['min_range' => -10, 'max_range' => 10]]);
 $tagINPUT = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
 $subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
-
 $titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => 'tfunction::dropQuote']);
 
 $titlePhotoINPUT = filter_input(INPUT_POST, 'titlePhoto', FILTER_SANITIZE_STRING);
 $updateImgINPUT = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
-
+#$titlePhotoOld = filter_input(INPUT_POST, 'titlePhotoOld', FILTER_SANITIZE_STRING);
 
 $check = filter_input(INPUT_POST, 'checked', FILTER_VALIDATE_INT);
 $checked = $check == 999 || $check == 0 ? $check : 1;
 
 $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 $adminId = $_SESSION['adminId'];
-
 
 
 // 一个匿名方法 作用发布文章 
@@ -54,31 +51,36 @@ $AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPU
 };
 
 // 一个匿名方法 作用记录此新闻使用过的图片
-$AMNewsImages = function($classifyIdINPUT, $Rsid, $updateImg)use($conn) {
-    $jsonImagesSqlT = $jsonImagesSql = '';
-    $jsonImages = json_decode('[' . trim($updateImg, ',') . ']');
+$AMNewsImages = function($classifyIdINPUT, $Rsid, $updateImg = '')use($conn) {
 
-    foreach ($jsonImages as $valueJsonImages) {
-        $jsonImagesSqlT .= sprintf('("%s","%s","%s","%s"),', $classifyIdINPUT, $Rsid, $valueJsonImages, time());
+    $jsonImagesSqlT = $jsonImagesSql = '';
+    if (is_array($updateImg)) {
+        foreach ($updateImg as $valueJsonImages) {
+            $jsonImagesSqlT .= sprintf('("%s","%s","%s","%s"),', $classifyIdINPUT, $Rsid, $valueJsonImages, time());
+        }
+    } else if (is_string($updateImg) && !empty($updateImg)) {
+        $jsonImagesSqlT .= sprintf('("%s","%s","%s","%s"),', $classifyIdINPUT, $Rsid, $updateImg, time());
     }
+
     $jsonImagesSql = 'INSERT INTO `Images` (`classifyId`,`newId`,`images`,`time`) VALUES' . trim($jsonImagesSqlT, ',');
     $conn->aud($jsonImagesSql);
 };
 
 // 一个匿名方法 作用图片上传 
-$AMNewsUploadImage = function($path) {
-
+$AMNewsUploadImage = function($path='') use ($tfunction) {
 
     $file = $_FILES['file'];
-
     if (!empty($file['name'])) {
-        $upload = Upload::factory('/files');
+        $upload = Upload::factory('/file/image/' . date('Ymd'));
         $upload->set_filename(md5(time()));
         $upload->file($file);
         $upload->set_max_file_size(200);
+        $upload->set_allowed_mime_types(['image/x-png', 'image/jpg', 'image/jpe', 'image/jpeg', 'image/pjpeg', 'image/gif', 'image/png']);
         $results = $upload->upload();
-        if (empty($results['errors'])) {
+        if ($results['status'] === true) {
             $path = $results['path'];
+        } else {
+            die($tfunction->message('请上传 jpg png gif 格式的图片'));
         }
     }
     return $path;
@@ -101,27 +103,32 @@ switch ($act) {
         $path = $AMNewsUploadImage();
 
 // 添加内容配置表信息
-        $sqlNewsConfigAddModele = 'INSERT INTO `news_config` '
-                . '(`classifyId`,`userid`,`time`,`sort`,`tag`,`subtitle`,`title`,`titlePhoto`,`checked`,`pinyin`,`isdel`)'
-                . 'VALUES("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s","%s")';
-        $sqlNewsConfigAdd = sprintf($sqlNewsConfigAddModele, $classifyIdINPUT, $adminId, $time, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $checked, $pinyin, 0);
-        $Rs = $conn->aud($sqlNewsConfigAdd);
-
+        $Rs = $conn->insert('news_config', [
+            'classifyId' => $classifyIdINPUT,
+            'userid' => $adminId,
+            'time' => time(),
+            'sort' => $sortINPUT,
+            'tag' => $tagINPUT,
+            'subtitle' => $subtitleINPUT,
+            'title' => $titleINPUT,
+            'titlePhoto' => $path,
+            'checked' => $checked,
+            'pinyin' => $pinyin,
+            'isdel' => 0
+        ]);
 // 添加内容表信息
         $AMNewsContent($Rs, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
 
 // 修改统计文章总数
-        $sqlClassifyUpdate = 'UPDATE `classify` SET summary=summary+1 where id=' . $classifyIdINPUT;
-        $conn->aud($sqlClassifyUpdate);
-
+        $conn->where(['id' => $classifyIdINPUT])->update('classify', ['summary' => 'summary+1']);
 // 记录此新闻使用过的图片
         $AMNewsImages($classifyIdINPUT, $Rs, $path);
-
+        empty($updateImgINPUT) or $AMNewsImages($classifyIdINPUT, $RsId, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
 
         die($tfunction->message('添加内容成功', 'news.php'));
         break;
     case 2:
-// 修改部分代码
+// 修改部分代码s
         if (!empty($id)) {
 // 添加部分限制代码
             empty($titleINPUT) && die($tfunction->message('信息标题不能为空'));
@@ -130,33 +137,32 @@ switch ($act) {
 // 图片上传功能
             $path = $AMNewsUploadImage($titlePhotoINPUT);
 // 查询文章是否存在
-            $sqlNewsContentSeletCount = 'select count(newsId) as C from news_content where newsId=' . $id;
-            $Rsc = $conn->query($sqlNewsContentSeletCount);
+            $Rsc = $conn->select('count(newsId) as C')->where(['newsId' => $id])->get('news_content');
 // 不存在添加文章 存在修改文章
             if (empty($Rsc[0]['C'])) {
 // 添加文章内容
                 $AMNewsContent($id, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
             } else {
 // 修改文章内容
-                $sqlNewsContentUpdateModele = 'update `news_content` set `newText` = "%s",`keywords` = "%s", `description`="%s" where newsId=%s';
-                $sqlNewsContentUpdate = sprintf($sqlNewsContentUpdateModele, $newTextINPUT, $keywordsINPUT, $descriptionINPUT, $id);
-                $conn->aud($sqlNewsContentUpdate);
+                $conn->where(['newsId' => $id])->update(
+                        'news_content', ['newText' => $newTextINPUT, 'keywords' => $keywordsINPUT, 'description' => $descriptionINPUT]
+                );
             }
 // 文章配置进行修改
-            $sqlNewsConfigUpdateModele = 'update `news_config` set '
-                    . '`classifyId` = "%s",'
-                    . '`sort` = "%s", '
-                    . '`tag`="%s" , '
-                    . '`subtitle` = "%s" ,'
-                    . '`title` = "%s" ,'
-                    . '`titlePhoto` = "%s" ,'
-                    . '`checked`="%s" '
-                    . ' where id=%s';
-            $sqlNewsConfigUpdate = sprintf($sqlNewsConfigUpdateModele, $classifyIdINPUT, $sortINPUT, $tagINPUT, $subtitleINPUT, $titleINPUT, $path, $checked, $id);
-            $conn->aud($sqlNewsConfigUpdate);
+            $conn->where(['id' => $id])->update('news_config', [
+                'classifyId' => $classifyIdINPUT,
+                'sort' => $sortINPUT,
+                'tag' => $tagINPUT,
+                'subtitle' => $titleINPUT,
+                'title' => $titleINPUT,
+                'titlePhoto' => $path,
+                'checked' => $checked
+            ]);
 // 记录此新闻使用过的图片
-            $AMNewsImages($classifyIdINPUT, $id, $path);
-
+            if (!is_bool($path) && $path !== $titlePhotoINPUT) {
+                $AMNewsImages($classifyIdINPUT, $id, $path);
+            }
+            empty($updateImgINPUT) or $imgRs = $AMNewsImages($classifyIdINPUT, $id, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
             die($tfunction->message('修改内容成功', 'news.php'));
         }
         break;
@@ -229,17 +235,9 @@ switch ($act) {
                                 break;
                         }
 
-//                        if ($recovery) {
-//                            $where .= ' and isdel = 1';
-//                        }
-
                         if ($url) {
                             //这个可能到后期需要更改
-
-                            $sqlClassify = 'select id,className from `classify` where pid=' . $url . ' or id=' . $url . ' order by id ';
-                            $dataClassify = $conn->query($sqlClassify);
-
-
+                            $dataClassify = $conn->select('id,className')->or_where(['pid' => $url, 'id' => $url])->order_by('id')->get('classify');
                             foreach ($dataClassify as $value) {
                                 $inlClassify.=',' . $value['id'];
                                 (int) $value['id'] === $url && $dataClassifyClassName = $value['className'];
@@ -259,20 +257,18 @@ switch ($act) {
                         }
                     }
                     $classifyRsJson = [];
-                    $classifyRs = $conn->query('select id,className from `classify`');
+
+                    $classifyRs = $conn->select('id,className')->get('classify');
+
                     foreach ($classifyRs as $classifyValue) {
                         $classifyRsJson['classify_' . $classifyValue['id']] = $classifyValue['className'];
                     }
 
                     $classifyJson = $classifyRsJson;
 
-                    //$sql = 'select checked,time,id,sort,title,classifyId from `news_config` where 1=1 ' . $where . ' order by id desc limit 10 Offset ' . $pagec;
-                    $data = $conn->set('checked,time,id,sort,title,classifyId')->where('1=1 ' . $where)->order_by('id desc')->limit(10)->offset($pagec)->get('news_config');
+                    $data = $conn->select(['checked', 'time', 'id', 'sort', 'title', 'classifyId'])->where('1=1 ' . $where)->order_by('id desc')->limit(10)->offset($pagec)->get('news_config');
 
-                    // echo $sql;
-                    // $data = $conn->query($sql);
-                    $sqlCount = 'select count(id) as cid from `news_config` where 1=1 ' . $where . '';
-                    $dataCount = $conn->query($sqlCount);
+                    $dataCount = $conn->select('count(id) as cid')->where('1=1 ' . $where)->get('news_config');
                     ?>
                     <dl>
                         <dt>
@@ -283,7 +279,7 @@ switch ($act) {
                             [<a href='javascript:void(0)' id='column'>栏目管理</a>]
                             [<a href='?cpage=1'>更新列表</a>]
                             [<a href='?cpage=1'>更新文档</a>]
-                            [<a href='?query=yes&recovery=1'>文章回收</a>]
+                            [<a href='newsSubject.php'>文章回收</a>]
                         </span>
                         </dt>
                         <dd>
@@ -559,10 +555,9 @@ switch ($act) {
 
     <script type="text/javascript">
 <?php printf('var classifyJson =%s;', json_encode($classifyJson)); ?>
-
         //mouseover
         $('.adminContent .atable ul').on('mouseover', function () {
-            $(this).css({'background': '#444', 'color': '#fff'});
+            $(this).css({'background': '#444'});
             $(this).find('a').css({'background': '', 'color': '#fff'});
         }).on('mouseout', function () {
             $(this).css({'background': '', 'color': ''});
@@ -610,8 +605,12 @@ switch ($act) {
                 width: '700px',
                 height: '180px',
                 ok: function () {
-                    var query = $('.searchContent').eq(1).find('#query').serialize();
-                    self.location = ('news.php?query=yes&' + query);
+                    var query = $('.searchContent').eq(1).find('#query');
+                    // if(query.find('select[name="queryselect"]').val()<=0){
+                    //     alert('请选择搜索的范围');
+                    //     return false;
+                    // }
+                    self.location = ('news.php?query=yes&' + query.serialize());
                     return false;
                 },
                 cancelValue: '取消',
@@ -624,9 +623,7 @@ switch ($act) {
             $(this).parent('span').hide();
         });
         $('.checked').on('click', function () {
-
             var id = $(this).attr('data-id');
-
             var dialog_ = dialog({
                 backdropBackground: '',
                 title: '提示',

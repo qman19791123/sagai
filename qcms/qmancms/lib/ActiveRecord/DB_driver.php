@@ -582,7 +582,7 @@ abstract class CI_DB_driver {
         if (empty($style)) {
             return $this->conn->query($sql);
         } elseif ($style === 'AUD') {
-            $this->aud($sql);
+           return $this->aud($sql);
         }
     }
 
@@ -1213,7 +1213,7 @@ abstract class CI_DB_driver {
      * @return	string
      */
     protected function _insert($table, $keys, $values) {
-        return 'INSERT INTO ' . $table . ' (' . implode(', ', $keys) . ') VALUES (' . implode(', ', $values) . ')';
+        return 'INSERT INTO ' . $table . ' (' . implode(', ', $keys) . ') VALUES ("' . implode('"," ', $values) . '");';
     }
 
     // --------------------------------------------------------------------
@@ -1256,10 +1256,10 @@ abstract class CI_DB_driver {
      */
     protected function _update($table, $values) {
         foreach ($values as $key => $val) {
-            $valstr[] = $key . ' = ' . $val;
+            $valstr[] = $key . ' = "' . $val.'"';
         }
 
-        return 'UPDATE ' . $table . ' SET ' . implode(', ', $valstr)
+        return 'UPDATE ' . $table . ' SET ' . implode(',', $valstr)
                 . $this->_compile_wh('qb_where')
                 . $this->_compile_order_by()
                 . ($this->qb_limit ? ' LIMIT ' . $this->qb_limit : '');

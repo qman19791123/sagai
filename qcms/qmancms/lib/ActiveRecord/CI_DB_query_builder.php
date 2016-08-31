@@ -1152,6 +1152,8 @@ class CI_DB_query_builder extends CI_DB_driver {
 
         $result = $this->query($this->_compile_select());
         $this->_reset_select();
+
+        $this->deletekey();
         return $result;
     }
 
@@ -1295,11 +1297,10 @@ class CI_DB_query_builder extends CI_DB_driver {
 
         $sql = $this->_insert(
                 $this->protect_identifiers(
-                        $this->qb_from[0], TRUE, $escape, FALSE
+                        $table, TRUE, $escape, FALSE
                 ), array_keys($this->qb_set), array_values($this->qb_set)
         );
-
-        $this->_reset_write();
+        $this->deletekey();
         return $this->query($sql, 'AUD');
     }
 
@@ -1360,26 +1361,17 @@ class CI_DB_query_builder extends CI_DB_driver {
      */
     public function update($table = '', $set = NULL, $where = NULL, $limit = NULL) {
         // Combine any cached components with the current statements
-
-
         if ($set !== NULL) {
             $this->set($set);
         }
-
-        if ($this->_validate_update($table) === FALSE) {
-            return FALSE;
-        }
-
         if ($where !== NULL) {
             $this->where($where);
         }
-
         if (!empty($limit)) {
             $this->limit($limit);
         }
-
-        $sql = $this->_update($this->qb_from[0], $this->qb_set);
-        $this->_reset_write();
+        $sql = $this->_update($table, $this->qb_set);
+        $this->deletekey();
         return $this->query($sql, 'AUD');
     }
 
@@ -1808,6 +1800,39 @@ class CI_DB_query_builder extends CI_DB_driver {
         }
 
         return in_array($str[0], $_str, TRUE);
+    }
+
+    public function deletekey() {
+        $this->return_delete_sql = FALSE;
+        $this->reset_delete_data = FALSE;
+        $this->qb_select = array();
+        $this->qb_distinct = FALSE;
+        $this->qb_from = array();
+        $this->qb_join = array();
+        $this->qb_where = array();
+        $this->qb_groupby = array();
+        $this->qb_having = array();
+        $this->qb_keys = array();
+        $this->qb_limit = FALSE;
+        $this->qb_offset = FALSE;
+        $this->qb_orderby = array();
+        $this->qb_set = array();
+        $this->qb_aliased_tables = array();
+        $this->qb_where_group_started = FALSE;
+        $this->qb_where_group_count = 0;
+
+        $this->qb_caching = FALSE;
+        $this->qb_cache_exists = array();
+        $this->qb_cache_select = array();
+        $this->qb_cache_from = array();
+        $this->qb_cache_join = array();
+        $this->qb_cache_where = array();
+        $this->qb_cache_groupby = array();
+        $this->qb_cache_having = array();
+        $this->qb_cache_orderby = array();
+        $this->qb_cache_set = array();
+        $this->qb_no_escape = array();
+        $this->qb_cache_no_escape = array();
     }
 
 }

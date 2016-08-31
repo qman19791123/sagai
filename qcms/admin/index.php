@@ -25,8 +25,8 @@ $conn = $tfunction->conn;
 </body>
 </html>
 <?php
-    $name = filter_input(INPUT_POST,'name',FILTER_SANITIZE_FULL_SPECIAL_CHARS);
-    $passwd = filter_input(INPUT_POST,'passwd',FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $name = trim(filter_input(INPUT_POST,'name',FILTER_SANITIZE_STRING));
+    $passwd = trim(filter_input(INPUT_POST,'passwd',FILTER_SANITIZE_STRING));
     $goto = filter_input(INPUT_POST,'goto',FILTER_VALIDATE_INT);
     !is_numeric($goto) && exit();
     empty($name) && die(tfunction::message('用户名不能为空'));

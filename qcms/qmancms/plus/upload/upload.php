@@ -258,9 +258,13 @@ class Upload {
 		//set filename
 		$this->file['filename']	= $this->filename;
 
+		$filename = $this->file_post['name'];
+		$filename = end(explode('.',$filename));
+		
+
 		//set full path
-		$this->file['full_path'] = $this->root . $this->destination . $this->filename;
-        $this->file['path'] = $this->destination . $this->filename;
+		$this->file['full_path'] = $this->root . $this->destination . $this->filename .'.'. $filename;
+        $this->file['path'] = $this->destination . $this->filename . $this->filename .'.'. $filename;
 
 		$status = move_uploaded_file($this->tmp_name, $this->file['full_path']);
 
