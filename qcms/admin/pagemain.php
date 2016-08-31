@@ -1,4 +1,5 @@
 <?php 
+define('noCache', TRUE);
 include '../config.php';
 include lib.'tfunction.inc.php';
 include 'isadmin.php';

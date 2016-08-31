@@ -1,4 +1,5 @@
 <?php
+define('noCache', TRUE);
 include '../config.php';
 include lib . 'tfunction.inc.php';
 include plus . 'upload/upload.php';
@@ -67,7 +68,7 @@ $AMNewsImages = function($classifyIdINPUT, $Rsid, $updateImg = '')use($conn) {
 };
 
 // 一个匿名方法 作用图片上传 
-$AMNewsUploadImage = function($path='') use ($tfunction) {
+$AMNewsUploadImage = function($path = '') use ($tfunction) {
 
     $file = $_FILES['file'];
     if (!empty($file['name'])) {
@@ -120,7 +121,8 @@ switch ($act) {
         $AMNewsContent($Rs, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
 
 // 修改统计文章总数
-        $conn->where(['id' => $classifyIdINPUT])->update('classify', ['summary' => 'summary+1']);
+        $RsSummary = $conn->select('summary')->where(['id' => $classifyIdINPUT])->get('classify');
+        $conn->where(['id' => $classifyIdINPUT])->update('classify', ['summary' => $RsSummary[0]['summary'] + 1]);
 // 记录此新闻使用过的图片
         $AMNewsImages($classifyIdINPUT, $Rs, $path);
         empty($updateImgINPUT) or $AMNewsImages($classifyIdINPUT, $RsId, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
@@ -168,8 +170,13 @@ switch ($act) {
         break;
     case 3:
 // 删除部分代码
-        echo $act;
-
+        //获取内容栏目
+        //
+        //
+        //
+        //假删除文章
+        //更改文件名
+        exit();
         break;
     case 4:
 // 特殊传值AJAx （设置审核流程）
