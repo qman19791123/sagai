@@ -7,38 +7,35 @@ include 'isadmin.php';
 include lang . $language;
 $tfunction = new tfunction();
 $conn = $tfunction->conn;
+
+$classifyId = '0';
+$sort = '0';
+$classifyJson = [];
+$adminId = $_SESSION['adminId'];
+
+// get
 $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT); //新闻编号 (有时间修改此命名)
-$classifyId = '0';
-$sort = '0';
+$classifyId = filter_input(INPUT_GET, 'classifyId', FILTER_VALIDATE_INT);
+$act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 
 
-$classifyJson = [];
 
-
+// post
 // 数据添加 删除 修改 操作
-$newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_CALLBACK, ['options' => 'tfunction::encode']); //, FILTER_CALLBACK, ['options' => 'tfunction::encode']);
+$newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
 $keywordsINPUT = filter_input(INPUT_POST, 'keywords', FILTER_SANITIZE_STRING);
 $descriptionINPUT = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
-
-// $time = time();
-
 $classifyIdINPUT = filter_input(INPUT_POST, 'classifyId', FILTER_VALIDATE_INT);
 $sortINPUT = filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT, ['options' => ['min_range' => -10, 'max_range' => 10]]);
 $tagINPUT = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
 $subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
 $titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => 'tfunction::dropQuote']);
-
 $titlePhotoINPUT = filter_input(INPUT_POST, 'titlePhoto', FILTER_SANITIZE_STRING);
 $updateImgINPUT = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
-#$titlePhotoOld = filter_input(INPUT_POST, 'titlePhotoOld', FILTER_SANITIZE_STRING);
+$checkedINPUT = filter_input(INPUT_POST, 'checked', FILTER_VALIDATE_INT);
 
-$check = filter_input(INPUT_POST, 'checked', FILTER_VALIDATE_INT);
-$checked = $check == 999 || $check == 0 ? $check : 1;
-
-$act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
-$adminId = $_SESSION['adminId'];
 
 
 // 一个匿名方法 作用发布文章 
@@ -113,7 +110,7 @@ switch ($act) {
             'subtitle' => $subtitleINPUT,
             'title' => $titleINPUT,
             'titlePhoto' => $path,
-            'checked' => $checked,
+            'checked' => $checkedINPUT,
             'pinyin' => $pinyin,
             'isdel' => 0
         ]);
@@ -158,7 +155,7 @@ switch ($act) {
                 'subtitle' => $titleINPUT,
                 'title' => $titleINPUT,
                 'titlePhoto' => $path,
-                'checked' => $checked
+                'checked' => $checkedINPUT
             ]);
 // 记录此新闻使用过的图片
             if (!is_bool($path) && $path !== $titlePhotoINPUT) {
@@ -170,13 +167,24 @@ switch ($act) {
         break;
     case 3:
 // 删除部分代码
-        //获取内容栏目
-        //
-        //
-        //
-        //假删除文章
-        //更改文件名
-        exit();
+        //获取内容栏目及栏目下文章数量
+        $classify = $conn->select('folder,summary')->where(['id'=>$classifyId])->get('classify');
+        //获取文章的拼音注解
+        $newsconfig = $conn->select('pinyin')->where(['id'=>$id])->get('news_config');
+        //获取文件
+        $file = staticFloder.$classify[0]['folder'].'/'.$newsconfig[0][''].'.html';
+        //判断是否开启静态功能和是否存在静态文件
+        if(StaticOpen && is_file($file))
+        {
+            //存在则修改文件名
+            rename($file,$file.'del');
+        }
+        //假删文章
+        $conn->where(['id'=>$id])->update('news_config',['isdel'=>1]);
+        //修改栏目下文章数量
+        $conn->where(['id'=>$classifyId])->update('classify',['summary'=>$classify[0]['summary']]);
+
+        die($tfunction->message('删除成功', 'news.php'));
         break;
     case 4:
 // 特殊传值AJAx （设置审核流程）
@@ -331,7 +339,7 @@ switch ($act) {
                                             <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked">审核</a>
                                             <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>">阅览</a>
                                             <a href="?cpage=2&id=<?php echo $rs['id'] ?>">修改新闻</a>
-                                            <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?>">删除新闻</a>
+                                            <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?>&classifyId=<?php echo $rs['classifyId'] ?>">删除新闻</a>
                                         </li>
 
                                     </ul>
@@ -473,7 +481,7 @@ switch ($act) {
                                     <li>
 
 
-                                        通过:<input type="radio" <?php $checked == 999 && print('checked="checked"') ?>  name="checked" value="999"/>
+                                        通过:<input type="radio" <?php $checked == 999 && print('checked="checked"') ?>  name="checked" value="1"/>
                                         未通过:<input type="radio" <?php $checked == 0 && print('checked="checked"') ?>  name="checked" value="0"/>
                                     </li>
                                 </ul>
