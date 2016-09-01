@@ -77,7 +77,7 @@ $AMNewsUploadImage = function($path = '') use ($tfunction) {
         if ($results['status'] === true) {
             $path = $results['path'];
         } else {
-            die($tfunction->message('请上传 jpg png gif 格式的图片'));
+            die($tfunction->message($lang['uploadIsJpgPngGif']));
         }
     }
     return $path;
@@ -86,9 +86,9 @@ $AMNewsUploadImage = function($path = '') use ($tfunction) {
 switch ($act) {
     case 1:
 // 添加部分限制代码
-        empty($titleINPUT) && die($tfunction->message('信息标题不能为空'));
-        empty($newTextINPUT) && die($tfunction->message('信息内容不能为空'));
-        empty($classifyIdINPUT) && die($tfunction->message('栏目不能为空'));
+        empty($titleINPUT) && die($tfunction->message($lang['mesgTitleNotEmpty']));
+        empty($newTextINPUT) && die($tfunction->message($lang['mesgContentNotEmpty']));
+        empty($classifyIdINPUT) && die($tfunction->message($lang['mesgColumnsNotEmpty']));
 
         empty($subtitleINPUT) && $subtitleINPUT = mb_substr(filter_var($newTextINPUT, FILTER_SANITIZE_STRING), 0, 240);
         empty($descriptionINPUT) && $descriptionINPUT = $subtitleINPUT;
@@ -123,15 +123,15 @@ switch ($act) {
         $AMNewsImages($classifyIdINPUT, $Rs, $path);
         empty($updateImgINPUT) or $AMNewsImages($classifyIdINPUT, $RsId, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
 
-        die($tfunction->message('添加内容成功', 'news.php'));
+        die($tfunction->message($lang['mesgAddContentSuccess'], 'news.php'));
         break;
     case 2:
 // 修改部分代码s
         if (!empty($id)) {
 // 添加部分限制代码
-            empty($titleINPUT) && die($tfunction->message('信息标题不能为空'));
-            empty($newTextINPUT) && die($tfunction->message('信息内容不能为空'));
-            empty($classifyIdINPUT) && die($tfunction->message('栏目不能为空'));
+            empty($titleINPUT) && die($tfunction->message($lang['mesgTitleNotEmpty']));
+            empty($newTextINPUT) && die($tfunction->message($lang['mesgContentNotEmpty']));
+            empty($classifyIdINPUT) && die($tfunction->message($lang['mesgColumnsNotEmpty']));
 // 图片上传功能
             $path = $AMNewsUploadImage($titlePhotoINPUT);
 // 查询文章是否存在
@@ -161,7 +161,7 @@ switch ($act) {
                 $AMNewsImages($classifyIdINPUT, $id, $path);
             }
             empty($updateImgINPUT) or $imgRs = $AMNewsImages($classifyIdINPUT, $id, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
-            die($tfunction->message('修改内容成功', 'news.php'));
+            die($tfunction->message($lang['mesgUpdateContentSuccess'], 'news.php'));
         }
         break;
     case 3:
@@ -211,7 +211,7 @@ switch ($act) {
         if ($p === true) {
             die('true');
         }
-        die($tfunction->message('删除成功', 'news.php'));
+        die($tfunction->message($lang['mesgRemoveContentSuccess'], 'news.php'));
         break;
     case 4:
 // 特殊传值AJAx （设置审核流程）
@@ -256,7 +256,7 @@ switch ($act) {
                     $pagec = ($page - 1) < 0 ? 0 : ($page - 1) * 10;
                     $query = filter_input(INPUT_GET, 'query');
                     $poUrl = '';
-                    $dataClassifyClassName = '所有文章';
+                    $dataClassifyClassName = $lang['newsAllArticles'];
                     $where .=' and isdel=0 ';
                     if (!empty($query)) {
                         $timestart = filter_input(INPUT_GET, 'timestart', FILTER_SANITIZE_STRING);
@@ -320,88 +320,96 @@ switch ($act) {
 
                     $dataCount = $conn->select('count(id) as cid')->where('1=1 ' . $where)->get('news_config');
                     ?>
+
                     <dl>
                         <dt>
-                            文章管理-<?php echo $dataClassifyClassName; ?>
+                            <?php echo $lang['newsArticleManager']; ?>-<?php echo $dataClassifyClassName; ?>
                         <span class="addLink">
-                            [<a href='?cpage=1'>添加文章</a>]
-                            [<a href='javascript:void(0)' id='retrievedArticles'>检索文章</a>]
-                            [<a href='javascript:void(0)' id='column'>栏目管理</a>]
-                            [<a href='?cpage=1'>更新列表</a>]
-                            [<a href='?cpage=1'>更新文档</a>]
-                            [<a href='newsdustbin.php'>文章回收</a>]
+                            [<a href='?cpage=1'><?php echo $lang['newsAddArticle']; ?></a>]
+                            [<a href='javascript:void(0)' id='retrievedArticles'><?php echo $lang['newsRetrievingArticle']; ?></a>]
+                            [<a href='javascript:void(0)' id='column'><?php echo $lang['newsTopicManagement']; ?></a>]
+                            [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
+                            [<a href='?cpage=1'><?php echo $lang['newsUpdateDocumentation']; ?></a>]
+                            [<a href='newsdustbin.php'><?php echo $lang['newsArticlesRecycling']; ?></a>]
                         </span>
                         </dt>
-                        <dd>
-                            <div class="list atable">
-                                <ul class="list atr" id="no">
-                                    <li>选择</li>
-                                    <li>编号</li>
-                                    <li>排序</li>
-                                    <li style="width: 10%">栏目</li>
-                                    <li style="width: 40%">名称</li>
-                                    <li style="width: 5%">审核</li>
-                                    <li style="width: 17%">时间</li>
-                                    <li style="width: 20%">操作</li>
-                                </ul>
-                                <?php
-                                foreach ($data as $rs):
-                                    ?>
-                                    <ul class="list atr">
-                                        <li><input name="checkid" type="checkbox" value="<?php echo $rs['id'] ?>"></li>
-                                        <li><?php echo $rs['id'] ?></li>
-                                        <li><?php echo $rs['sort'] ?></li>
-                                        <li data-id="<?php echo $rs['classifyId'] ?>"></li>
-                                        <li><?php echo $rs['title'] ?></li>
-                                        <li><?php
-                                            if (is_numeric($rs['checked'])) {
-                                                switch ($rs['checked']) {
-                                                    case 0 :
-                                                        echo '未通过';
-                                                        break;
-                                                    case 1:
-                                                        echo '等待';
-                                                        break;
-                                                    case 999:
-                                                        echo '通过';
-                                                        break;
-                                                }
-                                            } else {
-                                                echo '等待';
-                                            }
-                                            ?></li>
-                                        <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
-
-                                        <li>
-                                            <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked">审核</a>
-                                            <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>">阅览</a>
-                                            <a href="?cpage=2&id=<?php echo $rs['id'] ?>">修改新闻</a>
-                                            <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?> ?>">删除新闻</a>
-                                        </li>
-
+                        <?php if (!empty($data)): ?> 
+                            <dd>
+                                <div class="list atable">
+                                    <ul class="list atr" id="no">
+                                        <li><?php echo $lang['choose']; ?></li>
+                                        <li><?php echo $lang['id']; ?></li>
+                                        <li><?php echo $lang['sort']; ?></li>
+                                        <li style="width: 10%"><?php echo $lang['columns']; ?></li>
+                                        <li style="width: 40%"><?php echo $lang['name']; ?></li>
+                                        <li style="width: 5%"><?php echo $lang['check']; ?></li>
+                                        <li style="width: 17%"><?php echo $lang['time']; ?></li>
+                                        <li style="width: 20%"><?php echo $lang['operation']; ?></li>
                                     </ul>
-                                <?php endforeach; ?>
-                            </div>
-                        </dd>
-                        <dd class='toolbar'>
-                        <button type='button' id='all' onclick="javascript:$('input[name=checkid]').attr('checked', true).prop('checked', true)">全选</button>
-                        <button type='button' id='cancel' onclick="javascript:$('input[name=checkid]').removeAttr('checked', '').prop('checked', false)">取消</button>
-                        <button type='button' id='push'>推送</button>
-                        <button type='button' id='check' >审核</button>
-                        <button type='button' id='delete'>删除</button>
-                        </dd>
-                        <dd class='page'>
-                            <a href="?page=<?php echo $page <= 1 ? 1 : $page - 1 ?>&<?php echo $poUrl ?>">上一页</a>
-                            <?php
-                            $p = $tfunction->Page($dataCount[0]['cid'], 1, 10, $page);
-                            for ($i = $p['pageStart']; $i <= $p['pageEnd']; $i++):
-                                ?>
-                                <a href="?page=<?php echo $i ?>&<?php echo $poUrl ?>"><span style="color:<?php echo $i == $page || ($page <= 0 && $i == 1) ? "#FF0000 " : "#000000" ?>"><?php echo $i ?></span></a>
+                                    <?php
+                                    foreach ($data as $rs):
+                                        ?>
+                                        <ul class="list atr">
+                                            <li><input name="checkid" type="checkbox" value="<?php echo $rs['id'] ?>"></li>
+                                            <li><?php echo $rs['id'] ?></li>
+                                            <li><?php echo $rs['sort'] ?></li>
+                                            <li data-id="<?php echo $rs['classifyId'] ?>"></li>
+                                            <li><?php echo $rs['title'] ?></li>
+                                            <li><?php
+                                                if (is_numeric($rs['checked'])) {
+                                                    switch ($rs['checked']) {
+                                                        case 0 :
+                                                            echo $lang['notPass'];
+                                                            break;
+                                                        case 1:
+                                                            echo $lang['wait'];
+                                                            break;
+                                                        case 999:
+                                                            echo $lang['pass'];
+                                                            break;
+                                                    }
+                                                } else {
+                                                    echo $lang['wait'];
+                                                }
+                                                ?></li>
+                                            <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
+
+                                            <li>
+                                                <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked"><?php echo $lang['check']; ?></a>
+                                                <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>"><?php echo $lang['reading']; ?></a>
+                                                <a href="?cpage=2&id=<?php echo $rs['id'] ?>"><?php echo $lang['update']; ?></a>
+                                                <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?> ?>"><?php echo $lang['remove']; ?></a>
+                                            </li>
+
+                                        </ul>
+                                    <?php endforeach; ?>
+                                </div>
+                            </dd>
+                            <dd class='toolbar'>
+                            <button type='button' id='all' onclick="javascript:$('input[name=checkid]').attr('checked', true).prop('checked', true)"><?php echo $lang['selectAll']; ?></button>
+                            <button type='button' id='cancel' onclick="javascript:$('input[name=checkid]').removeAttr('checked', '').prop('checked', false)"><?php echo $lang['cancel']; ?></button>
+                            <button type='button' id='push'><?php echo $lang['push']; ?></button>
+                            <button type='button' id='check' ><?php echo $lang['check']; ?></button>
+                            <button type='button' id='delete'><?php echo $lang['remove']; ?></button>
+
+                            </dd>
+
+                            <dd class='page'>
+                                <a href="?page=<?php echo $page <= 1 ? 1 : $page - 1 ?>&<?php echo $poUrl ?>"><?php echo $lang['lastPage'] ?></a>
                                 <?php
-                            endfor;
-                            ?>
-                            <a href='?page=<?php echo ($page < $p['pageCount'] ? $page <= 0 ? $page + 2 : $page + 1 : $page) ?>&<?php echo $poUrl ?>'>下一页</a>
-                        </dd>
+                                $p = $tfunction->Page($dataCount[0]['cid'], 1, 10, $page);
+                                for ($i = $p['pageStart']; $i <= $p['pageEnd']; $i++):
+                                    ?>
+                                    <a href="?page=<?php echo $i ?>&<?php echo $poUrl ?>"><span style="color:<?php echo $i == $page || ($page <= 0 && $i == 1) ? "#FF0000 " : "#000000" ?>"><?php echo $i ?></span></a>
+                                    <?php
+                                endfor;
+                                ?>
+                                <a href='?page=<?php echo ($page < $p['pageCount'] ? $page <= 0 ? $page + 2 : $page + 1 : $page) ?>&<?php echo $poUrl ?>'><?php echo $lang['nextPage'] ?></a>
+                            </dd>
+                        <?php else: ?>
+                            <dd class='notInfo'><span><?php echo $lang['notInfo'] ?></span></dd>
+                        <?php endif; ?>
+
                     </dl>
 
                     <?php
@@ -440,13 +448,13 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            文章管理 
+                            <?php echo $lang['newsArticleManager']; ?>
                         <span class="addLink"></span>
                         </dt>
                         <dd>
                             <?php if ($checked == 1): ?>
                             <span class="informationBar">
-                                <?php print('请通过审核') ?>
+                                <?php print($lang['mesgPleaseReview']); ?>
                                 <a href="javascript:void(0)" id='off' title="关闭">X</a>
                             </span>
                         <?php endif; ?>
@@ -454,11 +462,11 @@ switch ($act) {
                             <div class="list atable">
                                 <ul class="list a20_80">
                                     <li>
-                                        栏目:
+                                        <?php echo $lang['classifyName']; ?>:
                                     </li>
                                     <li>
                                         <select style ="width:180px" name="classifyId" class="classifyId">
-                                            <option value="0">主栏目</option>
+                                            <option value="0"><?php $lang['classifyMain'] ?></option>
                                             <?php
                                             $classify = new tfunction($conn);
                                             $data = $classify->classify();
@@ -472,7 +480,7 @@ switch ($act) {
                                 </ul>
 
                                 <ul class="list a20_80">
-                                    <li>排序</li>
+                                    <li><?php echo $lang['sort']; ?></li>
                                     <li>
                                         <select name="sort" class="sort">
                                         </select>
@@ -481,52 +489,52 @@ switch ($act) {
 
 
                                 <ul class="list a20_80">
-                                    <li>标签:</li>
+                                    <li><?php echo $lang['tag']; ?>:</li>
                                     <li><input style="width: 80%;" name="tag" value="<?php echo $tag; ?>"/></li>
                                 </ul>
 
                                 <ul class="list a20_80">
-                                    <li>标题:</li>
+                                    <li><?php echo $lang['title']; ?>:</li>
                                     <li><input style="width: 80%;" name="title" value="<?php echo $title; ?>"/></li>
                                 </ul>
 
                                 <ul class="list a20_80">
-                                    <li>副标题:</li>
+                                    <li><?php echo $lang['subtitle']; ?>:</li>
                                     <li>
                                         <textarea style="width: 80%;height: 100px;resize: none;" name="subtitle"><?php echo $subtitle; ?></textarea>
                                     </li>   
                                 </ul>
                                 <ul class="list a20_80">
-                                    <li>标题图片:</li>
+                                    <li><?php echo $lang['titlePhoto']; ?>:</li>
                                     <li>
                                         <input class="showfile" readonly style="width: 80%;" name="titlePhoto" value="<?php echo $titlePhoto; ?>">
                                         <input type="file" id="file_input" class="file" name="file"/>
                                     </li>
                                 </ul>
                                 <ul class="list a20_80">
-                                    <li>关键词 （SEO）:</li>
+                                    <li><?php echo $lang['keyWords']; ?> （SEO）:</li>
                                     <li><input style="width: 80%;" name="keywords" value="<?php echo $keywords; ?>"/></li>
                                 </ul>
                                 <ul class="list a20_80">
-                                    <li>内容摘要（SEO）:</li>
+                                    <li><?php echo $lang['description']; ?>（SEO）:</li>
                                     <li><textarea style="width: 80%;height: 100px;resize: none;" name="description"><?php echo $description; ?></textarea></li>
                                 </ul>
 
 
                                 <ul class="list a20_80">
-                                    <li>内容:</li>
+                                    <li><?php echo $lang['content']; ?>:</li>
                                     <li><textarea name="newText" style="width: 80%;height: 50px;resize: none;"><?php echo $newText; ?></textarea></li>   
                                 </ul>
 
                                 <ul class="list a20_80">
                                     <li>
-                                        审核
+                                        <?php echo $lang['check']; ?>
                                     </li>
                                     <li>
 
 
-                                        通过:<input type="radio" <?php $checked == 999 && print('checked="checked"') ?>  name="checked" value="1"/>
-                                        未通过:<input type="radio" <?php $checked == 0 && print('checked="checked"') ?>  name="checked" value="0"/>
+                                        <?php echo $lang['pass']; ?>:<input type="radio" <?php $checked == 999 && print('checked="checked"') ?>  name="checked" value="1"/>
+                                        <?php echo $lang['notPass']; ?>:<input type="radio" <?php $checked == 0 && print('checked="checked"') ?>  name="checked" value="0"/>
                                     </li>
                                 </ul>
                             </div>
@@ -549,14 +557,14 @@ switch ($act) {
             <div class='dialogContent auditContent'>
                 <ul>
                     <li class="r">
-                        审核
+                        <?php echo $lang['check']; ?>
                     </li>
                     <li class="l">
                         <select>
-                            <option >选择</option>
-                            <option value="0">未通过</option>
-                            <option value="1">等待</option>
-                            <option value="999">通过</option>
+                            <option ><?php echo $lang['choose']; ?></option>
+                            <option value="0"><?php echo $lang['notPass']; ?></option>
+                            <option value="1"><?php echo $lang['wait']; ?></option>
+                            <option value="999"><?php echo $lang['pass']; ?></option>
                         </select>
                     </li>
                 </ul>
@@ -568,14 +576,14 @@ switch ($act) {
             <div class='dialogContent searchContent'>
                 <form id='query'>
                     <p>
-                    <span>添加时间：</span> <input class="times" name='timestart'/> - <input class="times" name='timeend'/>
+                    <span><?php echo $lang['time']; ?>：</span> <input class="times" name='timestart'/> - <input class="times" name='timeend'/>
                     </p>
                     <p>
-                    <span>搜索：</span>
+                    <span><?php echo $lang['search']; ?>：</span>
                     <select name='queryselect'>
-                        <option value="0">选择</option>
-                        <option value="1">标题</option>
-                        <option value="2">副标题</option>
+                        <option value="0"><?php echo $lang['choose']; ?></option>
+                        <option value="1"><?php echo $lang['title']; ?></option>
+                        <option value="2"><?php echo $lang['subtitle']; ?></option>
                     </select>  
                     <input name='content' />
                     </p>
@@ -637,13 +645,13 @@ switch ($act) {
                     $('#delete').on('click', function () {
                         dialog({
                             backdropBackground: '',
-                            title: '提示',
-                            content: '确认是否删除此些文章',
-                            okValue: '确定',
+                            title: '<?php echo $lang['prompt']; ?>',
+                            content: '<?php echo $lang['mesgIsRemoveSomeContent']; ?>',
+                            okValue: '<?php echo $lang['ok']; ?>',
                             width: '500px',
                             ok: function () {
-                                this.title('删除中…');
-                                this.content("删除中请等待");
+                                this.title('<?php echo $lang['mesgDeletion']; ?>');
+                                this.content("<?php echo $lang['mesgRemovePleaseWait']; ?>");
                                 var checkboxp = '';
                                 $('input[name=checkid]:checked').each(function (i, p) {
                                     checkboxp += $(p).val() + ',';
@@ -663,7 +671,7 @@ switch ($act) {
                                 }
                                 return false;
                             },
-                            cancelValue: '取消',
+                            cancelValue: '<?php echo $lang['cancel']; ?>',
                             cancel: function () {}
                         }).showModal();
                     });
@@ -672,16 +680,16 @@ switch ($act) {
                     $('#column').on('click', function () {
                         dialog({
                             backdropBackground: '',
-                            title: '提示',
+                            title: '<?php echo $lang['prompt']; ?>',
                             content: $('.column').html(),
-                            okValue: '确定',
+                            okValue: '<?php echo $lang['ok']; ?>',
                             width: '700px',
                             ok: function () {
                                 var query = $('.searchContent').eq(1).find('#query').serialize();
                                 self.location = ('?query=yes&' + query);
                                 return false;
                             },
-                            cancelValue: '取消',
+                            cancelValue: '<?php echo $lang['cancel']; ?>',
                             cancel: function () {}
                         }).showModal();
 
@@ -699,9 +707,9 @@ switch ($act) {
                         $('.combo').hide();
                         dialog({
                             backdropBackground: '',
-                            title: '提示',
+                            title: '<?php echo $lang['prompt']; ?>',
                             content: $('.search').html(),
-                            okValue: '确定',
+                            okValue: '<?php echo $lang['ok']; ?>',
                             width: '700px',
                             height: '180px',
                             ok: function () {
@@ -713,7 +721,7 @@ switch ($act) {
                                 self.location = ('news.php?query=yes&' + query.serialize());
                                 return false;
                             },
-                            cancelValue: '取消',
+                            cancelValue: '<?php echo $lang['cancel']; ?>',
                             cancel: function () {}
                         }).showModal();
                         $('.searchContent .times').datebox({});
@@ -731,16 +739,16 @@ switch ($act) {
                         var id = $(this).attr('data-id');
                         var dialog_ = dialog({
                             backdropBackground: '',
-                            title: '提示',
+                            title: '<?php echo $lang['prompt']; ?>',
                             content: $('.audit').html(),
-                            okValue: '确定',
+                            okValue: '<?php echo $lang['ok']; ?>',
                             width: '300px',
                             height: '80px',
                             ok: function () {
                                 var tt = $('.auditContent').eq(1).find('select').val();
-                                if (tt !== '选择') {
-                                    console.log(tt);
-                                    this.title('提交中…');
+                                if (tt !== '<?php echo $lang['choose']; ?>') {
+                                    this.title('<?php echo $lang['mesgSubmitting']; ?>');
+                                    this.title('<?php echo $lang['mesgSubmittPleaseWait']; ?>');
                                     $.ajax({
                                         type: "POST",
                                         url: '?act=4',
@@ -754,7 +762,7 @@ switch ($act) {
                                 }
                                 return false;
                             },
-                            cancelValue: '取消',
+                            cancelValue: '<?php echo $lang['cancel']; ?>',
                             cancel: function () {}
                         }).showModal();
                     });
@@ -841,7 +849,7 @@ switch ($act) {
 
                     //删除提示 code start
                     $('.delmes').on('click', function () {
-                        return confirm('是否真的删除');
+                        return confirm('<?php echo $lang['mesgConfirmDeletion']; ?>');
                     });
                     //删除提示  code end
 
@@ -857,11 +865,11 @@ switch ($act) {
                                 th.val($('#file_input').val());
                             },
                             extensionerror: function () {
-                                alert('格式不正确或不能为空');
+                                alert('<?php echo $lang['mesgPhotoNotEmpty']; ?>');
                                 return;
                             },
                             sizeerror: function () {
-                                alert('最大尺寸请在200kb以内');
+                                alert('<?php echo $lang['mesgPhotoNotMax']; ?>');
                                 return;
                             }
                         });

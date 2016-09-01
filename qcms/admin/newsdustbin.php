@@ -19,6 +19,8 @@ $AMNClassifyNewContent = function($ajaxId) use($conn) {
             ->join('classify as a', 'a.id=b.classifyId', 'left')
             ->where('b.id in(' . $ajaxId . ')')
             ->get('news_config as b');
+
+
     return $classify;
 };
 
@@ -42,10 +44,12 @@ switch ($act) {
                 //去除.del的后缀
                 rename($file, mb_substr($file, 0, -4, 'UTF-8'));
                 //rename($file, rtrim($file, '.del'));
-                $classifyCount[$v['aid']] = $v['summary'];
-                $classifyIdArr[$v['aid']] +=1;
-                $newidArr[] = $v['bid'];
             }
+            $classifyCount[$v['aid']] = $v['summary'];
+
+            $classifyIdArr[$v['aid']] = empty($classifyIdArr[$v['aid']]) || !isset($classifyIdArr[$v['aid']]) ? 1 : $classifyIdArr[$v['aid']] + 1;
+
+            $newidArr[] = $v['bid'];
         }
         if (!empty($classifyIdArr)) {
             foreach ($classifyIdArr as $k => $v) {
@@ -60,9 +64,9 @@ switch ($act) {
                 die('true');
             }
         } else {
-            die($tfunction->message('文章还原失败', 'newsSubject.php'));
+            die($tfunction->message($lang['newsArticlesRestoreFailed'], 'newsSubject.php'));
         }
-        die($tfunction->message('文章还原成功', 'newsSubject.php'));
+        die($tfunction->message($lang['newsArticlesRestoreSuccess'], 'newsSubject.php'));
 
         break;
     case 2:
@@ -103,7 +107,7 @@ switch ($act) {
         $conn->where('id in (' . $ajaxId . ')')->delete('news_config');
         $conn->where('id in (' . $ajaxId . ')')->delete('news_content');
 
-        die($tfunction->message('文章删除成功', 'newsSubject.php'));
+        die($tfunction->message($lang['mesgRemoveContentSuccess'], 'newsSubject.php'));
 
         break;
 }
@@ -139,77 +143,80 @@ switch ($act) {
             ?>
             <dl>
                 <dt>
-                    文章回收
+                    <?php echo $lang['newsArticlesRecycling']; ?>
                 <span class="addLink">
-                    [<a href='news.php'>文章管理</a>]
+                    [<a href='news.php'><?php echo $lang['newsArticleManager']; ?></a>]
                 </span>
                 </dt>
-                <dd>
-                    <div class="list atable">
-                        <ul class="list atr" id="no">
-                            <li>选择</li>
-                            <li>编号</li>
-                            <li>排序</li>
-                            <li style="width: 10%">栏目</li>
-                            <li style="width: 40%">名称</li>
-                            <li style="width: 5%">审核</li>
-                            <li style="width: 17%">时间</li>
-                            <li style="width: 20%">操作</li>
-                        </ul>
-                        <?php foreach ($data as $rs): ?>
-                            <ul class="list atr">
-                                <li><input name="checkid" type="checkbox" value="<?php echo $rs['id'] ?>"></li>
-                                <li><?php echo $rs['id'] ?></li>
-                                <li><?php echo $rs['sort'] ?></li>
-                                <li data-id="<?php echo $rs['classifyId'] ?>"></li>
-                                <li><?php echo $rs['title'] ?></li>
-                                <li><?php
-                                    if (is_numeric($rs['checked'])) {
-                                        switch ($rs['checked']) {
-                                            case 0 :
-                                                echo '未通过';
-                                                break;
-                                            case 1:
-                                                echo '等待';
-                                                break;
-                                            case 999:
-                                                echo '通过';
-                                                break;
-                                        }
-                                    } else {
-                                        echo '等待';
-                                    }
-                                    ?></li>
-                                <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
-                                <li>
-                                    <a href="?act=1&id=<?php echo $rs['id'] ?>" class="checked">还原</a>
-                                    <a class="delmes nopt" href="?act=2&id=<?php echo $rs['id'] ?>">删除</a>
-                                </li>
-
+                <?php if (!empty($data)): ?>
+                    <dd>
+                        <div class="list atable">
+                            <ul class="list atr" id="no">
+                                <li><?php echo $lang['choose']; ?></li>
+                                <li><?php echo $lang['id']; ?></li>
+                                <li><?php echo $lang['sort']; ?></li>
+                                <li style="width: 10%"><?php echo $lang['columns']; ?></li>
+                                <li style="width: 40%"><?php echo $lang['name']; ?></li>
+                                <li style="width: 5%"><?php echo $lang['check']; ?></li>
+                                <li style="width: 17%"><?php echo $lang['time']; ?></li>
+                                <li style="width: 20%"><?php echo $lang['operation']; ?></li>
                             </ul>
-                        <?php endforeach; ?>
-                    </div>
-                </dd>
-                <dd class='toolbar'>
-                <button type='button' id='all' onclick="javascript:$('input[name=checkid]').attr('checked', true).prop('checked', true)">全选</button>
-                <button type='button' id='cancel' onclick="javascript:$('input[name=checkid]').removeAttr('checked', '').prop('checked', false)">取消</button>
-                <button type='button' id='reduction' >还原</button>
-                <button type='button' id='delete'>删除</button>
-                </dd>
-                <dd class='page'>
-                    <?php if (!empty($data)): ?>
-                        <a href="?page=<?php echo $page <= 1 ? 1 : $page - 1 ?>">上一页</a>
+                            <?php foreach ($data as $rs): ?>
+                                <ul class="list atr">
+                                    <li><input name="checkid" type="checkbox" value="<?php echo $rs['id'] ?>"></li>
+                                    <li><?php echo $rs['id'] ?></li>
+                                    <li><?php echo $rs['sort'] ?></li>
+                                    <li data-id="<?php echo $rs['classifyId'] ?>"></li>
+                                    <li><?php echo $rs['title'] ?></li>
+                                    <li><?php
+                                        if (is_numeric($rs['checked'])) {
+                                            switch ($rs['checked']) {
+                                                case 0 :
+                                                    echo $lang['notPass'];
+                                                    break;
+                                                case 1:
+                                                    echo $lang['wait'];
+                                                    break;
+                                                case 999:
+                                                    echo $lang['pass'];
+                                                    break;
+                                            }
+                                        } else {
+                                            echo $lang['wait'];
+                                        }
+                                        ?></li>
+                                    <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
+                                    <li>
+                                        <a href="?act=1&id=<?php echo $rs['id'] ?>" class="checked"><?php echo $lang['restore'] ?></a>
+                                        <a class="delmes nopt" href="?act=2&id=<?php echo $rs['id'] ?>"><?php echo $lang['remove'] ?></a>
+                                    </li>
+
+                                </ul>
+                            <?php endforeach; ?>
+                        </div>
+                    </dd>
+                    <dd class='toolbar'>
+                    <button type='button' id='all' onclick="javascript:$('input[name=checkid]').attr('checked', true).prop('checked', true)">全选</button>
+                    <button type='button' id='cancel' onclick="javascript:$('input[name=checkid]').removeAttr('checked', '').prop('checked', false)">取消</button>
+                    <button type='button' id='reduction' ><?php echo $lang['restore'] ?></button>
+                    <button type='button' id='delete'><?php echo $lang['remove'] ?></button>
+                    </dd>
+                    <dd class='page'>
+
+                        <a href="?page=<?php echo $page <= 1 ? 1 : $page - 1 ?>"><?php echo $lang['lastPage'] ?></a>
                         <?php
                         $p = $tfunction->Page($dataCount[0]['cid'], 1, 10, $page);
                         for ($i = $p['pageStart']; $i <= $p['pageEnd']; $i++):
                             ?>
                             <a href="?page=<?php echo $i ?>"><span style="color:<?php echo $i == $page || ($page <= 0 && $i == 1) ? "#FF0000 " : "#000000" ?>"><?php echo $i ?></span></a>
-                                <?php
-                            endfor;
-                            ?>
-                        <a href='?page=<?php echo ($page < $p['pageCount'] ? $page <= 0 ? $page + 2 : $page + 1 : $page) ?>'>下一页</a>
-                    <?php endif; ?>
-                </dd>
+                            <?php
+                        endfor;
+                        ?>
+                        <a href='?page=<?php echo ($page < $p['pageCount'] ? $page <= 0 ? $page + 2 : $page + 1 : $page) ?>'><?php echo $lang['nextPage'] ?></a>
+                    </dd>
+                <?php else: ?>
+                    <dd class='notInfo'><span><?php echo $lang['notInfo'] ?></span></dd>
+                <?php endif; ?>
             </dl>
         </div>
         <!--dialog  -->
@@ -227,13 +234,13 @@ switch ($act) {
                     $('#delete').on('click', function () {
                         dialog({
                             backdropBackground: '',
-                            title: '提示',
-                            content: '确认是否删除此些文章',
-                            okValue: '确定',
+                            title: '<?php echo $lang['prompt'] ?>',
+                            content: '<?php echo $lang['mesgIsRemoveSomeContent'] ?>',
+                            okValue: '<?php echo $lang['ok'] ?>',
                             width: '500px',
                             ok: function () {
-                                this.title('删除中…');
-                                this.content("删除中请等待…");
+                                this.title('<?php echo $lang['mesgDeletion'] ?>');
+                                this.content('<?php echo $lang['mesgRemovePleaseWait'] ?>');
                                 var checkboxp = '';
                                 $('input[name=checkid]:checked').each(function (i, p) {
                                     checkboxp += $(p).val() + ',';
@@ -253,7 +260,7 @@ switch ($act) {
                                 }
                                 return false;
                             },
-                            cancelValue: '取消',
+                            cancelValue: '<?php echo $lang['cancel'] ?>',
                             cancel: function () {}
                         }).showModal();
                     });
@@ -261,13 +268,13 @@ switch ($act) {
                     $('#reduction').on('click', function () {
                         dialog({
                             backdropBackground: '',
-                            title: '提示',
-                            content: '确认是否还原此些文章',
+                            title: '<?php echo $lang['prompt'] ?>',
+                            content: '<?php echo $lang['mesgIsRestoreSomeContent'] ?>',
                             okValue: '确定',
                             width: '500px',
                             ok: function () {
-                                this.title('还原中…');
-                                this.content("还原中请等待…");
+                                this.title('<?php echo $lang['mesgRestore'] ?>');
+                                this.content('<?php echo $lang['mesgRestorePleaseWait'] ?>');
                                 var checkboxp = '';
                                 $('input[name=checkid]:checked').each(function (i, p) {
                                     checkboxp += $(p).val() + ',';
@@ -287,13 +294,13 @@ switch ($act) {
                                 }
                                 return false;
                             },
-                            cancelValue: '取消',
+                            cancelValue: '<?php echo $lang['cancel'] ?>',
                             cancel: function () {}
                         }).showModal();
                     });
 
                     $('.delmes').on('click', function () {
-                        return confirm('是否真的删除，一但删除此些数据将不可被挽回。');
+                        return confirm('<?php echo $lang['mesgConfirmDeletion']; ?>');
                     });
 
     </script>

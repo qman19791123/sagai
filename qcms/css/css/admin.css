@@ -409,6 +409,15 @@ body {
     border: none;
     line-height: 0;
   }
+  .adminContent .notInfo {
+    width: 100%;
+    margin: 60px 0;
+    text-align: center;
+    padding: 5px 0;
+  }
+  .adminContent .notInfo span {
+    font-size: 14px;
+  }
   .adminContent .menu {
     font-size: 12px;
     display: inline-block;
@@ -770,6 +779,15 @@ body {
     background: inherit;
     border: none;
     line-height: 0;
+  }
+  .adminContent .notInfo {
+    width: 100%;
+    margin: 60px 0;
+    text-align: center;
+    padding: 5px 0;
+  }
+  .adminContent .notInfo span {
+    font-size: 14px;
   }
   .adminContent .menu {
     font-size: 12px;
