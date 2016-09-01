@@ -1149,7 +1149,7 @@ class CI_DB_query_builder extends CI_DB_driver {
         if (!empty($limit)) {
             $this->limit($limit, $offset);
         }
-
+//        echo $this->_compile_select();
         $result = $this->query($this->_compile_select());
         $this->_reset_select();
 
@@ -1475,11 +1475,10 @@ class CI_DB_query_builder extends CI_DB_driver {
         }
 
         $sql = $this->_delete($table);
-        if ($reset_data) {
-            $this->_reset_write();
-        }
 
-        return ($this->return_delete_sql === TRUE) ? $sql : $this->query($sql, 'AUD');
+        $this->deletekey();
+        
+        return $this->query($sql, 'AUD');
     }
 
     // --------------------------------------------------------------------
@@ -1524,8 +1523,6 @@ class CI_DB_query_builder extends CI_DB_driver {
         // if a table alias is used we can recognize it by a space
         if (strpos($table, ' ') !== FALSE) {
             // if the alias is written with the AS keyword, remove it
-            $table = preg_replace('/\s+AS\s+/i', ' ', $table);
-
             // Grab the alias
             $table = trim(strrchr($table, ' '));
 

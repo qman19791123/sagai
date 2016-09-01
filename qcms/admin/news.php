@@ -17,7 +17,6 @@ $adminId = $_SESSION['adminId'];
 $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT); //新闻编号 (有时间修改此命名)
-$classifyId = filter_input(INPUT_GET, 'classifyId', FILTER_VALIDATE_INT);
 $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 
 
@@ -167,31 +166,66 @@ switch ($act) {
         break;
     case 3:
 // 删除部分代码
-        //获取内容栏目及栏目下文章数量
-        $classify = $conn->select('folder,summary')->where(['id'=>$classifyId])->get('classify');
-        //获取文章的拼音注解
-        $newsconfig = $conn->select('pinyin')->where(['id'=>$id])->get('news_config');
-        //获取文件
-        $file = staticFloder.$classify[0]['folder'].'/'.$newsconfig[0][''].'.html';
-        //判断是否开启静态功能和是否存在静态文件
-        if(StaticOpen && is_file($file))
-        {
-            //存在则修改文件名
-            rename($file,$file.'del');
+        // 获取文章和栏目
+        $ajaxId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        if (!$ajaxId) {
+            $ajaxId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
+            if (!$ajaxId) {
+                die('false');
+            }
+        }
+
+        $classify = $conn->select(['a.folder as folder', 'a.summary as summary', 'pinyin', 'a.id as aid', 'b.id as bid'])
+                ->join('classify as a', 'a.id=b.classifyId', 'left')
+                ->where('b.id in(' . $ajaxId . ')')
+                ->get('news_config as b');
+
+
+
+        foreach ($classify as $k => $v) {
+            //获取文件
+            $file = trim(staticFloder) . '/' . trim($v['folder']) . '/' . trim($v['pinyin']) . '.html';
+            //判断是否开启静态功能和是否存在静态文件
+            if (StaticOpen && is_file($file)) {
+                //存在则修改文件名
+                rename($file, $file . 'del');
+            }
+            $classifyCount[$v['aid']] = $v['summary'];
+            $classifyIdArr[$v['aid']] = empty($classifyIdArr[$v['aid']]) || !isset($classifyIdArr[$v['aid']]) ? 1 : $classifyIdArr[$v['aid']] + 1;
+            $newidArr[] = $v['bid'];
+        }
+        //修改栏目下文章数量''
+        foreach ($classifyIdArr as $k => $v) {
+            $conn->where(['id' => $k])->update('classify', ['summary' => ($classifyCount[$k] - $v)]);
+            //防止操作过于频繁造成的计算过大的问题
+            sleep(0.5);
         }
         //假删文章
-        $conn->where(['id'=>$id])->update('news_config',['isdel'=>1]);
-        //修改栏目下文章数量
-        $conn->where(['id'=>$classifyId])->update('classify',['summary'=>$classify[0]['summary']]);
+        $newidStr = join(',', array_unique($newidArr));
+        $conn->where('id in (' . $newidStr . ')')->update('news_config', ['isdel' => 1]);
+        //防止操作过于频繁造成的计算过大的问题
+        sleep(0.5);
 
+        // 特定参数
+        $p = filter_input(INPUT_GET, 'p', FILTER_VALIDATE_BOOLEAN);
+        if ($p === true) {
+            die('true');
+        }
         die($tfunction->message('删除成功', 'news.php'));
         break;
     case 4:
 // 特殊传值AJAx （设置审核流程）
         $ajaxT = filter_input(INPUT_POST, 't', FILTER_VALIDATE_INT);
         $ajaxId = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
-        $sql = 'update `news_config` set checked = ' . $ajaxT . ' where id=' . $ajaxId;
-        $conn->aud($sql);
+        if (!$ajaxId) {
+            $ajaxId = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_STRING);
+            if (!$ajaxId) {
+                die('false');
+            }
+        }
+
+        $conn->where('id in (' . $ajaxId . ')')->update('news_config', ['checked' => $ajaxT]);
+
         die('true');
         break;
     case 5:
@@ -223,6 +257,7 @@ switch ($act) {
                     $query = filter_input(INPUT_GET, 'query');
                     $poUrl = '';
                     $dataClassifyClassName = '所有文章';
+                    $where .=' and isdel=0 ';
                     if (!empty($query)) {
                         $timestart = filter_input(INPUT_GET, 'timestart', FILTER_SANITIZE_STRING);
                         $timeend = filter_input(INPUT_GET, 'timeend', FILTER_SANITIZE_STRING);
@@ -294,12 +329,13 @@ switch ($act) {
                             [<a href='javascript:void(0)' id='column'>栏目管理</a>]
                             [<a href='?cpage=1'>更新列表</a>]
                             [<a href='?cpage=1'>更新文档</a>]
-                            [<a href='newsSubject.php'>文章回收</a>]
+                            [<a href='newsdustbin.php'>文章回收</a>]
                         </span>
                         </dt>
                         <dd>
                             <div class="list atable">
                                 <ul class="list atr" id="no">
+                                    <li>选择</li>
                                     <li>编号</li>
                                     <li>排序</li>
                                     <li style="width: 10%">栏目</li>
@@ -312,6 +348,7 @@ switch ($act) {
                                 foreach ($data as $rs):
                                     ?>
                                     <ul class="list atr">
+                                        <li><input name="checkid" type="checkbox" value="<?php echo $rs['id'] ?>"></li>
                                         <li><?php echo $rs['id'] ?></li>
                                         <li><?php echo $rs['sort'] ?></li>
                                         <li data-id="<?php echo $rs['classifyId'] ?>"></li>
@@ -339,24 +376,31 @@ switch ($act) {
                                             <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked">审核</a>
                                             <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>">阅览</a>
                                             <a href="?cpage=2&id=<?php echo $rs['id'] ?>">修改新闻</a>
-                                            <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?>&classifyId=<?php echo $rs['classifyId'] ?>">删除新闻</a>
+                                            <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?> ?>">删除新闻</a>
                                         </li>
 
                                     </ul>
                                 <?php endforeach; ?>
                             </div>
-                            <div class='page'>
-                                <a href="?page=<?php echo $page <= 1 ? 1 : $page - 1 ?>&<?php echo $poUrl ?>">上一页</a>
-                                <?php
-                                $p = $tfunction->Page($dataCount[0]['cid'], 1, 10, $page);
-                                for ($i = $p['pageStart']; $i <= $p['pageEnd']; $i++):
-                                    ?>
-                                    <a href="?page=<?php echo $i ?>&<?php echo $poUrl ?>"><span style="color:<?php echo $i == $page ? "#FF0000 " : "#000000" ?>"><?php echo $i ?></span></a>
-                                    <?php
-                                endfor;
+                        </dd>
+                        <dd class='toolbar'>
+                        <button type='button' id='all' onclick="javascript:$('input[name=checkid]').attr('checked', true).prop('checked', true)">全选</button>
+                        <button type='button' id='cancel' onclick="javascript:$('input[name=checkid]').removeAttr('checked', '').prop('checked', false)">取消</button>
+                        <button type='button' id='push'>推送</button>
+                        <button type='button' id='check' >审核</button>
+                        <button type='button' id='delete'>删除</button>
+                        </dd>
+                        <dd class='page'>
+                            <a href="?page=<?php echo $page <= 1 ? 1 : $page - 1 ?>&<?php echo $poUrl ?>">上一页</a>
+                            <?php
+                            $p = $tfunction->Page($dataCount[0]['cid'], 1, 10, $page);
+                            for ($i = $p['pageStart']; $i <= $p['pageEnd']; $i++):
                                 ?>
-                                <a href='?page=<?php echo ($page < $p['pageCount'] ? $page + 1 : $page) ?>&<?php echo $poUrl ?>'>下一页</a>
-                            </div>
+                                <a href="?page=<?php echo $i ?>&<?php echo $poUrl ?>"><span style="color:<?php echo $i == $page || ($page <= 0 && $i == 1) ? "#FF0000 " : "#000000" ?>"><?php echo $i ?></span></a>
+                                <?php
+                            endfor;
+                            ?>
+                            <a href='?page=<?php echo ($page < $p['pageCount'] ? $page <= 0 ? $page + 2 : $page + 1 : $page) ?>&<?php echo $poUrl ?>'>下一页</a>
                         </dd>
                     </dl>
 
@@ -555,194 +599,274 @@ switch ($act) {
         </div>
         <!--栏目 end-->
 
+        <!--KindEditor-->
     <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
     <link rel="stylesheet" href="../js/KindEditor/plugins/code/prettify.css" />
-    <link rel="stylesheet" href="../js/JqueryEasyui/default/easyui.css" />
-    <script charset="utf-8" src="../js/JqueryEasyui/JqueryEasyui.js"></script>
-
     <script charset="utf-8" src="../js/KindEditor/kindeditor-all-min.js"></script>
     <script charset="utf-8" src="../js/KindEditor/plugins/code/prettify.js"></script>
-    <!--dialog css -->
+    <!--JqueryEasyui-->
+    <link rel="stylesheet" href="../js/JqueryEasyui/default/easyui.css" />
+    <script charset="utf-8" src="../js/JqueryEasyui/JqueryEasyui.js"></script>
+    <!--dialog  -->
     <link rel="stylesheet" href="../js/Dialog/css/ui-dialog.css">
-    <!--dialog js -->
     <script type="text/javascript" src="../js/Dialog/dist/dialog-min.js"></script>
+    <!--upfile  -->
     <script type="text/javascript" src="../js/file.js"></script>
 
     <script type="text/javascript">
 <?php printf('var classifyJson =%s;', json_encode($classifyJson)); ?>
-        //mouseover
-        $('.adminContent .atable ul').on('mouseover', function () {
-            $(this).css({'background': '#444'});
-            $(this).find('a').css({'background': '', 'color': '#fff'});
-        }).on('mouseout', function () {
-            $(this).css({'background': '', 'color': ''});
-            $(this).find('a').css({'background': '', 'color': ''});
-        });
+                    //mouseover
+                    $('.adminContent .atable ul').on('mouseover', function () {
+                        $(this).css({'background': '#444'});
+                        $(this).find('a').css({'background': '', 'color': '#fff'});
+                    }).on('mouseout', function () {
+                        $(this).css({'background': '', 'color': ''});
+                        $(this).find('a').css({'background': '', 'color': ''});
+                    });
 
 
-        $('.atable ul li').each(function (i, p) {
-            if ($(p).attr('data-id'))
-            {
-                $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
-            }
-        });
+                    $('.atable ul li').each(function (i, p) {
+                        if ($(p).attr('data-id'))
+                        {
+                            $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
+                        }
+                    });
 
-        $('#column').on('click', function () {
-            dialog({
-                backdropBackground: '',
-                title: '提示',
-                content: $('.column').html(),
-                okValue: '确定',
-                width: '700px',
-                ok: function () {
-                    var query = $('.searchContent').eq(1).find('#query').serialize();
-                    self.location = ('?query=yes&' + query);
-                    return false;
-                },
-                cancelValue: '取消',
-                cancel: function () {}
-            }).showModal();
 
-            $('.columnContent').eq(1).find('.tree').tree({
-                data: <?php echo json_encode($tfunction->classifyArray()) ?>,
-                onClick: function (node) {
-                    self.location = ('?query=yes&url=' + node.id);
-                }
-            });
-        });
-        $('#retrievedArticles').on('click', function () {
-            $('.combo').hide();
-            dialog({
-                backdropBackground: '',
-                title: '提示',
-                content: $('.search').html(),
-                okValue: '确定',
-                width: '700px',
-                height: '180px',
-                ok: function () {
-                    var query = $('.searchContent').eq(1).find('#query');
-                    // if(query.find('select[name="queryselect"]').val()<=0){
-                    //     alert('请选择搜索的范围');
-                    //     return false;
-                    // }
-                    self.location = ('news.php?query=yes&' + query.serialize());
-                    return false;
-                },
-                cancelValue: '取消',
-                cancel: function () {}
-            }).showModal();
-            $('.searchContent .times').datebox({});
-        });
 
-        $('#off').on('click', function () {
-            $(this).parent('span').hide();
-        });
-        $('.checked').on('click', function () {
-            var id = $(this).attr('data-id');
-            var dialog_ = dialog({
-                backdropBackground: '',
-                title: '提示',
-                content: $('.audit').html(),
-                okValue: '确定',
-                width: '300px',
-                height: '80px',
-                ok: function () {
-                    var tt = $('.auditContent').eq(1).find('select').val();
-                    if (tt !== '选择') {
-                        console.log(tt);
-                        this.title('提交中…');
-                        $.ajax({
-                            type: "POST",
-                            url: '?act=4',
-                            data: {"t": tt, "id": id},
-                            success: function (e) {
-                                if (Boolean(e) === true) {
-                                    history.go(0);
+                    $('#delete').on('click', function () {
+                        dialog({
+                            backdropBackground: '',
+                            title: '提示',
+                            content: '确认是否删除此些文章',
+                            okValue: '确定',
+                            width: '500px',
+                            ok: function () {
+                                this.title('删除中…');
+                                this.content("删除中请等待");
+                                var checkboxp = '';
+                                $('input[name=checkid]:checked').each(function (i, p) {
+                                    checkboxp += $(p).val() + ',';
+                                });
+                                if (checkboxp) {
+                                    checkboxp = checkboxp.substr(0, checkboxp.length - 1);
+                                    $.ajax({
+                                        type: "GET",
+                                        data: {'id': checkboxp},
+                                        url: '?p=on&act=3',
+                                        success: function (e) {
+                                            if (Boolean(e) === true) {
+                                                history.go(0);
+                                            }
+                                        }
+                                    });
                                 }
+                                return false;
+                            },
+                            cancelValue: '取消',
+                            cancel: function () {}
+                        }).showModal();
+                    });
+
+                    //指定文章输出栏目 [栏目管理] code start
+                    $('#column').on('click', function () {
+                        dialog({
+                            backdropBackground: '',
+                            title: '提示',
+                            content: $('.column').html(),
+                            okValue: '确定',
+                            width: '700px',
+                            ok: function () {
+                                var query = $('.searchContent').eq(1).find('#query').serialize();
+                                self.location = ('?query=yes&' + query);
+                                return false;
+                            },
+                            cancelValue: '取消',
+                            cancel: function () {}
+                        }).showModal();
+
+                        $('.columnContent').eq(1).find('.tree').tree({
+                            data: <?php echo json_encode($tfunction->classifyArray()) ?>,
+                            onClick: function (node) {
+                                self.location = ('?query=yes&url=' + node.id);
                             }
                         });
-                    }
-                    return false;
-                },
-                cancelValue: '取消',
-                cancel: function () {}
-            }).showModal();
-        });
+                    });
+                    //指定文章输出栏目 [栏目管理] code end
 
-        /*
-         *  KindEditor 编辑器
-         */
-        KindEditor.ready(function (K) {
-            var editor1 = K.create('textarea[name="newText"]', {
-                cssPath: '../js/KindEditor/plugins/code/prettify.css',
-                uploadJson: '../js/KindEditor/php/upload_json.php',
-                fileManagerJson: '../js/KindEditor/php/file_manager_json.php',
-                width: '100%',
-                height: '250px',
-                resizeType: 0,
-                items: [
-                    'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
-                    'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
-                    'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
-                    'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
-                    'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
-                    'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
-                    'flash', 'media', 'insertfile', 'table', 'hr', 'baidumap', 'pagebreak',
-                    'link', 'unlink'
-                ],
-                allowFileManager: true,
-                afterCreate: function () {
-                    var self = this;
-                },
-                afterUpload: function (data) {
-                    var img = $('input[name="updateImg"]');
-                    img.val('"' + data + '",' + img.val());
-                }
-            });
-            prettyPrint();
+                    //检索（查询） 文章 code start
+                    $('#retrievedArticles').on('click', function () {
+                        $('.combo').hide();
+                        dialog({
+                            backdropBackground: '',
+                            title: '提示',
+                            content: $('.search').html(),
+                            okValue: '确定',
+                            width: '700px',
+                            height: '180px',
+                            ok: function () {
+                                var query = $('.searchContent').eq(1).find('#query');
+                                // if(query.find('select[name="queryselect"]').val()<=0){
+                                //     alert('请选择搜索的范围');
+                                //     return false;
+                                // }
+                                self.location = ('news.php?query=yes&' + query.serialize());
+                                return false;
+                            },
+                            cancelValue: '取消',
+                            cancel: function () {}
+                        }).showModal();
+                        $('.searchContent .times').datebox({});
+                    });
+                    //检索（查询） 文章 code end
 
 
-        });
+                    //文章审核code start
+                    // 文章 审核 提醒
+                    $('#off').on('click', function () {
+                        $(this).parent('span').hide();
+                    });
+                    //对单个文章进行审核设置
+                    $('.checked').on('click', function () {
+                        var id = $(this).attr('data-id');
+                        var dialog_ = dialog({
+                            backdropBackground: '',
+                            title: '提示',
+                            content: $('.audit').html(),
+                            okValue: '确定',
+                            width: '300px',
+                            height: '80px',
+                            ok: function () {
+                                var tt = $('.auditContent').eq(1).find('select').val();
+                                if (tt !== '选择') {
+                                    console.log(tt);
+                                    this.title('提交中…');
+                                    $.ajax({
+                                        type: "POST",
+                                        url: '?act=4',
+                                        data: {"t": tt, "id": id},
+                                        success: function (e) {
+                                            if (Boolean(e) === true) {
+                                                history.go(0);
+                                            }
+                                        }
+                                    });
+                                }
+                                return false;
+                            },
+                            cancelValue: '取消',
+                            cancel: function () {}
+                        }).showModal();
+                    });
+                    //对文章批量确定审核
+                    $('#check').on('click', function () {
+                        var checkboxp = '';
+                        $('input[name=checkid]:checked').each(function (i, p) {
+                            checkboxp += $(p).val() + ',';
+                        });
+                        if (checkboxp) {
 
+                            checkboxp = checkboxp.substr(0, checkboxp.length - 1)
+                            $.ajax({
+                                type: "POST",
+                                url: '?act=4',
+                                data: {'t': '999', 'id': checkboxp},
+                                success: function (e) {
+                                    if (Boolean(e) === true) {
+                                        history.go(0);
+                                    }
+                                }
+                            });
+                        }
+                        return false;
+                    });
 
-        $('#fanhui').on('click', function () {
-            self.history.go(-1);
-        });
+                    //文章审核code end
 
-        $('.sort').append(function () {
-            var html = '', t;
-            for (i = -10; i <= 10; ++i) {
-                t = parseInt(<?php echo $sort ?>) === parseInt(i) ? 'selected' : '';
-                html += '<option ' + t + '>' + i + '</option>';
-            }
-            return html;
-        });
+                    // KindEditor 编辑器 code start
+                    KindEditor.ready(function (K) {
+                        var editor1 = K.create('textarea[name="newText"]', {
+                            cssPath: '../js/KindEditor/plugins/code/prettify.css',
+                            uploadJson: '../js/KindEditor/php/upload_json.php',
+                            fileManagerJson: '../js/KindEditor/php/file_manager_json.php',
+                            width: '100%',
+                            height: '250px',
+                            resizeType: 0,
+                            items: [
+                                'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
+                                'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                                'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                                'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                                'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
+                                'flash', 'media', 'insertfile', 'table', 'hr', 'baidumap', 'pagebreak',
+                                'link', 'unlink'
+                            ],
+                            allowFileManager: true,
+                            afterCreate: function () {
+                                var self = this;
+                            },
+                            afterUpload: function (data) {
+                                var img = $('input[name="updateImg"]');
+                                img.val('"' + data + '",' + img.val());
+                            }
+                        });
+                        prettyPrint();
+                    });
+                    // KindEditor 编辑器 code end
 
-        $('.classifyId option').each(function (i, v) {
-            t = (parseInt($(v).val()) === parseInt(<?php echo $classifyId ?>));
-            $(v).attr('selected', t);
-        });
+                    //返回上一页 按钮 code start
+                    $('#fanhui').on('click', function () {
+                        self.history.go(-1);
+                    });
+                    //返回上一页 按钮 code end
 
-        $('.file').hide();
-        $('.showfile').on('click', function () {
-            var th = $(this);
-            $('#file_input').click();
-            $('#file_input').checkFileTypeAndSize({
-                allowedExtensions: ['jpg', 'png', 'gif'],
-                maxSize: 500,
-                success: function () {
-                    th.val($('#file_input').val());
-                },
-                extensionerror: function () {
-                    alert('格式不正确或不能为空');
-                    return;
-                },
-                sizeerror: function () {
-                    alert('最大尺寸请在200kb以内');
-                    return;
-                }
-            });
-        });
+                    //排序 权重 数量 设置 code start
+                    $('.sort').append(function () {
+                        var html = '', t;
+                        for (i = -10; i <= 10; ++i) {
+                            t = parseInt(<?php echo $sort ?>) === parseInt(i) ? 'selected' : '';
+                            html += '<option ' + t + '>' + i + '</option>';
+                        }
+                        return html;
+                    });
+                    //排序 权重 数量 设置 code end
+
+                    //定位文章 栏目 select selected 挑选出来的选项位置 code start
+                    $('.classifyId option').each(function (i, v) {
+                        t = (parseInt($(v).val()) === parseInt(<?php echo $classifyId ?>));
+                        $(v).attr('selected', t);
+                    });
+                    //定位文章 栏目 select selected 挑选出来的选项位置 code end
+
+                    //删除提示 code start
+                    $('.delmes').on('click', function () {
+                        return confirm('是否真的删除');
+                    });
+                    //删除提示  code end
+
+                    // 图片选择 code start
+                    $('.file').hide();
+                    $('.showfile').on('click', function () {
+                        var th = $(this);
+                        $('#file_input').click();
+                        $('#file_input').checkFileTypeAndSize({
+                            allowedExtensions: ['jpg', 'png', 'gif'],
+                            maxSize: 500,
+                            success: function () {
+                                th.val($('#file_input').val());
+                            },
+                            extensionerror: function () {
+                                alert('格式不正确或不能为空');
+                                return;
+                            },
+                            sizeerror: function () {
+                                alert('最大尺寸请在200kb以内');
+                                return;
+                            }
+                        });
+                    });
+                    // 图片选择 code end
     </script>
 </body>
 

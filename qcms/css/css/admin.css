@@ -377,8 +377,21 @@ body {
     width: 35%;
     background: #f0f0f0;
   }
+  .adminContent .toolbar {
+    width: 100%;
+    margin: auto;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .adminContent .toolbar button {
+    font-size: 14px;
+    border: 1px solid #ccc;
+    margin: 1px;
+    background: #f0f0f0;
+    cursor: pointer;
+  }
   .adminContent .page {
-    width: 95%;
+    width: 100%;
     margin: auto;
     text-align: center;
     padding: 5px 0;
@@ -726,8 +739,21 @@ body {
     width: 35%;
     background: #f0f0f0;
   }
+  .adminContent .toolbar {
+    width: 100%;
+    margin: auto;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .adminContent .toolbar button {
+    font-size: 14px;
+    border: 1px solid #ccc;
+    margin: 1px;
+    background: #f0f0f0;
+    cursor: pointer;
+  }
   .adminContent .page {
-    width: 95%;
+    width: 100%;
     margin: auto;
     text-align: center;
     padding: 5px 0;
