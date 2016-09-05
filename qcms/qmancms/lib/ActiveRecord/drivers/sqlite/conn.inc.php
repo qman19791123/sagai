@@ -4,9 +4,10 @@
  * 
  */
 class conn {
+
     function __construct() {
-    	$dsn = sprintf('sqlite:%s/%s/%s', install, dataLocal, dataName);
-    	$this->db = new PDO($dsn);
+        $dsn = sprintf('sqlite:%s/%s/%s', install, dataLocal, dataName);
+        $this->db = new PDO($dsn);
         $this->db->query('SET NAMES ' . dataCharset);
     }
 
@@ -38,4 +39,5 @@ class conn {
         }
         return true;
     }
+
 }

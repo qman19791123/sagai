@@ -109,7 +109,7 @@ switch ($act) {
             'subtitle' => $subtitleINPUT,
             'title' => $titleINPUT,
             'titlePhoto' => $path,
-            'checked' => $checkedINPUT,
+            'checked' => $checkedINPUT >= 1 ? 999 : 1,
             'pinyin' => $pinyin,
             'isdel' => 0
         ]);
@@ -154,7 +154,7 @@ switch ($act) {
                 'subtitle' => $titleINPUT,
                 'title' => $titleINPUT,
                 'titlePhoto' => $path,
-                'checked' => $checkedINPUT
+                'checked' => $checkedINPUT >= 1 ? 999 : 1
             ]);
 // 记录此新闻使用过的图片
             if (!is_bool($path) && $path !== $titlePhotoINPUT) {
@@ -534,7 +534,7 @@ switch ($act) {
 
 
                                         <?php echo $lang['pass']; ?>:<input type="radio" <?php $checked == 999 && print('checked="checked"') ?>  name="checked" value="1"/>
-                                        <?php echo $lang['notPass']; ?>:<input type="radio" <?php $checked == 0 && print('checked="checked"') ?>  name="checked" value="0"/>
+                                        <?php echo $lang['wait']; ?>:<input type="radio" <?php $checked == 0 && print('checked="checked"') ?>  name="checked" value="0"/>
                                     </li>
                                 </ul>
                             </div>
@@ -623,258 +623,258 @@ switch ($act) {
 
     <script type="text/javascript">
 <?php printf('var classifyJson =%s;', json_encode($classifyJson)); ?>
-                    //mouseover
-                    $('.adminContent .atable ul').on('mouseover', function () {
-                        $(this).css({'background': '#444'});
-                        $(this).find('a').css({'background': '', 'color': '#fff'});
-                    }).on('mouseout', function () {
-                        $(this).css({'background': '', 'color': ''});
-                        $(this).find('a').css({'background': '', 'color': ''});
-                    });
-
-
-                    $('.atable ul li').each(function (i, p) {
-                        if ($(p).attr('data-id'))
-                        {
-                            $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
-                        }
-                    });
-
-
-
-                    $('#delete').on('click', function () {
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: '<?php echo $lang['mesgIsRemoveSomeContent']; ?>',
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '500px',
-                            ok: function () {
-                                this.title('<?php echo $lang['mesgDeletion']; ?>');
-                                this.content("<?php echo $lang['mesgRemovePleaseWait']; ?>");
-                                var checkboxp = '';
-                                $('input[name=checkid]:checked').each(function (i, p) {
-                                    checkboxp += $(p).val() + ',';
+                                //mouseover
+                                $('.adminContent .atable ul').on('mouseover', function () {
+                                    $(this).css({'background': '#444'});
+                                    $(this).find('a').css({'background': '', 'color': '#fff'});
+                                }).on('mouseout', function () {
+                                    $(this).css({'background': '', 'color': ''});
+                                    $(this).find('a').css({'background': '', 'color': ''});
                                 });
-                                if (checkboxp) {
-                                    checkboxp = checkboxp.substr(0, checkboxp.length - 1);
-                                    $.ajax({
-                                        type: "GET",
-                                        data: {'id': checkboxp},
-                                        url: '?p=on&act=3',
-                                        success: function (e) {
-                                            if (Boolean(e) === true) {
-                                                history.go(0);
-                                            }
-                                        }
-                                    });
-                                }
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-                    });
-
-                    //指定文章输出栏目 [栏目管理] code start
-                    $('#column').on('click', function () {
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: $('.column').html(),
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '700px',
-                            ok: function () {
-                                var query = $('.searchContent').eq(1).find('#query').serialize();
-                                self.location = ('?query=yes&' + query);
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-
-                        $('.columnContent').eq(1).find('.tree').tree({
-                            data: <?php echo json_encode($tfunction->classifyArray()) ?>,
-                            onClick: function (node) {
-                                self.location = ('?query=yes&url=' + node.id);
-                            }
-                        });
-                    });
-                    //指定文章输出栏目 [栏目管理] code end
-
-                    //检索（查询） 文章 code start
-                    $('#retrievedArticles').on('click', function () {
-                        $('.combo').hide();
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: $('.search').html(),
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '700px',
-                            height: '180px',
-                            ok: function () {
-                                var query = $('.searchContent').eq(1).find('#query');
-                                // if(query.find('select[name="queryselect"]').val()<=0){
-                                //     alert('请选择搜索的范围');
-                                //     return false;
-                                // }
-                                self.location = ('news.php?query=yes&' + query.serialize());
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-                        $('.searchContent .times').datebox({});
-                    });
-                    //检索（查询） 文章 code end
 
 
-                    //文章审核code start
-                    // 文章 审核 提醒
-                    $('#off').on('click', function () {
-                        $(this).parent('span').hide();
-                    });
-                    //对单个文章进行审核设置
-                    $('.checked').on('click', function () {
-                        var id = $(this).attr('data-id');
-                        var dialog_ = dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: $('.audit').html(),
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '300px',
-                            height: '80px',
-                            ok: function () {
-                                var tt = $('.auditContent').eq(1).find('select').val();
-                                if (tt !== '<?php echo $lang['choose']; ?>') {
-                                    this.title('<?php echo $lang['mesgSubmitting']; ?>');
-                                    this.title('<?php echo $lang['mesgSubmittPleaseWait']; ?>');
-                                    $.ajax({
-                                        type: "POST",
-                                        url: '?act=4',
-                                        data: {"t": tt, "id": id},
-                                        success: function (e) {
-                                            if (Boolean(e) === true) {
-                                                history.go(0);
-                                            }
-                                        }
-                                    });
-                                }
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-                    });
-                    //对文章批量确定审核
-                    $('#check').on('click', function () {
-                        var checkboxp = '';
-                        $('input[name=checkid]:checked').each(function (i, p) {
-                            checkboxp += $(p).val() + ',';
-                        });
-                        if (checkboxp) {
-
-                            checkboxp = checkboxp.substr(0, checkboxp.length - 1)
-                            $.ajax({
-                                type: "POST",
-                                url: '?act=4',
-                                data: {'t': '999', 'id': checkboxp},
-                                success: function (e) {
-                                    if (Boolean(e) === true) {
-                                        history.go(0);
+                                $('.atable ul li').each(function (i, p) {
+                                    if ($(p).attr('data-id'))
+                                    {
+                                        $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
                                     }
-                                }
-                            });
-                        }
-                        return false;
-                    });
+                                });
 
-                    //文章审核code end
 
-                    // KindEditor 编辑器 code start
-                    KindEditor.ready(function (K) {
-                        var editor1 = K.create('textarea[name="newText"]', {
-                            cssPath: '../js/KindEditor/plugins/code/prettify.css',
-                            uploadJson: '../js/KindEditor/php/upload_json.php',
-                            fileManagerJson: '../js/KindEditor/php/file_manager_json.php',
-                            width: '100%',
-                            height: '250px',
-                            resizeType: 0,
-                            items: [
-                                'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
-                                'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
-                                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
-                                'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
-                                'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
-                                'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
-                                'flash', 'media', 'insertfile', 'table', 'hr', 'baidumap', 'pagebreak',
-                                'link', 'unlink'
-                            ],
-                            allowFileManager: true,
-                            afterCreate: function () {
-                                var self = this;
-                            },
-                            afterUpload: function (data) {
-                                var img = $('input[name="updateImg"]');
-                                img.val('"' + data + '",' + img.val());
-                            }
-                        });
-                        prettyPrint();
-                    });
-                    // KindEditor 编辑器 code end
 
-                    //返回上一页 按钮 code start
-                    $('#fanhui').on('click', function () {
-                        self.history.go(-1);
-                    });
-                    //返回上一页 按钮 code end
+                                $('#delete').on('click', function () {
+                                    dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: '<?php echo $lang['mesgIsRemoveSomeContent']; ?>',
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '500px',
+                                        ok: function () {
+                                            this.title('<?php echo $lang['mesgDeletion']; ?>');
+                                            this.content("<?php echo $lang['mesgRemovePleaseWait']; ?>");
+                                            var checkboxp = '';
+                                            $('input[name=checkid]:checked').each(function (i, p) {
+                                                checkboxp += $(p).val() + ',';
+                                            });
+                                            if (checkboxp) {
+                                                checkboxp = checkboxp.substr(0, checkboxp.length - 1);
+                                                $.ajax({
+                                                    type: "GET",
+                                                    data: {'id': checkboxp},
+                                                    url: '?p=on&act=3',
+                                                    success: function (e) {
+                                                        if (Boolean(e) === true) {
+                                                            history.go(0);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+                                });
 
-                    //排序 权重 数量 设置 code start
-                    $('.sort').append(function () {
-                        var html = '', t;
-                        for (i = -10; i <= 10; ++i) {
-                            t = parseInt(<?php echo $sort ?>) === parseInt(i) ? 'selected' : '';
-                            html += '<option ' + t + '>' + i + '</option>';
-                        }
-                        return html;
-                    });
-                    //排序 权重 数量 设置 code end
+                                //指定文章输出栏目 [栏目管理] code start
+                                $('#column').on('click', function () {
+                                    dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: $('.column').html(),
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '700px',
+                                        ok: function () {
+                                            var query = $('.searchContent').eq(1).find('#query').serialize();
+                                            self.location = ('?query=yes&' + query);
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
 
-                    //定位文章 栏目 select selected 挑选出来的选项位置 code start
-                    $('.classifyId option').each(function (i, v) {
-                        t = (parseInt($(v).val()) === parseInt(<?php echo $classifyId ?>));
-                        $(v).attr('selected', t);
-                    });
-                    //定位文章 栏目 select selected 挑选出来的选项位置 code end
+                                    $('.columnContent').eq(1).find('.tree').tree({
+                                        data: <?php echo json_encode($tfunction->classifyArray()) ?>,
+                                        onClick: function (node) {
+                                            self.location = ('?query=yes&url=' + node.id);
+                                        }
+                                    });
+                                });
+                                //指定文章输出栏目 [栏目管理] code end
 
-                    //删除提示 code start
-                    $('.delmes').on('click', function () {
-                        return confirm('<?php echo $lang['mesgConfirmDeletion']; ?>');
-                    });
-                    //删除提示  code end
+                                //检索（查询） 文章 code start
+                                $('#retrievedArticles').on('click', function () {
+                                    $('.combo').hide();
+                                    dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: $('.search').html(),
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '700px',
+                                        height: '180px',
+                                        ok: function () {
+                                            var query = $('.searchContent').eq(1).find('#query');
+                                            // if(query.find('select[name="queryselect"]').val()<=0){
+                                            //     alert('请选择搜索的范围');
+                                            //     return false;
+                                            // }
+                                            self.location = ('news.php?query=yes&' + query.serialize());
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+                                    $('.searchContent .times').datebox({});
+                                });
+                                //检索（查询） 文章 code end
 
-                    // 图片选择 code start
-                    $('.file').hide();
-                    $('.showfile').on('click', function () {
-                        var th = $(this);
-                        $('#file_input').click();
-                        $('#file_input').checkFileTypeAndSize({
-                            allowedExtensions: ['jpg', 'png', 'gif'],
-                            maxSize: 500,
-                            success: function () {
-                                th.val($('#file_input').val());
-                            },
-                            extensionerror: function () {
-                                alert('<?php echo $lang['mesgPhotoNotEmpty']; ?>');
-                                return;
-                            },
-                            sizeerror: function () {
-                                alert('<?php echo $lang['mesgPhotoNotMax']; ?>');
-                                return;
-                            }
-                        });
-                    });
-                    // 图片选择 code end
+
+                                //文章审核code start
+                                // 文章 审核 提醒
+                                $('#off').on('click', function () {
+                                    $(this).parent('span').hide();
+                                });
+                                //对单个文章进行审核设置
+                                $('.checked').on('click', function () {
+                                    var id = $(this).attr('data-id');
+                                    var dialog_ = dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: $('.audit').html(),
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '300px',
+                                        height: '80px',
+                                        ok: function () {
+                                            var tt = $('.auditContent').eq(1).find('select').val();
+                                            if (tt !== '<?php echo $lang['choose']; ?>') {
+                                                this.title('<?php echo $lang['mesgSubmitting']; ?>');
+                                                this.title('<?php echo $lang['mesgSubmittPleaseWait']; ?>');
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: '?act=4',
+                                                    data: {"t": tt, "id": id},
+                                                    success: function (e) {
+                                                        if (Boolean(e) === true) {
+                                                            history.go(0);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+                                });
+                                //对文章批量确定审核
+                                $('#check').on('click', function () {
+                                    var checkboxp = '';
+                                    $('input[name=checkid]:checked').each(function (i, p) {
+                                        checkboxp += $(p).val() + ',';
+                                    });
+                                    if (checkboxp) {
+
+                                        checkboxp = checkboxp.substr(0, checkboxp.length - 1)
+                                        $.ajax({
+                                            type: "POST",
+                                            url: '?act=4',
+                                            data: {'t': '999', 'id': checkboxp},
+                                            success: function (e) {
+                                                if (Boolean(e) === true) {
+                                                    history.go(0);
+                                                }
+                                            }
+                                        });
+                                    }
+                                    return false;
+                                });
+
+                                //文章审核code end
+
+                                // KindEditor 编辑器 code start
+                                KindEditor.ready(function (K) {
+                                    var editor1 = K.create('textarea[name="newText"]', {
+                                        cssPath: '../js/KindEditor/plugins/code/prettify.css',
+                                        uploadJson: '../js/KindEditor/php/upload_json.php',
+                                        fileManagerJson: '../js/KindEditor/php/file_manager_json.php',
+                                        width: '100%',
+                                        height: '250px',
+                                        resizeType: 0,
+                                        items: [
+                                            'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
+                                            'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                                            'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                                            'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                                            'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                                            'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
+                                            'flash', 'media', 'insertfile', 'table', 'hr', 'baidumap', 'pagebreak',
+                                            'link', 'unlink'
+                                        ],
+                                        allowFileManager: true,
+                                        afterCreate: function () {
+                                            var self = this;
+                                        },
+                                        afterUpload: function (data) {
+                                            var img = $('input[name="updateImg"]');
+                                            img.val('"' + data + '",' + img.val());
+                                        }
+                                    });
+                                    prettyPrint();
+                                });
+                                // KindEditor 编辑器 code end
+
+                                //返回上一页 按钮 code start
+                                $('#fanhui').on('click', function () {
+                                    self.history.go(-1);
+                                });
+                                //返回上一页 按钮 code end
+
+                                //排序 权重 数量 设置 code start
+                                $('.sort').append(function () {
+                                    var html = '', t;
+                                    for (i = -10; i <= 10; ++i) {
+                                        t = parseInt(<?php echo $sort ?>) === parseInt(i) ? 'selected' : '';
+                                        html += '<option ' + t + '>' + i + '</option>';
+                                    }
+                                    return html;
+                                });
+                                //排序 权重 数量 设置 code end
+
+                                //定位文章 栏目 select selected 挑选出来的选项位置 code start
+                                $('.classifyId option').each(function (i, v) {
+                                    t = (parseInt($(v).val()) === parseInt(<?php echo $classifyId ?>));
+                                    $(v).attr('selected', t);
+                                });
+                                //定位文章 栏目 select selected 挑选出来的选项位置 code end
+
+                                //删除提示 code start
+                                $('.delmes').on('click', function () {
+                                    return confirm('<?php echo $lang['mesgConfirmDeletion']; ?>');
+                                });
+                                //删除提示  code end
+
+                                // 图片选择 code start
+                                $('.file').hide();
+                                $('.showfile').on('click', function () {
+                                    var th = $(this);
+                                    $('#file_input').click();
+                                    $('#file_input').checkFileTypeAndSize({
+                                        allowedExtensions: ['jpg', 'png', 'gif'],
+                                        maxSize: 500,
+                                        success: function () {
+                                            th.val($('#file_input').val());
+                                        },
+                                        extensionerror: function () {
+                                            alert('<?php echo $lang['mesgPhotoNotEmpty']; ?>');
+                                            return;
+                                        },
+                                        sizeerror: function () {
+                                            alert('<?php echo $lang['mesgPhotoNotMax']; ?>');
+                                            return;
+                                        }
+                                    });
+                                });
+                                // 图片选择 code end
     </script>
 </body>
 

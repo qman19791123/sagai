@@ -5,10 +5,10 @@ $lang = [];
 $lang['classifyManagement'] = '栏目管理';
 $lang['classifyDelSuccess'] = '删除栏目成功';
 $lang['classifyDelFail'] = '请现删除其下的栏目';
-$lang['classifyUpdateSuccess'] = '修改栏目成功';
+$lang['classifyUpdateSuccess'] = '编辑栏目成功';
 $lang['classifyAddSuccess'] = '添加栏目成功';
 $lang['classifyAdd'] = '添加栏目';
-$lang['classifyUpdate'] = '修改栏目';
+$lang['classifyUpdate'] = '编辑栏目';
 $lang['classifyDel'] = '删除栏目';
 $lang['classifyUp'] = '上级栏目';
 $lang['classifyMain']='主栏目';
@@ -29,6 +29,12 @@ $lang['newsUpdateDocumentation'] ='更新文档';
 $lang['newsArticlesRecycling'] ='文章回收';
 $lang['newsArticlesRestoreFailed'] = '文章还原失败';
 $lang['newsArticlesRestoreSuccess'] = '文章还原成功';
+
+
+/*专题*/
+$lang['specialArticleManager'] ='专题管理';
+$lang['specialAddTheme'] ='添加专题';
+$lang['specialThemeRecycling'] ='专题回收';
 
 
 
@@ -61,7 +67,7 @@ $lang['selectAll'] = '全选' ;
 $lang['cancel'] = '取消';
 $lang['push'] = '推送';
 $lang['remove'] = '删除';
-$lang['update'] = '修改';
+$lang['update'] = '编辑';
 $lang['lastPage'] = '上一页';
 $lang['nextPage'] = '下一页';
 $lang['tag']='标签';
@@ -86,6 +92,9 @@ $lang['uploadIsJpgPngGif']='请上传 jpg png gif 格式的图片';
 $lang['mesgTitleNotEmpty']='标题不能为空';
 $lang['mesgContentNotEmpty']='内容不能为空';
 $lang['mesgColumnsNotEmpty']='栏目不能为空';
+$lang['mesgIntroductionNotEmpty']='介绍不能为空';
+$lang['mesgSpecialNameNotEmpty']='专题名称不能为空';
+
 $lang['mesgAddContentSuccess']='添加内容成功';
 $lang['mesgUpdateContentSuccess']='更新内容成功';
 $lang['mesgRemoveContentSuccess']='删除内容成功';

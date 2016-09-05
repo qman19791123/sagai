@@ -14,11 +14,11 @@ $conn = $tfunction->conn;
         <link rel="stylesheet" type="text/css" href="<?php echo '../' . $tfunction->lessc('admin.less') ?>">
     </head>
     <body class="admin">
-        <form method="post">
+        <form method="post" autocomplete="off">
             <div class="login">
                 <p>
-                    <input type="text" name="name" placeholder="用户名">
-                    <input type="password" name="passwd" placeholder="密码">
+                    <input type="text" name="name" placeholder="用户名" autocomplete="off" >
+                    <input type="password" name="passwd" placeholder="密码" autocomplete="off" >
                 </p>
                 <button name="goto" value="1">登录</button>
             </div>
