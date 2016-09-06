@@ -16,7 +16,7 @@ $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 
 // post
 // 数据添加 删除 修改 操作
-$specialName = filter_input(INPUT_POST, 'specialName', FILTER_SANITIZE_STRING);
+$specialName = filter_input(INPUT_POST, 'specialName', FILTER_SANITIZE_MAGIC_QUOTES);
 $introduction = filter_input(INPUT_POST, 'introduction', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
 
 
@@ -24,12 +24,19 @@ switch ($act) {
     case 1:
         empty($introduction) && die($tfunction->message($lang['mesgIntroductionNotEmpty']));
         empty($specialName) && die($tfunction->message($lang['mesgSpecialNameNotEmpty']));
-        $pinyin = $tfunction->py(mb_substr($introduction, 0, 20, 'utf-8'));
+        $pinyin = $tfunction->py($introduction, 'tfunction::ZNSymbolFilter');
+        $conn->insert('special_config', [
+            'specialName' => $specialName,
+            'introduction' => $introduction,
+            'pinyin' => $pinyin,
+            'time' => time()
+        ]);
+        die($tfunction->message($lang['mesgAddContentSuccess'], 'newssubject.php'));
         break;
     case 2:
         empty($introduction) && die($tfunction->message($lang['mesgIntroductionNotEmpty']));
         empty($specialName) && die($tfunction->message($lang['mesgSpecialNameNotEmpty']));
-
+        $conn->where('id=' . $id)->update('special_config', [ 'specialName' => $specialName, 'introduction' => $introduction]);
         break;
 }
 ?>

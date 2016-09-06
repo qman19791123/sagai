@@ -20,7 +20,7 @@ $ntmp = filter_input(INPUT_POST, 'ntmp', FILTER_SANITIZE_STRING);
 $ctemp = filter_input(INPUT_POST, 'ctemp', FILTER_SANITIZE_STRING);
 $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_URL);
 $setting = (int) filter_input(INPUT_POST, 'setting', FILTER_VALIDATE_INT);
-$folder = $tfunction->py($className);
+$folder = $tfunction->py($className, 'tfunction::ZNSymbolFilter');
 
 // 一个匿名方法 作用删除栏目缓存数据
 $AMNewsCacheClassifty = function () use($conn) {
@@ -217,7 +217,7 @@ switch ($act) {
                     break;
                 case 2:
                     $t_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
-                    $Rs = $conn->where(['id'=>(int)$t_id])->get('classify');
+                    $Rs = $conn->where(['id' => (int) $t_id])->get('classify');
                     $setting = empty($Rs[0]['setting']) ? 0 : $Rs[0]['setting']
                     ?>
                     <dl>

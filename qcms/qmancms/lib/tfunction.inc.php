@@ -137,25 +137,49 @@ class tfunction {
      * ?>
      * </pre>
      * @param string $ZNContent <p>
-     * 中文内容  <b>不能为空，长度不能超过20个字符</b>
+     * 中文内容  <b>不能为空</b>
      * </p> 
+     * @param function  callBack
+     * 回调方法
+     * @param int len
+     * 输入最长长度
      * @return sting|bool <p>
      * 在为超过20（中文）字符的时候系统会将转换为拼音字母并输出，超出时候则输出布尔型的FALSE以表示失败
      * </p>
      */
-    public function py($ZNContent) {
+    public function py($ZNContent, $callBack = '', $len = 20) {
         $zd = '';
         if (!function_exists('zhconversion_hans')) {
             include plus . "Zdian.php";
             include plus . "convert.php";
             $this->zd = $zd;
         }
-        if (mb_strlen($ZNContent, 'utf-8') <= 20) {
+        
+        if ($callBack) {
+            $ZNContent = call_user_func_array($callBack, array($ZNContent, $len));
+        }
+        if (mb_strlen($ZNContent, 'utf-8') <= $len) {
             $string = zhconversion_hans($ZNContent);
             return strtr($string, $this->zd);
         } else {
             return FALSE;
         }
+    }
+
+    /**
+     * <b>中文符合过滤</b>
+     * @param string $str 
+     * 中文内容  
+     * @return string 
+     * 过滤后的信息
+     */
+    public function ZNSymbolFilter($str, $len) {
+        $re = ["\t","\n", "\r", "\r\n", ' ', '·', '｜', '～', '！', '＠', '＃', '￥', '％', '…', '＆', '＊', '（', '）', '—', '＋', '－', '＝', '『', '』', '「', '」', '：', '“', '|', '；', '‘', '、', '《', '》', '？', '，', '。', '/', '@', '#', '%', '&', '*', '-', '=', '+', '【', '】', '~', '!', '$', '^', '(', ')', '_', '{', '}', '[', ']', ':', '"', ';', '\'', '\\', '<', '>', '?', ',', '.',];
+        $filterStr = str_replace($re, '', $str);
+        if (!empty($len)) {
+            $filterStr = mb_substr($filterStr, 0, $len, 'utf-8');
+        }
+        return $filterStr;
     }
 
     /**

@@ -94,7 +94,7 @@ switch ($act) {
         empty($descriptionINPUT) && $descriptionINPUT = $subtitleINPUT;
         !is_numeric($sortINPUT) && $sortINPUT = 0;
 // 标题拼音化
-        $pinyin = $tfunction->py(mb_substr($titleINPUT, 0, 20, 'utf-8')) . '-' . md5(microtime());
+        $pinyin = $tfunction->py($titleINPUT,'tfunction::ZNSymbolFilter') . '-' . md5(microtime());
 
 // 图片上传功能
         $path = $AMNewsUploadImage();
