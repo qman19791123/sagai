@@ -270,7 +270,7 @@ switch ($act) {
                             backdropBackground: '',
                             title: '<?php echo $lang['prompt'] ?>',
                             content: '<?php echo $lang['mesgIsRestoreSomeContent'] ?>',
-                            okValue: '确定',
+                            okValue: '<?php echo $lang['ok'] ?>',
                             width: '500px',
                             ok: function () {
                                 this.title('<?php echo $lang['mesgRestore'] ?>');
