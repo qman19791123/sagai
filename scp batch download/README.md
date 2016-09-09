@@ -55,7 +55,7 @@
 		#以写方式开启日志文件
 		fout = open ('./config/log.txt', "w")
 	
-		#平装服务连接链
+		#拼装服务连接链
 		cmd = 'ssh %s@%s'%(user_,hots_)
 		child = pexpect.spawn(cmd)
 		#执行密码
