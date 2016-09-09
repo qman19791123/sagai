@@ -1,3 +1,5 @@
+=============================================
+
 # **文件拖取程式**
 
 * 请执行 run.py 文件
@@ -106,73 +108,68 @@
 
 	### 2 CollectionDocument.py 
 	#-------------------------------------------------------------------------------------
-		配置头
-		{
-			#!/usr/bin/python
-			#coding=utf-8
-		}
-		引入包
-		{
-			import datetime
-			import os,sys,pexpect,time
+	```python
+		#!/usr/bin/python
+		#coding=utf-8
+		#引入包		
+		import datetime
+		import os,sys,pexpect,time
 
-			try:
-				import cPickle as pickle
-			except ImportError:
-				import pickle
+		try:
+			import cPickle as pickle
+		except ImportError:
+			import pickle
 
-			import config
-		}
-		配置文件
-		{
+		import config
+		
+		#配置文件
+	
 		
 		#短串联重复序列 （#网站目录）
 		strs = config.webFolder_
 		# 时间
 		now = datetime.datetime.now()
-		}
-		job 
-		{
-			#获取 dump 文件中内容
-			inputs = open('./config/dump.txt', 'r').read()
-			# 转换格式
-			rp = pickle.loads(inputs)
 		
-			#配置 log 文件夹 不存在时候建立
-			if not os.path.exists(config.log_):
-				os.makedirs('%s/%s'%(os.getcwd(),config.log_))
+		#获取 dump 文件中内容
+		inputs = open('./config/dump.txt', 'r').read()
+		# 转换格式
+		rp = pickle.loads(inputs)
+	
+		#配置 log 文件夹 不存在时候建立
+		if not os.path.exists(config.log_):
+			os.makedirs('%s/%s'%(os.getcwd(),config.log_))
 
-			#以写方式开启日志文件
-			fout = open ('%s/%s/log'%(os.getcwd(),config.log_), "w")
+		#以写方式开启日志文件
+		fout = open ('%s/%s/log'%(os.getcwd(),config.log_), "w")
 
-			#建立本地与服务器对应文件夹
-			for x in rp:
-				file =  '/'.join(x.split('/')[1:-1])
-				#li.append(file)
-				try:
-				os.makedirs('%s/%s'%(os.getcwd(),file))
-				except:
-				continue
+		#建立本地与服务器对应文件夹
+		for x in rp:
+			file =  '/'.join(x.split('/')[1:-1])
+			#li.append(file)
+			try:
+			os.makedirs('%s/%s'%(os.getcwd(),file))
+			except:
+			continue
 
-			#拖取文件
-			for x in rp:
-				#在相对时间主动关闭程序
-				if(int(now.strftime("%H")) == int(config.orvetime_)):
-				exit();
-				file2 = '%s%s'%(strs,x[1:])
-				file1 = '%s/%s'%(os.getcwd(),'/'.join(x.split('/')[1:-1]))
-				isfile ='%s/%s'%(os.getcwd(),'/'.join(x.split('/')))
-				if not os.path.exists(isfile):
-				#使用 scp 方式拖取文件
-				cmd = 'scp -r  %s@%s:%s %s'%(config.user_,config.hots_,file2,file1)
-				child = pexpect.spawn(cmd)
-				child.expect('.ssword:')
-				child.sendline(config.pass_)
-				#完成后记录日志
-				fout.write("%s ok \r\n"%cmd)
-				#暂停半秒钟
-				time.sleep(0.5)
-			#完成后关闭文件
-			fout.close()
-		}
+		#拖取文件
+		for x in rp:
+			#在相对时间主动关闭程序
+			if(int(now.strftime("%H")) == int(config.orvetime_)):
+			exit();
+			file2 = '%s%s'%(strs,x[1:])
+			file1 = '%s/%s'%(os.getcwd(),'/'.join(x.split('/')[1:-1]))
+			isfile ='%s/%s'%(os.getcwd(),'/'.join(x.split('/')))
+			if not os.path.exists(isfile):
+			#使用 scp 方式拖取文件
+			cmd = 'scp -r  %s@%s:%s %s'%(config.user_,config.hots_,file2,file1)
+			child = pexpect.spawn(cmd)
+			child.expect('.ssword:')
+			child.sendline(config.pass_)
+			#完成后记录日志
+			fout.write("%s ok \r\n"%cmd)
+			#暂停半秒钟
+			time.sleep(0.5)
+		#完成后关闭文件
+		fout.close()
+	```
 
