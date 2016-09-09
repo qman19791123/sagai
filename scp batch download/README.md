@@ -23,7 +23,7 @@
 	执行程序<br/>
 
 </h2> 3 代码介绍 </h2>
-** 1 GetFiles.py **
+### **1 GetFiles.py**
 ``` python
 
 	#!/usr/bin/python
@@ -91,7 +91,7 @@
 		pickle.dump(lm, f)
 		f.close()
 ```
-** 2 CollectionDocument.py ** 
+### **2 CollectionDocument.py** 
 ``` python
 	#!/usr/bin/python
 	#coding=utf-8
