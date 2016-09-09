@@ -8,10 +8,10 @@
 1 chmod +x run.py (赋予执行权限)
 2 nohup ./run.py & (使用 nohup 方式执行程序)
 ## **1 文件**
-	>>*CollectionDocument.py			集合文档
-	>>*>GetFiles.py				获取文件
-	>>*config.py				配置文件
-	>>*run.py					执行文件
+	**CollectionDocument.py				集合文档**
+	**GetFiles.py					获取文件**
+	**config.py					配置文件**
+	**run.py					执行文件**
 ## **2 文件介绍**
 	>>*1 GetFiles.py 
 	>>>用于采集服务器上的所有相关文件的地址
