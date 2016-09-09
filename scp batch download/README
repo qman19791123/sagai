@@ -1,16 +1,16 @@
-#文件拖取程式 
+# **文件拖取程式**
 
-##* 请执行 run.py 文件
-##* 执行方法 python run.py
-##* 后台执行方法
-###1 chmod +x run.py (赋予执行权限)
-###2 nohup ./run.py & (使用 nohup 方式执行程序)
-1 文件
+* 请执行 run.py 文件
+* 执行方法 python run.py
+* 后台执行方法
+1 chmod +x run.py (赋予执行权限)
+2 nohup ./run.py & (使用 nohup 方式执行程序)
+## **1 文件**
 	CollectionDocument.py			集合文档
 	GetFiles.py				获取文件
 	config.py				配置文件
 	run.py					执行文件
-2 文件介绍
+## **2 文件介绍**
 	1 GetFiles.py 
 		用于采集服务器上的所有相关文件的地址
 	2 CollectionDocument.py 
@@ -20,39 +20,34 @@
 	4 run.py
 		执行程序
 
-3 代码介绍
+## **3 代码介绍**
 
-	1 GetFiles.py 
+	### **1 GetFiles.py **
 	#-------------------------------------------------------------------------------------
-		配置头
-		{
+	```python
+	
 		#!/usr/bin/python
 		#coding=utf-8
-		}
-		引入包
-		{
-			import os,sys,pexpect,time，config
-			try:
-					import cPickle as pickle
-			except ImportError:
-					import pickle
-		}
-		配置文件
-		{
-			#hots 服务器地址
-			hots_ = config.hots_
-			#user 服务器用户名
-			user_ = config.user_
-			#pass 服务器密码
-			pass_= config.pass_
-			# live make 临时使用
-			lm =[]
-			i=0
-			j=0
-			t=False
-		}
-		job 
-		{
+		#引入包
+		import os,sys,pexpect,time，config
+		try:
+			import cPickle as pickle
+		except ImportError:
+			import pickle
+				
+		#hots 服务器地址
+		hots_ = config.hots_
+		#user 服务器用户名
+		user_ = config.user_
+		#pass 服务器密码
+		pass_= config.pass_
+		# live make 临时使用
+		lm =[]
+		i=0
+		j=0
+		t=False
+	
+		
 		#配置 config 文件夹 不存在时候建立
 		if not os.path.exists('./config'):
 			os.makedirs('%s/%s'%(os.getcwd(),'./config'))
@@ -95,7 +90,7 @@
 			f = open('./config/dump.txt', 'wb')
 			pickle.dump(lm, f)
 			f.close()
-		}
+	```
 
 
 
@@ -108,7 +103,8 @@
 
 
 
-	2 CollectionDocument.py 
+
+	### 2 CollectionDocument.py 
 	#-------------------------------------------------------------------------------------
 		配置头
 		{
