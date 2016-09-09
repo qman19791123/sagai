@@ -2,12 +2,12 @@
 
 # **文件拖取程式**
 
-* 请执行 run.py 文件
-* 执行方法 python run.py
-* 后台执行方法
-1 chmod +x run.py (赋予执行权限)
-2 nohup ./run.py & (使用 nohup 方式执行程序)
-## **1 文件**
+* 请执行 run.py 文件 <br/>
+* 执行方法 python run.py <br/>
+* 后台执行方法 <br/>
+1 chmod +x run.py (赋予执行权限)<br/>
+2 nohup ./run.py & (使用 nohup 方式执行程序)<br/>
+## **1 文件** <br/>
 	CollectionDocument.py				集合文档<br/>
 	GetFiles.py					获取文件<br/>
 	config.py					配置文件<br/>
