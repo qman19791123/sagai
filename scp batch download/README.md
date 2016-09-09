@@ -7,24 +7,24 @@
 * 后台执行方法 <br/>
 1 chmod +x run.py (赋予执行权限)<br/>
 2 nohup ./run.py & (使用 nohup 方式执行程序)<br/>
-## **1 文件** <br/>
+### **1 文件** <br/>
 	CollectionDocument.py				集合文档<br/>
 	GetFiles.py					获取文件<br/>
 	config.py					配置文件<br/>
 	run.py						执行文件<br/>
-## **2 文件介绍**
-	>>*1 GetFiles.py 
-	>>>用于采集服务器上的所有相关文件的地址
-	>>*2 CollectionDocument.py 
-	>>>用于获取服务器上的文件并下载至本地
-	>>*3 config.py 
-	>>>配置采集需要的信息 （如服务器名，密码...等）
-	>>*4 run.py
-	>>>执行程序
+### **2 文件介绍**
+	*1 GetFiles.py <br/>
+	用于采集服务器上的所有相关文件的地址<br/>
+	*2 CollectionDocument.py <br/>
+	用于获取服务器上的文件并下载至本地<br/>
+	*3 config.py <br/>
+	配置采集需要的信息 （如服务器名，密码...等）<br/>
+	*4 run.py<br/>
+	执行程序<br/>
 
-## **3 代码介绍**
+### **3 代码介绍**
 
-	### **1 GetFiles.py **
+	**1 GetFiles.py **
 	```python
 	
 		#!/usr/bin/python
