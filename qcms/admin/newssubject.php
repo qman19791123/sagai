@@ -10,34 +10,64 @@ $uuid = md5(uniqid(time()));
 // get
 $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT); //新闻编号 (有时间修改此命名)
+$id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
 $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
-
+$style = filter_input(INPUT_GET, 'style', FILTER_VALIDATE_BOOLEAN);
 
 // post
 // 数据添加 删除 修改 操作
-$specialName = filter_input(INPUT_POST, 'specialName', FILTER_SANITIZE_MAGIC_QUOTES);
-$introduction = filter_input(INPUT_POST, 'introduction', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
+$specialNameINPUT = filter_input(INPUT_POST, 'specialName', FILTER_SANITIZE_MAGIC_QUOTES);
+$introductionINPUT = filter_input(INPUT_POST, 'introduction', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
+$idINPUT = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_STRING);
 
+$pIdINPUT = filter_input(INPUT_POST, 'pid', FILTER_SANITIZE_STRING);
+$classifyNameINPUT = filter_input(INPUT_POST, 'classifyName', FILTER_SANITIZE_STRING);
+$templateINPUT = filter_input(INPUT_POST, 'template', FILTER_SANITIZE_STRING);
+$templateContentINPUT = filter_input(INPUT_POST, 'templateContent', FILTER_SANITIZE_STRING);
+$classifyIdINPUT = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_STRING);
+$specialIdINPUT = filter_input(INPUT_POST, 'specialId', FILTER_SANITIZE_STRING);
 
 switch ($act) {
     case 1:
-        empty($introduction) && die($tfunction->message($lang['mesgIntroductionNotEmpty']));
-        empty($specialName) && die($tfunction->message($lang['mesgSpecialNameNotEmpty']));
+        empty($introductionINPUT) && die($tfunction->message($lang['mesgIntroductionNotEmpty']));
+        empty($specialNameINPUT) && die($tfunction->message($lang['mesgSpecialNameNotEmpty']));
         $pinyin = $tfunction->py($introduction, 'tfunction::ZNSymbolFilter');
         $conn->insert('special_config', [
-            'specialName' => $specialName,
-            'introduction' => $introduction,
+            'specialName' => $specialNameINPUT,
+            'introduction' => $introductionINPUT,
             'pinyin' => $pinyin,
-            'time' => time()
+            'time' => time(),
+            'id' => $idINPUT
         ]);
-        die($tfunction->message($lang['mesgAddContentSuccess'], 'newssubject.php'));
+        if (!$style) {
+            die($tfunction->message($lang['mesgUpdateContentSuccess'], 'newssubject.php'));
+        } else {
+            exit(json_encode([TRUE]));
+        }
         break;
     case 2:
-        empty($introduction) && die($tfunction->message($lang['mesgIntroductionNotEmpty']));
-        empty($specialName) && die($tfunction->message($lang['mesgSpecialNameNotEmpty']));
-        $conn->where('id=' . $id)->update('special_config', [ 'specialName' => $specialName, 'introduction' => $introduction]);
-        die($tfunction->message($lang['mesgUpdateContentSuccess'], 'newssubject.php'));
+        empty($introductionINPUT) && die($tfunction->message($lang['mesgIntroductionNotEmpty']));
+        empty($specialNameINPUT) && die($tfunction->message($lang['mesgSpecialNameNotEmpty']));
+        $conn->where('id=' . $id)->update('special_config', [ 'specialName' => $specialNameINPUT, 'introduction' => $introductionINPUT]);
+        if (!$style) {
+            die($tfunction->message($lang['mesgUpdateContentSuccess'], 'newssubject.php'));
+        } else {
+            exit(json_encode([TRUE]));
+        }
+        // die($tfunction->message($lang['mesgUpdateContentSuccess'], 'newssubject.php'));
+        break;
+    case 5:
+
+
+
+        break;
+    case 6:
+        if (!empty($idINPUT) && !empty($Rs = $conn->select('count(id) as cid')->where('id=' . $idINPUT)->get('special_config')) && (!empty($Rs[0]['cid']))) {
+            $conn->insert('special_classify', ['id' => trim($uuid), 'specialId' => trim($idINPUT)]);
+            exit(json_encode([TRUE, $uuid]));
+        } else {
+            exit(json_encode([FALSE]));
+        }
         break;
 }
 ?>
@@ -204,13 +234,13 @@ switch ($act) {
                                         <li>
                                             <strong>栏目设置
                                                 <span>
-                                                    <a class="nodedel" href="javascript:void(0)" data-id="<?php print(!empty($id) ? $id : $uuid); ?>">删除</a>
-                                                    <a class="nodeadd" href="javascript:void(0)" data-id="<?php print(!empty($id) ? $id : $uuid); ?>">提交</a>
+                                                    <a class="nodedel" href="javascript:void(0)">删除</a>
+                                                    <a class="nodeadd" href="javascript:void(0)">提交</a>
                                                 </span>
                                             </strong>
                                             <p>
                                                 <label>上级栏目:</label>
-                                                <select style="width: 150px;">
+                                                <select style="width: 150px;" name="pid">
                                                     <option>主目录:</option>
                                                 </select>
                                                 <label>栏目名称:</label><input type="text" style="width: 65%">
@@ -223,6 +253,40 @@ switch ($act) {
                                             </p>
                                             <p class="page"><p>
                                         </li>
+
+                                        <?php
+                                        if (!empty($id)):
+                                            $Rs = $conn->where('specialId=' . $id)->get('special_classify');
+                                            if ($Rs):
+                                                foreach ($Rs as $k => $v):
+                                                    ?><li data-id="<?php echo $v['id'] ?>">
+                                                        <strong>栏目设置
+                                                            <span>
+                                                                <a class="nodeadd" href="javascript:void(0)" >提交</a>
+                                                                <a class="nodedel" href="javascript:void(0)" >删除</a>
+                                                            </span>
+                                                        </strong>
+                                                        <p>
+                                                            <label>上级栏目:</label>
+                                                            <select style="width: 150px;">
+                                                                <option>主目录:</option>
+                                                            </select>
+                                                            <label>栏目名称:</label><input value="<?php echo $v['classifyName'] ?>" type="text" style="width: 65%">
+                                                        </p>
+                                                        <p><label>专题列表模板:</label><input value="<?php echo $v['template'] ?>" type="text" style="width: 65%"></p>
+                                                        <p><label>专题内容模板:</label><input value="<?php echo $v['templateContent'] ?>" type="text" style="width: 65%"></p>
+                                                        <strong>旗下文章<span id="<?php print(!empty($id) ? $id : $uuid); ?>">获取</span></strong>
+                                                        <p class="newlist">
+
+                                                        </p>
+                                                        <p class="page"><p>
+                                                    </li>
+                                                    <?php
+                                                endforeach;
+                                            endif;
+                                        endif;
+                                        ?>
+
                                     </ul>
                                 </fieldset>
                                 <div class="tijiao">
@@ -261,12 +325,45 @@ switch ($act) {
         <script src="../js/qmancms.js" type="text/javascript"></script>
 
         <script type="text/javascript">
+            $('.newscontent li').eq(0).hide();
             $('.addclassify').on('click', function () {
-                //alert($(this).data('id'));
-                $('.newscontent').prepend('<li data-id="' + generateUUID('xxxxxxxxxxxxxxxxxxxxxxx') + '">' + $('.newscontent li').html() + '</li>');
+
+                if ($('input[name=specialName]').val() && $('textarea[name=introduction]').val()) {
+                    var id = $(this).data('id');
+                    $.post('?act=6', {'id': id}, function (data) {
+                        if (!data) {
+                            if (confirm('专题名稱及介绍未保存，只有保存后才能执行添栏目操作，现在是否保存?')) {
+                                $.post('?act=1&style=1',
+                                        {'specialName': $('input[name=specialName]').val(),
+                                            'introduction': $('textarea[name=introduction]').val(),
+                                            'id': id
+                                        },
+                                        function (data) {
+                                            if (data)
+                                            {
+                                                $.post('?act=6', {'id': id}, function (data) {
+                                                    $('.newscontent').prepend('<li data-id="' + data[1] + '">' + $('.newscontent li').html() + '</li>');
+                                                });
+                                            }
+                                        });
+                            }
+                            return NULL;
+                        }
+                        $('.newscontent').prepend('<li data-id="' + data[1] + '">' + $('.newscontent li').html() + '</li>');
+                    }, 'JSON');
+                } else
+                {
+                    alert('请先填写专题名稱及介绍');
+                }
+
+//                
             });
-            $('fieldset').on('click', '.nodedel', function () {
-                alert('111');
+            $('fieldset').on('click', '.nodeadd', function ($data) {
+                alert($(this).data('id'));
+
+            });
+            $('fieldset').on('click', '.nodedel', function ($data) {
+                alert($data);
             });
         </script>
 
