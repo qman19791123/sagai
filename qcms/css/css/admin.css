@@ -236,10 +236,10 @@ textarea {
     color: #333;
   }
   .adminMain .content2 {
-    width: 80%;
+    width: 85%;
     display: inline-block;
     font-size: 12px;
-    margin: 25px 2.5%;
+    margin: 25px 0;
     text-align: center;
     height: 85%;
   }
@@ -262,6 +262,63 @@ textarea {
   }
   .adminContent .addLink a {
     color: #444;
+  }
+  .adminContent fieldset {
+    width: 100%;
+    display: inline-block;
+    border: 1px solid #ccc;
+  }
+  .adminContent fieldset legend {
+    width: 100%;
+    display: inline-block;
+    line-height: 35px;
+    font-size: 12px;
+    border: none;
+    padding: 0 20px;
+    border-top: 1px solid #ccc;
+  }
+  .adminContent fieldset legend span {
+    float: right;
+  }
+  .adminContent fieldset ul {
+    display: inline-block;
+    width: 100%;
+    padding: 10px;
+  }
+  .adminContent fieldset ul li {
+    display: inline-block;
+    width: 100%;
+    font-size: 12px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin: 10px 0;
+  }
+  .adminContent fieldset ul li p,
+  .adminContent fieldset ul li strong {
+    width: 100%;
+    display: block;
+    line-height: 40px;
+  }
+  .adminContent fieldset ul li p label,
+  .adminContent fieldset ul li strong label {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  .adminContent fieldset ul li p span,
+  .adminContent fieldset ul li strong span {
+    display: block;
+  }
+  .adminContent fieldset ul li p.newlist,
+  .adminContent fieldset ul li strong.newlist {
+    height: 200px;
+    overflow-y: scroll;
+  }
+  .adminContent fieldset ul li strong {
+    font-weight: normal;
+    border-bottom: 1px solid #ccc;
+  }
+  .adminContent fieldset ul li strong span {
+    float: right;
   }
   .adminContent dl {
     width: 100%;
@@ -583,10 +640,10 @@ textarea {
     color: #333;
   }
   .adminMain .content2 {
-    width: 80%;
+    width: 85%;
     display: inline-block;
     font-size: 12px;
-    margin: 25px 2.5%;
+    margin: 25px 0;
     text-align: center;
     height: 85%;
   }
@@ -633,6 +690,63 @@ textarea {
   }
   .adminContent .addLink a {
     color: #444;
+  }
+  .adminContent fieldset {
+    width: 100%;
+    display: inline-block;
+    border: 1px solid #ccc;
+  }
+  .adminContent fieldset legend {
+    width: 100%;
+    display: inline-block;
+    line-height: 35px;
+    font-size: 12px;
+    border: none;
+    padding: 0 20px;
+    border-top: 1px solid #ccc;
+  }
+  .adminContent fieldset legend span {
+    float: right;
+  }
+  .adminContent fieldset ul {
+    display: inline-block;
+    width: 100%;
+    padding: 10px;
+  }
+  .adminContent fieldset ul li {
+    display: inline-block;
+    width: 100%;
+    font-size: 12px;
+    padding: 20px;
+    border: 1px solid #ccc;
+    margin: 10px 0;
+  }
+  .adminContent fieldset ul li p,
+  .adminContent fieldset ul li strong {
+    width: 100%;
+    display: block;
+    line-height: 40px;
+  }
+  .adminContent fieldset ul li p label,
+  .adminContent fieldset ul li strong label {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  .adminContent fieldset ul li p span,
+  .adminContent fieldset ul li strong span {
+    display: block;
+  }
+  .adminContent fieldset ul li p.newlist,
+  .adminContent fieldset ul li strong.newlist {
+    height: 200px;
+    overflow-y: scroll;
+  }
+  .adminContent fieldset ul li strong {
+    font-weight: normal;
+    border-bottom: 1px solid #ccc;
+  }
+  .adminContent fieldset ul li strong span {
+    float: right;
   }
   .adminContent dl {
     width: 100%;

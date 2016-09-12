@@ -102,7 +102,7 @@ if (StaticOpen && !is_dir(staticFloder)) {
 //设置session
 $cookiesSystemName = filter_input(INPUT_COOKIE, $systemName, FILTER_SANITIZE_STRING);
 if (empty($cookiesSystemName)) {
-    $p = 'qmancms' . md5(rand(10000, 99999) + time()) . uniqid(time());
+    $p = uniqid('qmancms' . md5(microtime()));
     session_name($systemName);
     session_id($p);
     session_start();

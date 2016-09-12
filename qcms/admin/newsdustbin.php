@@ -216,7 +216,7 @@ switch ($act) {
                     </dd>
                 <?php else: ?>
                     <dd class='notInfo'><span><?php echo $lang['notInfo'] ?></span></dd>
-                <?php endif; ?>
+                    <?php endif; ?>
             </dl>
         </div>
         <!--dialog  -->
@@ -224,6 +224,7 @@ switch ($act) {
     <script type="text/javascript" src="../js/Dialog/dist/dialog-min.js"></script>
     <script type="text/javascript">
 <?php printf('var classifyJson =%s;', json_encode($classifyJson)); ?>
+                    var mesgConfirmDeletion = '<?php echo $lang['mesgConfirmDeletion']; ?>';
                     $('.atable ul li').each(function (i, p) {
                         if ($(p).attr('data-id'))
                         {
@@ -298,11 +299,7 @@ switch ($act) {
                             cancel: function () {}
                         }).showModal();
                     });
-
-                    $('.delmes').on('click', function () {
-                        return confirm('<?php echo $lang['mesgConfirmDeletion']; ?>');
-                    });
-
     </script>
+    <script src="../js/qmancms.js" type="text/javascript"></script>
 </body>
 </html>

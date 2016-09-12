@@ -228,10 +228,10 @@ textarea{
         }
     }
     .content2{
-        width: 80%;
+        width: 85%;
         display: inline-block;
         font-size: 12px;
-        margin: 25px 2.5%;
+        margin: 25px 0;
         text-align: center;
 
         height: 85%;
@@ -258,6 +258,63 @@ textarea{
             color: #444;
         }
     }
+    fieldset{
+        width: 100%;
+        display: inline-block;
+        border: 1px solid #ccc;
+
+        legend{
+            width: 100%;
+            display: inline-block;
+            line-height: 35px;
+            font-size: 12px;
+            border:none;
+            padding:0 20px;
+            border-top:1px solid #ccc;
+            span{
+                float: right;
+            }
+        }
+      
+        ul{
+            display: inline-block;
+            width: 100%;
+            padding: 10px;
+            li{
+                display: inline-block;
+                width: 100%;
+                font-size: 12px;
+                padding:20px;
+                border: 1px solid #ccc;
+                margin: 10px 0;
+                p,strong{
+                    width: 100%;
+                    display: block;
+                    line-height: 40px;
+                    label{
+                        display: inline-block;
+                        margin-right: 10px;
+                    }
+                    span{
+                        display: block;
+                    }
+                    &.newlist{
+                        height: 200px;
+                        overflow-y: scroll;
+                    }
+                }
+                strong{
+                    font-weight: normal;
+                    border-bottom: 1px solid #ccc;
+                    span{
+                        float: right;
+                        
+                    }
+                }
+            }
+        }
+    }
+
     dl{
         width: 100%;
         dt{

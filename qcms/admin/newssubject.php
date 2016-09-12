@@ -6,7 +6,7 @@ include 'isadmin.php';
 include lang . $language;
 $tfunction = new tfunction();
 $conn = $tfunction->conn;
-
+$uuid = md5(uniqid(time()));
 // get
 $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
@@ -37,6 +37,7 @@ switch ($act) {
         empty($introduction) && die($tfunction->message($lang['mesgIntroductionNotEmpty']));
         empty($specialName) && die($tfunction->message($lang['mesgSpecialNameNotEmpty']));
         $conn->where('id=' . $id)->update('special_config', [ 'specialName' => $specialName, 'introduction' => $introduction]);
+        die($tfunction->message($lang['mesgUpdateContentSuccess'], 'newssubject.php'));
         break;
 }
 ?>
@@ -167,12 +168,17 @@ switch ($act) {
                         $introduction = tfunction::decode($Rs[0]['introduction']);
                     }
                     ?>
+
                     <dl>
                         <dt>
                             <?php echo $lang['specialArticleManager']; ?>
                         </dt>
                         <dd>
-                            <form method="post"  enctype="multipart/form-data" action="?act=<?php echo $cpage ?><?php !empty($id) && print('&id=' . $id) ?>">
+                            <form method="post"  enctype="multipart/form-data" 
+                                  action="?act=<?php
+                                  echo $cpage;
+                                  printf('&id=%s', !empty($id) ? $id : $uuid);
+                                  ?>">
                                 <div class="list atable">
                                     <ul class="list a20_80">
                                         <li>
@@ -191,6 +197,34 @@ switch ($act) {
                                         </li>
                                     </ul>
                                 </div>
+
+                                <fieldset>
+                                    <legend>栏目设置<span class='addclassify' data-id="<?php print(!empty($id) ? $id : $uuid); ?>">添加</span></legend>
+                                    <ul class="newscontent">
+                                        <li>
+                                            <strong>栏目设置
+                                                <span>
+                                                    <a class="nodedel" href="javascript:void(0)" data-id="<?php print(!empty($id) ? $id : $uuid); ?>">删除</a>
+                                                    <a class="nodeadd" href="javascript:void(0)" data-id="<?php print(!empty($id) ? $id : $uuid); ?>">提交</a>
+                                                </span>
+                                            </strong>
+                                            <p>
+                                                <label>上级栏目:</label>
+                                                <select style="width: 150px;">
+                                                    <option>主目录:</option>
+                                                </select>
+                                                <label>栏目名称:</label><input type="text" style="width: 65%">
+                                            </p>
+                                            <p><label>专题列表模板:</label></p>
+                                            <p><label>专题内容模板:</label></p>
+                                            <strong>旗下文章<span id="<?php print(!empty($id) ? $id : $uuid); ?>">获取</span></strong>
+                                            <p class="newlist">
+
+                                            </p>
+                                            <p class="page"><p>
+                                        </li>
+                                    </ul>
+                                </fieldset>
                                 <div class="tijiao">
                                     <button type="submit"><?php echo $lang['submit']; ?></button>
                                     <button type="reset"><?php echo $lang['reset']; ?></button>
@@ -220,26 +254,22 @@ switch ($act) {
                     </dl>
             <?php endswitch; ?> 
         </div>
+
         <script>
-            //mouseover
-            $('.adminContent .atable ul').on('mouseover', function () {
-                $(this).css({'background': '#444'});
-                $(this).find('a').css({'background': '', 'color': '#fff'});
-            }).on('mouseout', function () {
-                $(this).css({'background': '', 'color': ''});
-                $(this).find('a').css({'background': '', 'color': ''});
-            });
-            //删除提示 code start
-            $('.delmes').on('click', function () {
-                return confirm('<?php echo $lang['mesgConfirmDeletion']; ?>');
-            });
-            //返回上一页 按钮 code start
-            $('#fanhui').on('click', function () {
-                self.history.go(-1);
-            });
-
-
+            var mesgConfirmDeletion = '<?php echo $lang['mesgConfirmDeletion']; ?>';
         </script>
+        <script src="../js/qmancms.js" type="text/javascript"></script>
+
+        <script type="text/javascript">
+            $('.addclassify').on('click', function () {
+                //alert($(this).data('id'));
+                $('.newscontent').prepend('<li data-id="' + generateUUID('xxxxxxxxxxxxxxxxxxxxxxx') + '">' + $('.newscontent li').html() + '</li>');
+            });
+            $('fieldset').on('click', '.nodedel', function () {
+                alert('111');
+            });
+        </script>
+
     </body>
 
 </html>
