@@ -234,8 +234,8 @@ switch ($act) {
                                         <li>
                                             <strong>栏目设置
                                                 <span>
-                                                    <a class="nodedel" href="javascript:void(0)">删除</a>
                                                     <a class="nodeadd" href="javascript:void(0)">提交</a>
+                                                    <a class="nodedel" href="javascript:void(0)">删除</a>
                                                 </span>
                                             </strong>
                                             <p>
@@ -362,8 +362,8 @@ switch ($act) {
                 alert($(this).data('id'));
 
             });
-            $('fieldset').on('click', '.nodedel', function ($data) {
-                alert($data);
+            $('fieldset').on('click', '.nodedel', function (data) {
+                alert($(this).parents('li').data('id'));
             });
         </script>
 
