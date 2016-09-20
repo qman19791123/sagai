@@ -23,6 +23,18 @@ function generateUUID(style) {
     return uuid;
 }
 
+//排序 权重 数量 设置 code start
+$('.sort').append(function () {
+    var html = '', t;
+    for (i = -10; i <= 10; ++i) {
+        t = parseInt($(this).data('sort')) === parseInt(i) ? 'selected' : '';
+        html += '<option ' + t + '>' + i + '</option>';
+    }
+    return html;
+});
+//排序 权重 数量 设置 code end
+
+
 //mouseover
 $('.adminContent .atable ul').on('mouseover', function () {
     $(this).css({'background': '#444'});

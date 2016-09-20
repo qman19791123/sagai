@@ -6,7 +6,7 @@ include 'isadmin.php';
 include lang . $language;
 $tfunction = new tfunction();
 $conn = $tfunction->conn;
-$uuid = md5(uniqid(time()));
+$uuid = md5(uniqid(microtime(TRUE)));
 // get
 $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
@@ -26,7 +26,7 @@ $templateINPUT = filter_input(INPUT_POST, 'template', FILTER_SANITIZE_STRING);
 $templateContentINPUT = filter_input(INPUT_POST, 'templateContent', FILTER_SANITIZE_STRING);
 $classifyIdINPUT = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_STRING);
 $specialIdINPUT = filter_input(INPUT_POST, 'specialId', FILTER_SANITIZE_STRING);
-
+$sortINPUT = filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT);
 switch ($act) {
     case 1:
         empty($introductionINPUT) && die($tfunction->message($lang['mesgIntroductionNotEmpty']));
@@ -58,7 +58,16 @@ switch ($act) {
         break;
     case 5:
 
-
+        if (!empty($idINPUT) && !empty($Rs = $conn->select('count(id) as cid')->where('id=' . $idINPUT)->get('special_classify'))) {
+            //print_r([$classifyNameINPUT, $templateINPUT, $templateContentINPUT, $idINPUT]);
+            $conn->update('special_classify', ['pinyin' => $tfunction->py($classifyNameINPUT, 'tfunction::ZNSymbolFilter'),
+                'sort' => $sortINPUT,
+                'pid' => $pIdINPUT,
+                'classifyName' => $classifyNameINPUT,
+                'template' => $templateINPUT,
+                'templateContent' => $templateContentINPUT], 'id="' . $idINPUT . '"');
+        }
+        exit();
 
         break;
     case 6:
@@ -243,8 +252,8 @@ switch ($act) {
                                                 <select style="width: 150px;" name="pid">
                                                     <option>主目录:</option>
                                                 </select>
-                                                <label>栏目名称:</label><input type="text" style="width: 65%">
                                             </p>
+                                            <p><label>栏目名称:</label><input type="text" style="width: 65%"><label>排序</label><select class='sort'data-sort='0'></select></p>
                                             <p><label>专题列表模板:</label></p>
                                             <p><label>专题内容模板:</label></p>
                                             <strong>旗下文章<span id="<?php print(!empty($id) ? $id : $uuid); ?>">获取</span></strong>
@@ -271,7 +280,11 @@ switch ($act) {
                                                             <select style="width: 150px;">
                                                                 <option>主目录:</option>
                                                             </select>
-                                                            <label>栏目名称:</label><input value="<?php echo $v['classifyName'] ?>" type="text" style="width: 65%">
+
+                                                        </p>
+                                                        <p>
+                                                            <label>栏目名称:</label><input value="<?php echo $v['classifyName'] ?>" type="text" style="width: 55%">
+                                                            <label>排序</label><select class='sort' data-sort='<?php echo empty($v['sort']) ? 0 : $v['sort'] ?>'></select>
                                                         </p>
                                                         <p><label>专题列表模板:</label><input value="<?php echo $v['template'] ?>" type="text" style="width: 65%"></p>
                                                         <p><label>专题内容模板:</label><input value="<?php echo $v['templateContent'] ?>" type="text" style="width: 65%"></p>
@@ -325,6 +338,7 @@ switch ($act) {
         <script src="../js/qmancms.js" type="text/javascript"></script>
 
         <script type="text/javascript">
+
             $('.newscontent li').eq(0).hide();
             $('.addclassify').on('click', function () {
 
@@ -360,10 +374,14 @@ switch ($act) {
             });
             $('fieldset').on('click', '.nodeadd', function ($data) {
                 var data = $(this).parents('li');
-                var id = data.data('id');
-                
-                $(data.find('input')).each(function(i,p){
-                    console.log($(p).val());
+                var inputData = {};
+                inputData['id'] = data.data('id');
+                inputData['classifyName'] = data.find('input:eq(0)').val();
+                inputData['template'] = data.find('input:eq(1)').val();
+                inputData['templateContent'] = data.find('input:eq(2)').val();
+                inputData['sort'] = data.find('.sort').val();
+                $.post('?act=5', inputData, function (data) {
+                    console.log(data);
                 });
             });
             $('fieldset').on('click', '.nodedel', function (data) {

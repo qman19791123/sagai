@@ -482,8 +482,7 @@ switch ($act) {
                                 <ul class="list a20_80">
                                     <li><?php echo $lang['sort']; ?></li>
                                     <li>
-                                        <select name="sort" class="sort">
-                                        </select>
+                                        <select name="sort" class="sort" data-sort='<?php echo $sort?>'></select>
                                     </li>
                                 </ul>
 
@@ -782,16 +781,7 @@ switch ($act) {
 
                     //文章审核code end
 
-                    //排序 权重 数量 设置 code start
-                    $('.sort').append(function () {
-                        var html = '', t;
-                        for (i = -10; i <= 10; ++i) {
-                            t = parseInt(<?php echo $sort ?>) === parseInt(i) ? 'selected' : '';
-                            html += '<option ' + t + '>' + i + '</option>';
-                        }
-                        return html;
-                    });
-                    //排序 权重 数量 设置 code end
+
 
                     //定位文章 栏目 select selected 挑选出来的选项位置 code start
                     $('.classifyId option').each(function (i, v) {
