@@ -359,8 +359,12 @@ switch ($act) {
 //                
             });
             $('fieldset').on('click', '.nodeadd', function ($data) {
-                alert($(this).data('id'));
-
+                var data = $(this).parents('li');
+                var id = data.data('id');
+                
+                $(data.find('input')).each(function(i,p){
+                    console.log($(p).val());
+                });
             });
             $('fieldset').on('click', '.nodedel', function (data) {
                 alert($(this).parents('li').data('id'));
