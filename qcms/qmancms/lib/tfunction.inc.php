@@ -154,7 +154,7 @@ class tfunction {
             include plus . "convert.php";
             $this->zd = $zd;
         }
-        
+
         if ($callBack) {
             $ZNContent = call_user_func_array($callBack, array($ZNContent, $len));
         }
@@ -174,9 +174,11 @@ class tfunction {
      * 过滤后的信息
      */
     public function ZNSymbolFilter($str, $len) {
-        $re = ["\t","\n", "\r", "\r\n", ' ', '·', '｜', '～', '！', '＠', '＃', '￥', '％', '…', '＆', '＊', '（', '）', '—', '＋', '－', '＝', '『', '』', '「', '」', '：', '“', '|', '；', '‘', '、', '《', '》', '？', '，', '。', '/', '@', '#', '%', '&', '*', '-', '=', '+', '【', '】', '~', '!', '$', '^', '(', ')', '_', '{', '}', '[', ']', ':', '"', ';', '\'', '\\', '<', '>', '?', ',', '.',];
+        $re = ["\t", "\n", "\r", "\r\n", ' ', '·', '｜', '～', '！', '＠', '＃', '￥', '％', '…', '＆', '＊', '（', '）', '—', '＋', '－', '＝', '『', '』', '「', '」', '：', '“', '|', '；', '‘', '、', '《', '》', '？', '，', '。', '/', '@', '#', '%', '&', '*', '-', '=', '+', '【', '】', '~', '!', '$', '^', '(', ')', '_', '{', '}', '[', ']', ':', '"', ';', '\'', '\\', '<', '>', '?', ',', '.',];
         $filterStr = str_replace($re, '', $str);
         if (!empty($len)) {
+            $slen = mb_strlen($str, 'utf-8');
+            $slen < $len && $len = $slen;
             $filterStr = mb_substr($filterStr, 0, $len, 'utf-8');
         }
         return $filterStr;
@@ -261,14 +263,11 @@ class tfunction {
             $data [$value['id']]['pid'] = $value['pid'];
             $data [$value['id']]['id'] = $value['id'];
             $data [$value['id']]['px'] = $value['px'];
-            $data [$value['id']]['className'] = $t . '├' . $value['className'];
+            $data [$value['id']]['className'] = $t . $v . $value['className'];
 
-            if ($value['pid'] == 0) {
-                $data [$value['id']]['className'] = str_replace("　　├", '', $data [$value['id']]['className']);
-                $t = str_replace("　　", '', $t);
-            }
 
-            $s = $this->classifyAchieved($data, $value['id'], $t, $rs);
+
+            $s = $this->classifyAchieved($data, $value['id'], $t, '├');
             if (!empty($s)) {
                 $data [$value['id']]['disabled'] = 'disabled';
             }

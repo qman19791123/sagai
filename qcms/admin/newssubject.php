@@ -27,6 +27,32 @@ $templateContentINPUT = filter_input(INPUT_POST, 'templateContent', FILTER_SANIT
 $classifyIdINPUT = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_STRING);
 $specialIdINPUT = filter_input(INPUT_POST, 'specialId', FILTER_SANITIZE_STRING);
 $sortINPUT = filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT);
+
+/**
+ * 一个匿名方法 排序分类
+ */
+$AMNnewssubjectClassify = function () use($conn) {
+
+    function data($conn, $id = 0,$t='',$p='') {
+        $t.='　';
+        $arr = array();
+        $sql = 'select id,classifyName  from special_classify where pid="' . $id . '"';
+
+        $rs = $conn->query($sql);
+        foreach ($rs as $value) {
+            $arr [$value['id']]['classifyName'] = $t.$p.$value['classifyName'];
+            $arr [$value['id']]['id'] = $value['id'];
+            $d = data($conn, $value['id'],$t,'├');
+            if (!empty($d)) {
+                $arr = $arr + $d;
+            }
+        }
+        return $arr;
+    }
+
+    return data($conn);
+};
+
 switch ($act) {
     case 1:
         empty($introductionINPUT) && die($tfunction->message($lang['mesgIntroductionNotEmpty']));
@@ -56,27 +82,44 @@ switch ($act) {
         }
         // die($tfunction->message($lang['mesgUpdateContentSuccess'], 'newssubject.php'));
         break;
+    case 4:
+        //删除分集
+        if (!empty($idINPUT)) {
+            $conn->delete('special_classify', ['id' => $idINPUT]);
+            exit(json_encode([TRUE]));
+        }
+        die(json_encode(FALSE));
+        break;
     case 5:
-
-        if (!empty($idINPUT) && !empty($Rs = $conn->select('count(id) as cid')->where('id=' . $idINPUT)->get('special_classify'))) {
+        //修改分集
+        if (!empty($idINPUT) && !empty($Rs = $conn->select('count(id) as cid,id')->where('id=' . $idINPUT)->get('special_classify')) && !empty($Rs[0]['cid'])) {
             //print_r([$classifyNameINPUT, $templateINPUT, $templateContentINPUT, $idINPUT]);
+
+            if ($Rs[0]['id'] == $pIdINPUT) {
+                die(json_encode([FALSE, 1]));
+            }
             $conn->update('special_classify', ['pinyin' => $tfunction->py($classifyNameINPUT, 'tfunction::ZNSymbolFilter'),
                 'sort' => $sortINPUT,
                 'pid' => $pIdINPUT,
                 'classifyName' => $classifyNameINPUT,
                 'template' => $templateINPUT,
                 'templateContent' => $templateContentINPUT], 'id="' . $idINPUT . '"');
+            die(json_encode([TRUE, 0]));
         }
-        exit();
-
+        die(json_encode([FALSE, 0]));
         break;
     case 6:
+
+        //添加分集
         if (!empty($idINPUT) && !empty($Rs = $conn->select('count(id) as cid')->where('id=' . $idINPUT)->get('special_config')) && (!empty($Rs[0]['cid']))) {
-            $conn->insert('special_classify', ['id' => trim($uuid), 'specialId' => trim($idINPUT)]);
+            $conn->insert('special_classify', ['id' => trim($uuid), 'specialId' => trim($idINPUT), 'time' => microtime(TRUE), 'sort' => 0, 'pid' => 0]);
             exit(json_encode([TRUE, $uuid]));
-        } else {
-            exit(json_encode([FALSE]));
         }
+        exit(json_encode([FALSE]));
+        break;
+    case 7:
+        //class ajax
+        die(json_encode($AMNnewssubjectClassify()));
         break;
 }
 ?>
@@ -87,7 +130,7 @@ switch ($act) {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>
-            <?php echo $systemName ?>
+<?php echo $systemName ?>
         </title>
         <link rel="stylesheet" type="text/css" href="<?php echo '../' . $tfunction->lessc('admin.less') ?>" />
         <!--字体图标 css -->
@@ -96,10 +139,10 @@ switch ($act) {
     </head>
     <body>
         <div class="adminContent">
-            <?php
-            switch ($cpage) :
-                case 0:
-                    ?>
+<?php
+switch ($cpage) :
+    case 0:
+        ?>
 
                     <?php
                     $pagec = ($page - 1) < 0 ? 0 : ($page - 1) * 10;
@@ -121,7 +164,7 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            <?php echo $lang['specialArticleManager']; ?>
+                    <?php echo $lang['specialArticleManager']; ?>
                             <span class="addLink">
                                 [<a href='?cpage=1'><?php echo $lang['specialAddTheme']; ?></a>]
                                 [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
@@ -129,13 +172,13 @@ switch ($act) {
                                 [<a href='#'><?php echo $lang['specialThemeRecycling']; ?></a>]
                             </span>
                         </dt>
-                        <?php if (!empty($data)): ?> 
+        <?php if (!empty($data)): ?> 
 
                             <dd>
                                 <div class="list atable">
                                     <ul class="list atr" id="no">
                                         <li>
-                                            <?php echo $lang['choose']; ?>
+            <?php echo $lang['choose']; ?>
                                         </li>
                                         <li>
                                             <?php echo $lang['id']; ?>
@@ -150,7 +193,7 @@ switch ($act) {
                                             <?php echo $lang['operation']; ?>
                                         </li>
                                     </ul>
-                                    <?php foreach ($data as $rs): ?>
+                                            <?php foreach ($data as $rs): ?>
                                         <ul class="list atr">
                                             <li><input name="checkid" type="checkbox" value="<?php echo $rs['id'] ?>"></li>
                                             <li><?php echo $rs['id'] ?></li>
@@ -164,7 +207,7 @@ switch ($act) {
                                                 <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?> ?>"><?php echo $lang['remove']; ?></a>
                                             </li>
                                         </ul>
-                                    <?php endforeach; ?>
+            <?php endforeach; ?>
                                 </div>
                             </dd>
                             <dd class='toolbar'>
@@ -174,174 +217,175 @@ switch ($act) {
                             </dd>
                             <dd class='page'>
                                 <a href="?page=<?php echo $page <= 1 ? 1 : $page - 1 ?>&<?php echo $poUrl ?>"><?php echo $lang['lastPage'] ?></a>
-                                <?php
-                                $p = $tfunction->Page($dataCount[0]['cid'], 1, 10, $page);
-                                for ($i = $p['pageStart']; $i <= $p['pageEnd']; $i++):
-                                    ?>
+            <?php
+            $p = $tfunction->Page($dataCount[0]['cid'], 1, 10, $page);
+            for ($i = $p['pageStart']; $i <= $p['pageEnd']; $i++):
+                ?>
                                     <a href="?page=<?php echo $i ?>&<?php echo $poUrl ?>"><span style="color:<?php echo $i == $page || ($page <= 0 && $i == 1) ? "#FF0000 " : "#000000" ?>"><?php echo $i ?></span></a>
                                     <?php
                                 endfor;
                                 ?>
                                 <a href='?page=<?php echo ($page < $p['pageCount'] ? $page <= 0 ? $page + 2 : $page + 1 : $page) ?>&<?php echo $poUrl ?>'><?php echo $lang['nextPage'] ?></a>
                             </dd>
-                        <?php else: ?>
+                            <?php else: ?>
                             <dd class='notInfo'>
                                 <span><?php echo $lang['notInfo'] ?></span>
                             </dd>
-                        <?php endif; ?>
+        <?php endif; ?>
                     </dl>
-                    <?php
-                    break;
-                case 1:
-                case 2:
-                    $specialName = '';
-                    $introduction = '';
-                    if (!empty($id)) {
+                        <?php
+                        break;
+                    case 1:
+                    case 2:
+                        $specialName = '';
+                        $introduction = '';
+                        if (!empty($id)) {
 
-                        $Rs = $conn
-                                ->select(['specialName', 'introduction'])
-                                ->where(['id' => $id])
-                                ->get('special_config');
+                            $Rs = $conn
+                                    ->select(['specialName', 'introduction'])
+                                    ->where(['id' => $id])
+                                    ->get('special_config');
 
-                        $specialName = $Rs[0]['specialName'];
-                        $introduction = tfunction::decode($Rs[0]['introduction']);
-                    }
-                    ?>
+                            $specialName = $Rs[0]['specialName'];
+                            $introduction = tfunction::decode($Rs[0]['introduction']);
+                        }
+                        ?>
 
                     <dl>
                         <dt>
-                            <?php echo $lang['specialArticleManager']; ?>
+        <?php echo $lang['specialArticleManager']; ?>
                         </dt>
                         <dd>
-                            <form method="post"  enctype="multipart/form-data" 
-                                  action="?act=<?php
-                                  echo $cpage;
-                                  printf('&id=%s', !empty($id) ? $id : $uuid);
-                                  ?>">
-                                <div class="list atable">
-                                    <ul class="list a20_80">
-                                        <li>
-                                            专题名稱:
-                                        </li>
-                                        <li>
-                                            <input style="width: 80%;" name="specialName" value="<?php echo $specialName ?>">
-                                        </li>
-                                    </ul>
-                                    <ul class="list a20_80">
-                                        <li>
-                                            介绍:
-                                        </li>
-                                        <li>
-                                            <textarea style="width: 80%;height: 100px;" name="introduction" ><?php echo $introduction; ?></textarea>
-                                        </li>
-                                    </ul>
-                                </div>
 
-                                <fieldset>
-                                    <legend>栏目设置<span class='addclassify' data-id="<?php print(!empty($id) ? $id : $uuid); ?>">添加</span></legend>
-                                    <ul class="newscontent">
-                                        <li>
-                                            <strong>栏目设置
-                                                <span>
-                                                    <a class="nodeadd" href="javascript:void(0)">提交</a>
-                                                    <a class="nodedel" href="javascript:void(0)">删除</a>
-                                                </span>
-                                            </strong>
-                                            <p>
-                                                <label>上级栏目:</label>
-                                                <select style="width: 150px;" name="pid">
-                                                    <option>主目录:</option>
-                                                </select>
-                                            </p>
-                                            <p><label>栏目名称:</label><input type="text" style="width: 65%"><label>排序</label><select class='sort'data-sort='0'></select></p>
-                                            <p><label>专题列表模板:</label></p>
-                                            <p><label>专题内容模板:</label></p>
-                                            <strong>旗下文章<span id="<?php print(!empty($id) ? $id : $uuid); ?>">获取</span></strong>
-                                            <p class="newlist">
+                            <div class="list atable">
+                                <ul class="list a20_80">
+                                    <li>
+                                        专题名稱:
+                                    </li>
+                                    <li>
+                                        <input style="width: 80%;" name="specialName" value="<?php echo $specialName ?>">
+                                    </li>
+                                </ul>
+                                <ul class="list a20_80">
+                                    <li>
+                                        介绍:
+                                    </li>
+                                    <li>
+                                        <textarea style="width: 80%;height: 100px;" name="introduction" ><?php echo $introduction; ?></textarea>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="tijiao">
+                                <button class='addclassify' data-id="<?php print(!empty($id) ? $id : $uuid); ?>" type="button">建立栏目</button>
+                                <button type="button" id='fanhui'><?php echo $lang['back']; ?></button>
+                            </div>
+                            <fieldset>
 
-                                            </p>
-                                            <p class="page"><p>
-                                        </li>
+                                <legend></legend>
+                                <ul class="newscontent">
+                                    <li data-id="<?php echo $v['id'] ?>">
+                                        <strong>栏目设置
+                                            <span>
+                                                <a class="nodeadd" href="javascript:void(0)" >提交</a>
+                                                <a class="nodedel" href="javascript:void(0)" >删除</a>
+                                            </span>
+                                        </strong>
+                                        <p>
+                                            <label>上级栏目:</label>
+                                            <select class="pid" style="width: 150px;">
+                                                <option value="0">主目录:</option>
+                                            </select>
 
-                                        <?php
-                                        if (!empty($id)):
-                                            $Rs = $conn->where('specialId=' . $id)->get('special_classify');
-                                            if ($Rs):
-                                                foreach ($Rs as $k => $v):
-                                                    ?><li data-id="<?php echo $v['id'] ?>">
-                                                        <strong>栏目设置
-                                                            <span>
-                                                                <a class="nodeadd" href="javascript:void(0)" >提交</a>
-                                                                <a class="nodedel" href="javascript:void(0)" >删除</a>
-                                                            </span>
-                                                        </strong>
-                                                        <p>
-                                                            <label>上级栏目:</label>
-                                                            <select style="width: 150px;">
-                                                                <option>主目录:</option>
-                                                            </select>
+                                        </p>
+                                        <p>
+                                            <label>栏目名称:</label><input  type="text" style="width: 55%">
+                                            <label>排序</label><select data-sort='0' class='sort'></select>
+                                        </p>
+                                        <p><label>专题列表模板:</label><input value="" type="text" style="width: 65%"></p>
+                                        <p><label>专题内容模板:</label><input value="" type="text" style="width: 65%"></p>
+                                        <strong>旗下文章<span>获取</span></strong>
+                                        <p class="newlist">
 
-                                                        </p>
-                                                        <p>
-                                                            <label>栏目名称:</label><input value="<?php echo $v['classifyName'] ?>" type="text" style="width: 55%">
-                                                            <label>排序</label><select class='sort' data-sort='<?php echo empty($v['sort']) ? 0 : $v['sort'] ?>'></select>
-                                                        </p>
-                                                        <p><label>专题列表模板:</label><input value="<?php echo $v['template'] ?>" type="text" style="width: 65%"></p>
-                                                        <p><label>专题内容模板:</label><input value="<?php echo $v['templateContent'] ?>" type="text" style="width: 65%"></p>
-                                                        <strong>旗下文章<span id="<?php print(!empty($id) ? $id : $uuid); ?>">获取</span></strong>
-                                                        <p class="newlist">
+                                        </p>
+                                        <p class="page"><p>
+                                    </li>
 
-                                                        </p>
-                                                        <p class="page"><p>
-                                                    </li>
-                                                    <?php
-                                                endforeach;
-                                            endif;
-                                        endif;
-                                        ?>
+        <?php
+        if (!empty($id)):
+            $Rs = $conn->where('specialId=' . $id)->order_by('sort', 'desc')->get('special_classify');
+            if ($Rs):
+                foreach ($Rs as $k => $v):
+                    ?><li data-id="<?php echo $v['id'] ?>">
+                                                    <strong>栏目设置
+                                                        <span>
+                                                            <a class="nodeadd" href="javascript:void(0)" >提交</a>
+                                                            <a class="nodedel" href="javascript:void(0)" >删除</a>
+                                                        </span>
+                                                    </strong>
+                                                    <p>
+                                                        <label>上级栏目:</label>
+                                                        <select class="pid" style="width: 150px;">
+                                                            <option value="0">主目录:</option>
+                                                        </select>
+                                                    </p>
+                                                    <p>
+                                                        <label>栏目名称:</label><input value="<?php echo $v['classifyName'] ?>" type="text" style="width: 55%">
+                                                        <label>排序</label><select class='sort' data-sort='<?php echo empty($v['sort']) ? 0 : $v['sort'] ?>'></select>
+                                                    </p>
+                                                    <p><label>专题列表模板:</label><input value="<?php echo $v['template'] ?>" type="text" style="width: 65%"></p>
+                                                    <p><label>专题内容模板:</label><input value="<?php echo $v['templateContent'] ?>" type="text" style="width: 65%"></p>
+                                                    <strong>旗下文章<span id="<?php print(!empty($id) ? $id : $uuid); ?>">获取</span></strong>
+                                                    <p class="newlist">
 
-                                    </ul>
-                                </fieldset>
-                                <div class="tijiao">
-                                    <button type="submit"><?php echo $lang['submit']; ?></button>
-                                    <button type="reset"><?php echo $lang['reset']; ?></button>
-                                    <button type="button" id='fanhui'><?php echo $lang['back']; ?></button>
-                                </div>
-                            </form>
+                                                    </p>
+                                                    <p class="page"><p>
+                                                </li>
+                    <?php
+                endforeach;
+            endif;
+        endif;
+        ?>
+
+                                </ul>
+                            </fieldset>
                         </dd>
                     </dl>
 
-                    <?php
-                    break;
-                case 3:
-                    ?>
+        <?php
+        break;
+    case 3:
+        ?>
                     <dl>
                         <dt>
                             aaa 3
                         </dt>
                     </dl>
-                    <?php
-                    break;
-                case 4:
-                    ?>
+        <?php
+        break;
+    case 4:
+        ?>
                     <dl>
                         <dt>
                             aaa 4
                         </dt>
                     </dl>
-            <?php endswitch; ?> 
+<?php endswitch; ?> 
         </div>
 
         <script>
             var mesgConfirmDeletion = '<?php echo $lang['mesgConfirmDeletion']; ?>';
         </script>
+
+        <script>
+            var classifyData = ;
+        </script>
+
         <script src="../js/qmancms.js" type="text/javascript"></script>
 
         <script type="text/javascript">
 
             $('.newscontent li').eq(0).hide();
             $('.addclassify').on('click', function () {
-
                 if ($('input[name=specialName]').val() && $('textarea[name=introduction]').val()) {
                     var id = $(this).data('id');
                     $.post('?act=6', {'id': id}, function (data) {
@@ -369,9 +413,8 @@ switch ($act) {
                 {
                     alert('请先填写专题名稱及介绍');
                 }
-
-//                
             });
+            // 修改的分集               
             $('fieldset').on('click', '.nodeadd', function ($data) {
                 var data = $(this).parents('li');
                 var inputData = {};
@@ -380,12 +423,52 @@ switch ($act) {
                 inputData['template'] = data.find('input:eq(1)').val();
                 inputData['templateContent'] = data.find('input:eq(2)').val();
                 inputData['sort'] = data.find('.sort').val();
+                inputData['pid'] = data.find('.pid').val();
+
                 $.post('?act=5', inputData, function (data) {
-                    console.log(data);
-                });
+                    if (data[0]) {
+                        alert('修改成功');
+                        return;
+                    }
+                    switch (data[1]) {
+                        case 0:
+                            alert('修改失败');
+                            break;
+                        case 1:
+                            alert('不能将自身设置为子类');
+                            break;
+                    }
+                    return;
+                }, 'JSON');
             });
+            //删除分集
             $('fieldset').on('click', '.nodedel', function (data) {
-                alert($(this).parents('li').data('id'));
+                var data = $(this).parents('li');
+                var inputData = {};
+                inputData['id'] = data.data('id');
+                $.post('?act=4', inputData, function (p) {
+                    if (p) {
+                        alert('删除成功');
+                        data.remove();
+                        return;
+                    }
+                    alert('删除失败');
+                    return;
+                }, 'JSON');
+            });
+
+            $('fieldset').on('mouseenter', '.pid', function () {
+                var this_ = this;
+
+                $.get('?act=7', function (data) {
+                    $(this_).find('option').remove();
+                    var html = '<option value="0">主目录:</option>';
+                    for (var p in data) {
+                        html += '<option value="' + data[p]['id'] + '">' + data[p]['classifyName'] + '</option>'
+                    }
+                    $(this_).append(html);
+
+                }, 'JSON');
             });
         </script>
 
