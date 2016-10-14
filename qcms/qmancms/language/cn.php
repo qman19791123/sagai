@@ -98,6 +98,7 @@ $lang['mesgSpecialNameNotEmpty']='专题名称不能为空';
 $lang['mesgAddContentSuccess']='添加内容成功';
 $lang['mesgUpdateContentSuccess']='更新内容成功';
 $lang['mesgRemoveContentSuccess']='删除内容成功';
+$lang['mesgRemoveContentFailed']='删除内容失败';
 $lang['mesgPleaseReview']='请管理通过审核';
 $lang['mesgIsRemoveSomeContent']='确认是否删除此些内容';
 $lang['mesgIsRestoreSomeContent']='确认是否还原此些内容';
@@ -110,7 +111,7 @@ $lang['mesgRestore']='还原中…';
 $lang['mesgRestorePleaseWait']='提交中请等待';
 
 
-$lang['mesgConfirmDeletion']='确认删除';
+$lang['mesgConfirmDeletion']='是否确认删除?';
 $lang['mesgPhotoNotEmpty']='格式不正确或不能为空';
 $lang['mesgPhotoNotMax']='最大尺寸请在200kb以内';
 

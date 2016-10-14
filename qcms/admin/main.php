@@ -107,14 +107,18 @@ $conn = $tfunction->conn;
         <script type="text/javascript">
 
                     function iFrameHeight() {
-                        var ifm = document.getElementById("iframepage");
-                        var subWeb = document.frames ? document.frames["iframepage"].document : ifm.contentDocument;
-                        if (ifm != null && subWeb != null) {
-                            ifm.height = 0;
-                            ifm.width = 0;
-                            ifm.height = window.screen.height - 210;
-                            //ifm.height = subWeb.body.scrollHeight;
-                            //ifm.width = subWeb.body.scrollWidth;
+                        try {
+                            var ifm = document.getElementById("iframepage");
+                            var subWeb = document.frames ? document.frames["iframepage"].document : ifm.contentDocument;
+                            if (ifm != null && subWeb != null) {
+                                ifm.height = 0;
+                                ifm.width = 0;
+                                ifm.height = window.screen.height - 210;
+                                //ifm.height = subWeb.body.scrollHeight;
+                                //ifm.width = subWeb.body.scrollWidth;
+                            }
+                        } catch (e) {
+                            return;
                         }
                     }
                     $(function (argument) {

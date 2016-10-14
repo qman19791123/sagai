@@ -3,6 +3,7 @@ define('noCache', TRUE);
 include '../config.php';
 include lib . 'tfunction.inc.php';
 include plus . 'upload/upload.php';
+include plus . 'filterStructUTF8.php';
 include 'isadmin.php';
 include lang . $language;
 $tfunction = new tfunction();
@@ -18,7 +19,7 @@ $cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
 $page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
 $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT); //新闻编号 (有时间修改此命名)
 $act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
-
+$newssubjectId = filter_input(INPUT_GET, 'newssubjectId', FILTER_SANITIZE_STRING);
 
 
 // post
@@ -34,7 +35,8 @@ $titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => '
 $titlePhotoINPUT = filter_input(INPUT_POST, 'titlePhoto', FILTER_SANITIZE_STRING);
 $updateImgINPUT = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
 $checkedINPUT = filter_input(INPUT_POST, 'checked', FILTER_VALIDATE_INT);
-
+$newssubjectDataIdINPUT = filter_input(INPUT_POST, 'newssubjectDataId', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
+$newssubjectDataContentINPUT = filter_input(INPUT_POST, 'newssubjectDataContent', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
 
 // 一个匿名方法 作用发布文章 
@@ -229,6 +231,34 @@ switch ($act) {
         die('true');
         break;
     case 5:
+        // 推送文章到专题文章下的结合中
+
+        $newssubjectDataIdINPUT_ = join(',', $newssubjectDataIdINPUT);
+
+        $Rs = $conn->select(['newsIds'])->where('specialClassifyId =' . $newssubjectId . ' and newsIds in(' . $newssubjectDataIdINPUT_ . ')')->get('special_content');
+        $newssubjectDataIdArr = [];
+
+
+        foreach ($Rs as $v) {
+            $newssubjectDataIdArr[] = $v['newsIds'];
+        }
+       
+        $newssubjectData = array_diff($newssubjectDataIdINPUT, $newssubjectDataIdArr);
+
+        if (empty($newssubjectData)) {
+            die('false');
+        }
+
+        $sqlContent = 'insert into special_content (`specialClassifyId`,`newsIds`,`newTitle`,`sort`)values';
+        foreach ($newssubjectData as $v) {
+            if (is_numeric($v)) {
+                $sqlContent .=sprintf('("%s","%s","%s","%s"),', $newssubjectId, $v, $newssubjectDataContentINPUT[$v], 0);
+            }
+        }
+
+        $sql = substr($sqlContent, 0, -1);
+        $conn->aud($sql);
+        die('true');
         break;
 }
 ?>
@@ -251,6 +281,7 @@ switch ($act) {
             <?php
             switch ($cpage) :
                 case 0:
+                case 3:
                     $inlClassify = '';
                     $where = '';
                     $pagec = ($page - 1) < 0 ? 0 : ($page - 1) * 10;
@@ -328,9 +359,11 @@ switch ($act) {
                             [<a href='?cpage=1'><?php echo $lang['newsAddArticle']; ?></a>]
                             [<a href='javascript:void(0)' id='retrievedArticles'><?php echo $lang['newsRetrievingArticle']; ?></a>]
                             [<a href='javascript:void(0)' id='column'><?php echo $lang['newsTopicManagement']; ?></a>]
-                            [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
-                            [<a href='?cpage=1'><?php echo $lang['newsUpdateDocumentation']; ?></a>]
-                            [<a href='newsdustbin.php'><?php echo $lang['newsArticlesRecycling']; ?></a>]
+                            <?php if ($cpage !== 3): ?>
+                                [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
+                                [<a href='?cpage=1'><?php echo $lang['newsUpdateDocumentation']; ?></a>]
+                                [<a href='newsdustbin.php'><?php echo $lang['newsArticlesRecycling']; ?></a>]
+                            <?php endif; ?>  
                         </span>
                         </dt>
                         <?php if (!empty($data)): ?> 
@@ -375,12 +408,13 @@ switch ($act) {
                                             <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
 
                                             <li>
-                                                <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked"><?php echo $lang['check']; ?></a>
-                                                <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>"><?php echo $lang['reading']; ?></a>
+                                                <?php if ($cpage !== 3): ?> 
+                                                    <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked"><?php echo $lang['check']; ?></a>
+                                                    <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>"><?php echo $lang['reading']; ?></a>
+                                                <?php endif; ?>
                                                 <a href="?cpage=2&id=<?php echo $rs['id'] ?>"><?php echo $lang['update']; ?></a>
                                                 <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?> ?>"><?php echo $lang['remove']; ?></a>
                                             </li>
-
                                         </ul>
                                     <?php endforeach; ?>
                                 </div>
@@ -388,7 +422,9 @@ switch ($act) {
                             <dd class='toolbar'>
                             <button type='button' id='all' onclick="javascript:$('input[name=checkid]').attr('checked', true).prop('checked', true)"><?php echo $lang['selectAll']; ?></button>
                             <button type='button' id='cancel' onclick="javascript:$('input[name=checkid]').removeAttr('checked', '').prop('checked', false)"><?php echo $lang['cancel']; ?></button>
-                            <button type='button' id='push'><?php echo $lang['push']; ?></button>
+                            <?php if ($cpage === 3): ?>
+                                <button type='button' id='push'><?php echo $lang['push']; ?></button>
+                            <?php endif; ?>
                             <button type='button' id='check' ><?php echo $lang['check']; ?></button>
                             <button type='button' id='delete'><?php echo $lang['remove']; ?></button>
 
@@ -465,15 +501,19 @@ switch ($act) {
                                         <?php echo $lang['classifyName']; ?>:
                                     </li>
                                     <li>
-                                        <select style ="width:180px" name="classifyId" class="classifyId">
+                                        <select style ="width:250px" name="classifyId" class="classifyId">
                                             <option value="0"><?php $lang['classifyMain'] ?></option>
                                             <?php
                                             $classify = new tfunction($conn);
                                             $data = $classify->classify();
                                             foreach ($data as $rs):
-                                                ?>
-                                                <option value="<?php echo $rs['id'] ?>"  <?php !empty($rs['disabled']) && print($rs['disabled']); ?>><?php echo $rs['className'] ?></option>
-                                            <?php endforeach ?>
+                                                if (empty($rs['setting'])):
+                                                    ?>
+                                                    <option value="<?php echo $rs['id'] ?>"  <?php !empty($rs['disabled']) && print($rs['disabled']); ?>><?php echo $rs['className'] ?></option>
+                                                    <?php
+                                                endif;
+                                            endforeach
+                                            ?>
 
                                         </select>
                                     </li>
@@ -482,7 +522,7 @@ switch ($act) {
                                 <ul class="list a20_80">
                                     <li><?php echo $lang['sort']; ?></li>
                                     <li>
-                                        <select name="sort" class="sort" data-sort='<?php echo $sort?>'></select>
+                                        <select name="sort" class="sort" data-sort='<?php echo $sort ?>'></select>
                                     </li>
                                 </ul>
 
@@ -622,199 +662,226 @@ switch ($act) {
 
     <script type="text/javascript">
 <?php printf('var classifyJson =%s;', json_encode($classifyJson)); ?>
-                    var mesgConfirmDeletion = '<?php echo $lang['mesgConfirmDeletion']; ?>';
-                    $('.atable ul li').each(function (i, p) {
-                        if ($(p).attr('data-id'))
-                        {
-                            $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
-                        }
-                    });
-
-
-
-                    $('#delete').on('click', function () {
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: '<?php echo $lang['mesgIsRemoveSomeContent']; ?>',
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '500px',
-                            ok: function () {
-                                this.title('<?php echo $lang['mesgDeletion']; ?>');
-                                this.content("<?php echo $lang['mesgRemovePleaseWait']; ?>");
-                                var checkboxp = '';
-                                $('input[name=checkid]:checked').each(function (i, p) {
-                                    checkboxp += $(p).val() + ',';
-                                });
-                                if (checkboxp) {
-                                    checkboxp = checkboxp.substr(0, checkboxp.length - 1);
-                                    $.ajax({
-                                        type: "GET",
-                                        data: {'id': checkboxp},
-                                        url: '?p=on&act=3',
-                                        success: function (e) {
-                                            if (Boolean(e) === true) {
-                                                history.go(0);
-                                            }
-                                        }
-                                    });
-                                }
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-                    });
-
-                    //指定文章输出栏目 [栏目管理] code start
-                    $('#column').on('click', function () {
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: $('.column').html(),
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '700px',
-                            ok: function () {
-                                var query = $('.searchContent').eq(1).find('#query').serialize();
-                                self.location = ('?query=yes&' + query);
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-
-                        $('.columnContent').eq(1).find('.tree').tree({
-                            data: <?php echo json_encode($tfunction->classifyArray()) ?>,
-                            onClick: function (node) {
-                                self.location = ('?query=yes&url=' + node.id);
-                            }
-                        });
-                    });
-                    //指定文章输出栏目 [栏目管理] code end
-
-                    //检索（查询） 文章 code start
-                    $('#retrievedArticles').on('click', function () {
-                        $('.combo').hide();
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: $('.search').html(),
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '700px',
-                            height: '180px',
-                            ok: function () {
-                                var query = $('.searchContent').eq(1).find('#query');
-                                // if(query.find('select[name="queryselect"]').val()<=0){
-                                //     alert('请选择搜索的范围');
-                                //     return false;
-                                // }
-                                self.location = ('news.php?query=yes&' + query.serialize());
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-                        $('.searchContent .times').datebox({});
-                    });
-                    //检索（查询） 文章 code end
-
-
-                    //文章审核code start
-                    // 文章 审核 提醒
-                    $('#off').on('click', function () {
-                        $(this).parent('span').hide();
-                    });
-                    //对单个文章进行审核设置
-                    $('.checked').on('click', function () {
-                        var id = $(this).attr('data-id');
-                        var dialog_ = dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: $('.audit').html(),
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '300px',
-                            height: '80px',
-                            ok: function () {
-                                var tt = $('.auditContent').eq(1).find('select').val();
-                                if (tt !== '<?php echo $lang['choose']; ?>') {
-                                    this.title('<?php echo $lang['mesgSubmitting']; ?>');
-                                    this.title('<?php echo $lang['mesgSubmittPleaseWait']; ?>');
-                                    $.ajax({
-                                        type: "POST",
-                                        url: '?act=4',
-                                        data: {"t": tt, "id": id},
-                                        success: function (e) {
-                                            if (Boolean(e) === true) {
-                                                history.go(0);
-                                            }
-                                        }
-                                    });
-                                }
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-                    });
-                    //对文章批量确定审核
-                    $('#check').on('click', function () {
-                        var checkboxp = '';
-                        $('input[name=checkid]:checked').each(function (i, p) {
-                            checkboxp += $(p).val() + ',';
-                        });
-                        if (checkboxp) {
-
-                            checkboxp = checkboxp.substr(0, checkboxp.length - 1)
-                            $.ajax({
-                                type: "POST",
-                                url: '?act=4',
-                                data: {'t': '999', 'id': checkboxp},
-                                success: function (e) {
-                                    if (Boolean(e) === true) {
-                                        history.go(0);
+                                var mesgConfirmDeletion = '<?php echo $lang['mesgConfirmDeletion']; ?>';
+                                $('.atable ul li').each(function (i, p) {
+                                    if ($(p).attr('data-id'))
+                                    {
+                                        $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
                                     }
-                                }
-                            });
-                        }
-                        return false;
-                    });
-
-                    //文章审核code end
+                                });
 
 
 
-                    //定位文章 栏目 select selected 挑选出来的选项位置 code start
-                    $('.classifyId option').each(function (i, v) {
-                        t = (parseInt($(v).val()) === parseInt(<?php echo $classifyId ?>));
-                        $(v).attr('selected', t);
-                    });
-                    //定位文章 栏目 select selected 挑选出来的选项位置 code end
+                                $('#delete').on('click', function () {
+                                    dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: '<?php echo $lang['mesgIsRemoveSomeContent']; ?>',
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '500px',
+                                        ok: function () {
+                                            this.title('<?php echo $lang['mesgDeletion']; ?>');
+                                            this.content("<?php echo $lang['mesgRemovePleaseWait']; ?>");
+                                            var checkboxp = '';
+                                            $('input[name=checkid]:checked').each(function (i, p) {
+                                                checkboxp += $(p).val() + ',';
+                                            });
+                                            if (checkboxp) {
+                                                checkboxp = checkboxp.substr(0, checkboxp.length - 1);
+                                                $.ajax({
+                                                    type: "GET",
+                                                    data: {'id': checkboxp},
+                                                    url: '?p=on&act=3',
+                                                    success: function (e) {
+                                                        if (Boolean(e) === true) {
+                                                            history.go(0);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+                                });
+
+                                //推送文章到专题文章下的结合中 code start
+                                $('.toolbar').on('click', '#push', function () {
+                                    var dataj = [];
+                                    var datajC = {};
+                                    $('.list input[name=checkid]').each(function (i, p) {
+                                        if ($(p).is(':checked')) {
+                                            dataj.push($(p).val());
+                                            //datajC.add[$(p).val()] = $(this).parent().parent().find('li:eq(4)').html();
+                                            datajC[ $(p).val()] = $(this).parent().parent().find('li:eq(4)').html();
+                                        }
+                                    });
+
+                                    if (dataj.length > 0) {
+                                        var data = {'newssubjectDataId[]': dataj, 'newssubjectDataContent': datajC};
+                                        $.post('?act=5&newssubjectId=<?php echo $newssubjectId ?>', data, function (data) {
+                                            console.log(data);
+                                            if (data === true) {
+                                                alert('推送成功');
+                                                window.location.href = '<?php echo $_SERVER['HTTP_REFERER']; ?>'
+                                            } else
+                                            {
+                                                alert('信息已存在');
+                                                window.location.href = '<?php echo $_SERVER['HTTP_REFERER']; ?>'
+                                            }
+                                        }, 'JSON');
+                                    }
+                                });
+                                //推送文章到专题文章下的结合中 code end
+
+                                //指定文章输出栏目 [栏目管理] code start
+                                $('#column').on('click', function () {
+                                    dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: $('.column').html(),
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '700px',
+                                        ok: function () {
+                                            var query = $('.searchContent').eq(1).find('#query').serialize();
+                                            self.location = ('?query=yes&' + query);
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+
+                                    $('.columnContent').eq(1).find('.tree').tree({
+                                        data: <?php echo json_encode($tfunction->classifyArray()) ?>,
+                                        onClick: function (node) {
+                                            self.location = ('?query=yes&url=' + node.id);
+                                        }
+                                    });
+                                });
+                                //指定文章输出栏目 [栏目管理] code end
+
+                                //检索（查询） 文章 code start
+                                $('#retrievedArticles').on('click', function () {
+                                    $('.combo').hide();
+                                    dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: $('.search').html(),
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '700px',
+                                        height: '180px',
+                                        ok: function () {
+                                            var query = $('.searchContent').eq(1).find('#query');
+                                            // if(query.find('select[name="queryselect"]').val()<=0){
+                                            //     alert('请选择搜索的范围');
+                                            //     return false;
+                                            // }
+                                            self.location = ('news.php?query=yes&' + query.serialize());
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+                                    $('.searchContent .times').datebox({});
+                                });
+                                //检索（查询） 文章 code end
 
 
-                    //删除提示  code end
+                                //文章审核code start
+                                // 文章 审核 提醒
+                                $('#off').on('click', function () {
+                                    $(this).parent('span').hide();
+                                });
+                                //对单个文章进行审核设置
+                                $('.checked').on('click', function () {
+                                    var id = $(this).attr('data-id');
+                                    var dialog_ = dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: $('.audit').html(),
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '300px',
+                                        height: '80px',
+                                        ok: function () {
+                                            var tt = $('.auditContent').eq(1).find('select').val();
+                                            if (tt !== '<?php echo $lang['choose']; ?>') {
+                                                this.title('<?php echo $lang['mesgSubmitting']; ?>');
+                                                this.title('<?php echo $lang['mesgSubmittPleaseWait']; ?>');
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: '?act=4',
+                                                    data: {"t": tt, "id": id},
+                                                    success: function (e) {
+                                                        if (Boolean(e) === true) {
+                                                            history.go(0);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+                                });
+                                //对文章批量确定审核
+                                $('#check').on('click', function () {
+                                    var checkboxp = '';
+                                    $('input[name=checkid]:checked').each(function (i, p) {
+                                        checkboxp += $(p).val() + ',';
+                                    });
+                                    if (checkboxp) {
 
-                    // 图片选择 code start
-                    $('.file').hide();
-                    $('.showfile').on('click', function () {
-                        var th = $(this);
-                        $('#file_input').click();
-                        $('#file_input').checkFileTypeAndSize({
-                            allowedExtensions: ['jpg', 'png', 'gif'],
-                            maxSize: 500,
-                            success: function () {
-                                th.val($('#file_input').val());
-                            },
-                            extensionerror: function () {
-                                alert('<?php echo $lang['mesgPhotoNotEmpty']; ?>');
-                                return;
-                            },
-                            sizeerror: function () {
-                                alert('<?php echo $lang['mesgPhotoNotMax']; ?>');
-                                return;
-                            }
-                        });
-                    });
-                    // 图片选择 code end
+                                        checkboxp = checkboxp.substr(0, checkboxp.length - 1)
+                                        $.ajax({
+                                            type: "POST",
+                                            url: '?act=4',
+                                            data: {'t': '999', 'id': checkboxp},
+                                            success: function (e) {
+                                                if (Boolean(e) === true) {
+                                                    history.go(0);
+                                                }
+                                            }
+                                        });
+                                    }
+                                    return false;
+                                });
+
+                                //文章审核code end
+
+
+
+                                //定位文章 栏目 select selected 挑选出来的选项位置 code start
+                                $('.classifyId option').each(function (i, v) {
+                                    t = (parseInt($(v).val()) === parseInt(<?php echo $classifyId ?>));
+                                    $(v).attr('selected', t);
+                                });
+                                //定位文章 栏目 select selected 挑选出来的选项位置 code end
+
+
+                                // 图片选择 code start
+                                $('.file').hide();
+                                $('.showfile').on('click', function () {
+                                    var th = $(this);
+                                    $('#file_input').click();
+                                    $('#file_input').checkFileTypeAndSize({
+                                        allowedExtensions: ['jpg', 'png', 'gif'],
+                                        maxSize: 500,
+                                        success: function () {
+                                            th.val($('#file_input').val());
+                                        },
+                                        extensionerror: function () {
+                                            alert('<?php echo $lang['mesgPhotoNotEmpty']; ?>');
+                                            return;
+                                        },
+                                        sizeerror: function () {
+                                            alert('<?php echo $lang['mesgPhotoNotMax']; ?>');
+                                            return;
+                                        }
+                                    });
+                                });
+                                // 图片选择 code end
     </script>
     <script src="../js/qmancms.js" type="text/javascript"></script>
 </body>

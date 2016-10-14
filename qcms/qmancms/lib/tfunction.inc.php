@@ -227,13 +227,15 @@ class tfunction {
      */
     public function classifyArray() {
         $data = [];
-        if (!is_file(install . '/cacheData/classifyArray.php')) {
+        if (!is_file(cacheData . '/classifyArray.php')) {
             $data = $this->classifyAchievedArray();
             $classifyArray = var_export($data, true);
-            file_put_contents(install . '/cacheData/classifyArray.php', "<?php \n\r\$classifyArray={$classifyArray} \r\n?>");
+         
+            
+            file_put_contents(cacheData . '/classifyArray.php', "<?php \n\r\$classifyArray={$classifyArray} \r\n?>");
         } else {
             global $classifyArray;
-            include install . '/cacheData/classifyArray.php';
+            include cacheData . '/classifyArray.php';
             $data = $classifyArray;
         }
         return $data;
@@ -251,22 +253,17 @@ class tfunction {
      * <b>递归格式(空格)</b>
      * </p>
      */
-    private function classifyAchieved(&$data, $id = '', $t = '　', $v = '') {
+    private function classifyAchieved(&$data, $id = '', $t = '', $v = '') {
         $t.='　　';
-        $rs = [];
-
-        $sql = 'select id,px,className,pid from classify where pid =' . $id . ' order by px desc';
+        $sql = 'select id,px,className,pid,setting from classify where pid =' . $id . ' order by px desc';
         $rs = $this->conn->query($sql);
 
         foreach ($rs as $value) {
-
             $data [$value['id']]['pid'] = $value['pid'];
             $data [$value['id']]['id'] = $value['id'];
             $data [$value['id']]['px'] = $value['px'];
             $data [$value['id']]['className'] = $t . $v . $value['className'];
-
-
-
+            $data[$value['id']]['setting'] = $value['setting'];
             $s = $this->classifyAchieved($data, $value['id'], $t, '├');
             if (!empty($s)) {
                 $data [$value['id']]['disabled'] = 'disabled';

@@ -43,7 +43,6 @@ $('.adminContent .atable ul').on('mouseover', function () {
     $(this).css({'background': '', 'color': ''});
     $(this).find('a').css({'background': '', 'color': ''});
 });
-
 //返回上一页 按钮 code start
 $('#fanhui').on('click', function () {
     self.history.go(-1);
@@ -57,35 +56,40 @@ $('.delmes').on('click', function () {
 //删除提示 code end
 
 // KindEditor 编辑器 code start
-KindEditor.ready(function (K) {
-    var editor1 = K.create('textarea[name="newText"]', {
-        cssPath: '../js/KindEditor/plugins/code/prettify.css',
-        uploadJson: '../js/KindEditor/php/upload_json.php',
-        fileManagerJson: '../js/KindEditor/php/file_manager_json.php',
-        width: '100%',
-        height: '250px',
-        resizeType: 0,
-        items: [
-            'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
-            'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
-            'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
-            'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
-            'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
-            'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
-            'flash', 'media', 'insertfile', 'table', 'hr', 'baidumap', 'pagebreak',
-            'link', 'unlink'
-        ],
-        allowFileManager: true,
-        afterCreate: function () {
-            var self = this;
-        },
-        afterUpload: function (data) {
-            var img = $('input[name="updateImg"]');
-            if (img) {
-                img.val('"' + data + '",' + img.val());
+try {
+    KindEditor.ready(function (K) {
+        var editor1 = K.create('textarea[name="newText"]', {
+            cssPath: '../js/KindEditor/plugins/code/prettify.css',
+            uploadJson: '../js/KindEditor/php/upload_json.php',
+            fileManagerJson: '../js/KindEditor/php/file_manager_json.php',
+            width: '100%',
+            height: '250px',
+            resizeType: 0,
+            items: [
+                'undo', 'redo', '|', 'preview', 'print', 'template', 'cut', 'copy', 'paste',
+                'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
+                'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
+                'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
+                'flash', 'media', 'insertfile', 'table', 'hr', 'baidumap', 'pagebreak',
+                'link', 'unlink'
+            ],
+            allowFileManager: true,
+            afterCreate: function () {
+                var self = this;
+            },
+            afterUpload: function (data) {
+                var img = $('input[name="updateImg"]');
+                if (img) {
+                    img.val('"' + data + '",' + img.val());
+                }
             }
-        }
+        });
+        prettyPrint();
     });
-    prettyPrint();
-});
+} catch (e) {
+    
+}
+
 // KindEditor 编辑器 code end

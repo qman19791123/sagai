@@ -314,6 +314,21 @@ textarea {
     height: 200px;
     overflow-y: scroll;
   }
+  .adminContent fieldset ul li p.newlist span,
+  .adminContent fieldset ul li strong.newlist span {
+    line-height: 40px;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+  }
+  .adminContent fieldset ul li p.newlist i,
+  .adminContent fieldset ul li strong.newlist i {
+    font-style: normal;
+  }
+  .adminContent fieldset ul li p.newlist i a,
+  .adminContent fieldset ul li strong.newlist i a {
+    display: inline-block;
+    float: right;
+  }
   .adminContent fieldset ul li strong {
     font-weight: normal;
     border-bottom: 1px solid #ccc;
@@ -742,6 +757,21 @@ textarea {
   .adminContent fieldset ul li strong.newlist {
     height: 200px;
     overflow-y: scroll;
+  }
+  .adminContent fieldset ul li p.newlist span,
+  .adminContent fieldset ul li strong.newlist span {
+    line-height: 40px;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+  }
+  .adminContent fieldset ul li p.newlist i,
+  .adminContent fieldset ul li strong.newlist i {
+    font-style: normal;
+  }
+  .adminContent fieldset ul li p.newlist i a,
+  .adminContent fieldset ul li strong.newlist i a {
+    display: inline-block;
+    float: right;
   }
   .adminContent fieldset ul li strong {
     font-weight: normal;

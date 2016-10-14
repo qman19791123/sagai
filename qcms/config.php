@@ -42,6 +42,8 @@ $cacheOpen = TRUE;
 $cachedTime = '90000000';
 //缓存目录
 $cachedPath = 'cache';
+//缓存数据目录
+$cacheData = 'cacheData';
 //页面是否压缩
 $compression = False;
 //是否开启静态
@@ -82,6 +84,8 @@ define('compression', $compression);
 define('cacheOpen', $cacheOpen);
 //缓存目录
 define('cacheFloder', install . $cachedPath);
+//缓存数据目录
+define('cacheData', install . $cachedPath . '/' . $cacheData);
 //是否开启静态
 define('StaticOpen', $StaticOpen);
 //静态目录
@@ -98,6 +102,11 @@ if (StaticOpen && !is_dir(staticFloder)) {
 
     mkdir(staticFloder, 0777);
 }
+
+if (!is_dir(cacheData)) {
+    mkdir(cacheData, 0777);
+}
+
 
 //设置session
 $cookiesSystemName = filter_input(INPUT_COOKIE, $systemName, FILTER_SANITIZE_STRING);

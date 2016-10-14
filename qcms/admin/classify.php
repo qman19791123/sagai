@@ -120,7 +120,20 @@ switch ($act) {
                                     <ul class="list atr">
                                         <li><?php echo $rs['id'] ?></li>
                                         <li><?php echo $rs['px'] ?></li>
-                                        <li><?php echo $rs['className'] ?></li>
+                                        <li><?php echo $rs['className'] ?>
+                                            <strong>
+                                                <?php
+                                                switch ($rs['setting']):
+                                                    case 0:
+                                                        break;
+                                                    case 1:
+                                                        echo '[外部地址]';
+                                                        break;
+                                                    case 2:
+                                                        echo '[单页]';
+                                                        break;
+                                                endswitch;
+                                                ?></strong></li>
                                         <li>
                                             <a href="?cpage=2&id=<?php echo $rs['id'] ?>"><?php echo $lang['classifyUpdate']; ?></a>
                                             <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?>"><?php echo $lang['classifyDel']; ?></a>
