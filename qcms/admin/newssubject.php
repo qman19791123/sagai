@@ -248,8 +248,10 @@ switch ($act) {
                                 ->select(['specialName', 'introduction'])
                                 ->where(['id' => $id])
                                 ->get('special_config');
-                        $specialName = $Rs[0]['specialName'];
-                        $introduction = tfunction::decode($Rs[0]['introduction']);
+                        if (!empty($Rs[0]['specialName'])) {
+                            $specialName = $Rs[0]['specialName'];
+                            $introduction = tfunction::decode($Rs[0]['introduction']);
+                        }
                     }
                     ?>
 
@@ -285,7 +287,7 @@ switch ($act) {
 
                                 <legend></legend>
                                 <ul class="newscontent">
-                                    <li data-id="<?php echo $v['id'] ?>">
+                                    <li data-id="">
                                         <strong>栏目设置
                                             <span>
                                                 <a class="nodeadd" href="javascript:void(0)" >提交</a>
@@ -408,14 +410,17 @@ switch ($act) {
                                                                         if (data)
                                                                         {
                                                                             $.post('?act=6', {'id': id}, function (data) {
-                                                                                $('.newscontent').prepend('<li data-id="' + data[1] + '">' + $('.newscontent li').html() + '</li>');
+                                                                                console.log(data);
+                                                                                window.location.href = '?cpage=2&id=' + id;
+                                                                                // cpage=2&id=9818a68685cf5c5fbcab0212ac27394e
                                                                             });
                                                                         }
                                                                     });
                                                         }
                                                         return NULL;
+                                                    } else {
+                                                        $('.newscontent').prepend('<li data-id="' + data[1] + '">' + $('.newscontent li').html() + '</li>');
                                                     }
-                                                    $('.newscontent').prepend('<li data-id="' + data[1] + '">' + $('.newscontent li').html() + '</li>');
                                                 }, 'JSON');
                                             }
                                         } else
@@ -501,7 +506,10 @@ switch ($act) {
                                         if (confirm('是否添加旗下文章')) {
                                             var data = $(this).parents('li');
                                             var id = data.data('id');
-                                            window.location.href = 'news.php?cpage=3&newssubjectId=' + id;
+
+                                            $newssubject = $(".tijiao .addclassify").data('id')
+
+                                            window.location.href = 'news.php?cpage=3&newssubjectClassId=' + id + '&newssubjectId=' + $newssubject;
                                         }
                                     });
                                     //添加旗下文章 code end

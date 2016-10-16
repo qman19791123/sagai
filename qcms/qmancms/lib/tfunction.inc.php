@@ -210,10 +210,10 @@ class tfunction {
         if (!is_file(install . '/cacheData/classifyStyleArray.php')) {
             $this->classifyAchieved($data, 0);
             $classifyArray = var_export($data, true);
-            file_put_contents(install . '/cacheData/classifyStyleArray.php', "<?php \n\r\$classifyStyleArray={$classifyArray} \r\n?>");
+            file_put_contents(cacheData . '/classifyStyleArray.php', "<?php \n\r\$classifyStyleArray={$classifyArray} \r\n?>");
         } else {
             global $classifyStyleArray;
-            include install . '/cacheData/classifyStyleArray.php';
+            include cacheData  . '/classifyStyleArray.php';
             $data = $classifyStyleArray;
         }
 

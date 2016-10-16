@@ -488,18 +488,20 @@ textarea {
   .adminContent .notInfo {
     width: 100%;
     margin: 60px 0;
-    text-align: center;
     padding: 5px 0;
   }
   .adminContent .notInfo span {
+    display: block;
     font-size: 14px;
+    margin: auto;
+    line-height: 30px;
   }
-  .adminContent .menu {
+  .adminContent .qmancmsmenu {
     font-size: 12px;
     display: inline-block;
     line-height: 0;
   }
-  .adminContent .menu a {
+  .adminContent .qmancmsmenu a {
     display: inline-block;
     width: 100px;
     border: 1px solid #ccc;
@@ -509,7 +511,7 @@ textarea {
     text-decoration: none;
     color: #444;
   }
-  .adminContent .menu .color {
+  .adminContent .qmancmsmenu .color {
     background: #555;
     color: #fff;
   }
@@ -932,18 +934,20 @@ textarea {
   .adminContent .notInfo {
     width: 100%;
     margin: 60px 0;
-    text-align: center;
     padding: 5px 0;
   }
   .adminContent .notInfo span {
+    display: block;
     font-size: 14px;
+    margin: auto;
+    line-height: 30px;
   }
-  .adminContent .menu {
+  .adminContent .qmancmsmenu {
     font-size: 12px;
     display: inline-block;
     line-height: 0;
   }
-  .adminContent .menu a {
+  .adminContent .qmancmsmenu a {
     display: inline-block;
     width: 100px;
     border: 1px solid #ccc;
@@ -953,7 +957,7 @@ textarea {
     text-decoration: none;
     color: #444;
   }
-  .adminContent .menu .color {
+  .adminContent .qmancmsmenu .color {
     background: #555;
     color: #fff;
   }

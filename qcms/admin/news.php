@@ -3,7 +3,6 @@ define('noCache', TRUE);
 include '../config.php';
 include lib . 'tfunction.inc.php';
 include plus . 'upload/upload.php';
-include plus . 'filterStructUTF8.php';
 include 'isadmin.php';
 include lang . $language;
 $tfunction = new tfunction();
@@ -15,29 +14,41 @@ $classifyJson = [];
 $adminId = $_SESSION['adminId'];
 
 // get
-$cpage = filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
-$page = filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
-$id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT); //新闻编号 (有时间修改此命名)
-$act = filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
+$cpage = (int) filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
+$page = (int) filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
+$id = (int) filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT); //新闻编号 (有时间修改此命名)
+$act = (int) filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
+$newssubjectClassId = filter_input(INPUT_GET, 'newssubjectClassId', FILTER_SANITIZE_STRING);
 $newssubjectId = filter_input(INPUT_GET, 'newssubjectId', FILTER_SANITIZE_STRING);
-
+$newsStyleGET = (int) filter_input(INPUT_GET, 'newsStyle', FILTER_VALIDATE_INT);
 
 // post
 // 数据添加 删除 修改 操作
 $newTextINPUT = filter_input(INPUT_POST, 'newText', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
 $keywordsINPUT = filter_input(INPUT_POST, 'keywords', FILTER_SANITIZE_STRING);
 $descriptionINPUT = filter_input(INPUT_POST, 'description', FILTER_SANITIZE_STRING);
-$classifyIdINPUT = filter_input(INPUT_POST, 'classifyId', FILTER_VALIDATE_INT);
-$sortINPUT = filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT, ['options' => ['min_range' => -10, 'max_range' => 10]]);
+$classifyIdINPUT = (int) filter_input(INPUT_POST, 'classifyId', FILTER_VALIDATE_INT);
+$sortINPUT = (int) filter_input(INPUT_POST, 'sort', FILTER_VALIDATE_INT, ['options' => ['min_range' => -10, 'max_range' => 10]]);
 $tagINPUT = filter_input(INPUT_POST, 'tag', FILTER_SANITIZE_STRING);
 $subtitleINPUT = filter_input(INPUT_POST, 'subtitle', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
 $titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => 'tfunction::dropQuote']);
 $titlePhotoINPUT = filter_input(INPUT_POST, 'titlePhoto', FILTER_SANITIZE_STRING);
 $updateImgINPUT = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
-$checkedINPUT = filter_input(INPUT_POST, 'checked', FILTER_VALIDATE_INT);
-$newssubjectDataIdINPUT = filter_input(INPUT_POST, 'newssubjectDataId', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
+$checkedINPUT = (int) filter_input(INPUT_POST, 'checked', FILTER_VALIDATE_INT);
+$newssubjectDataIdINPUT = (int) filter_input(INPUT_POST, 'newssubjectDataId', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
 $newssubjectDataContentINPUT = filter_input(INPUT_POST, 'newssubjectDataContent', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
+
+if (!empty($newssubjectClassId) && empty($_SESSION['newssubjectClassId'])) {
+    $_SESSION['newssubjectClassId'] = $newssubjectClassId;
+    $_SESSION['newssubjectId'] = $newssubjectId;
+} elseif (!empty($_SESSION['newssubjectClassId'])) {
+    $newssubjectClassId = $_SESSION['newssubjectClassId'];
+    $newssubjectId = $_SESSION['newssubjectId'];
+}
+
+$_SESSION['newsStyle'] = $newsStyleGET;
+$newsStyle = $_SESSION['newsStyle'];
 
 // 一个匿名方法 作用发布文章 
 $AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPUT)use($conn) {
@@ -84,13 +95,31 @@ $AMNewsUploadImage = function($path = '') use ($tfunction) {
     }
     return $path;
 };
+// 一个匿名方法 作用发布专题文章  
+$AMNewsAddSpecialContent = function($newssubjectData = '', $newssubjectDataContent) use($newssubjectClassId, $conn) {
+    $sqlContent = 'insert into special_content (`specialClassifyId`,`newsIds`,`newTitle`,`sort`)values';
+    foreach ($newssubjectData as $v) {
+        if (is_numeric($v)) {
+            $sqlContent .=sprintf('("%s","%s","%s","%s"),', $newssubjectClassId, $v, $newssubjectDataContent[$v], 0);
+        }
+    }
+    $sql = substr($sqlContent, 0, -1);
+    $conn->aud($sql);
+};
+// 一个匿名方法 作用返回专题文章内容  
+$AMNewsAddSpecialContentUrl = function()use($newssubjectId ) {
+    $url = empty($newssubjectId) ? 'news.php' : 'newssubject.php?cpage=2&id=' . $newssubjectId;
+    unset($_SESSION['newssubjectClassId'], $_SESSION['newssubjectId']);
+    return $url;
+};
 
 switch ($act) {
     case 1:
-// 添加部分限制代码
+// 添加部分代码
+// 限制代码
         empty($titleINPUT) && die($tfunction->message($lang['mesgTitleNotEmpty']));
         empty($newTextINPUT) && die($tfunction->message($lang['mesgContentNotEmpty']));
-        empty($classifyIdINPUT) && die($tfunction->message($lang['mesgColumnsNotEmpty']));
+        (!$newssubjectClassId && empty($classifyIdINPUT)) && die($tfunction->message($lang['mesgColumnsNotEmpty']));
 
         empty($subtitleINPUT) && $subtitleINPUT = mb_substr(filter_var($newTextINPUT, FILTER_SANITIZE_STRING), 0, 240);
         empty($descriptionINPUT) && $descriptionINPUT = $subtitleINPUT;
@@ -113,7 +142,8 @@ switch ($act) {
             'titlePhoto' => $path,
             'checked' => $checkedINPUT >= 1 ? 999 : 1,
             'pinyin' => $pinyin,
-            'isdel' => 0
+            'isdel' => 0,
+            'style' => (int) !empty($newssubjectId)
         ]);
 // 添加内容表信息
         $AMNewsContent($Rs, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
@@ -123,12 +153,14 @@ switch ($act) {
         $conn->where(['id' => $classifyIdINPUT])->update('classify', ['summary' => $RsSummary[0]['summary'] + 1]);
 // 记录此新闻使用过的图片
         $AMNewsImages($classifyIdINPUT, $Rs, $path);
-        empty($updateImgINPUT) or $AMNewsImages($classifyIdINPUT, $RsId, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
+        empty($updateImgINPUT) or $AMNewsImages($classifyIdINPUT, $Rs, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
+// 专题文章        
+        empty($newssubjectId) or $AMNewsAddSpecialContent([$Rs], [$Rs => $subtitleINPUT]);
 
-        die($tfunction->message($lang['mesgAddContentSuccess'], 'news.php'));
+        die($tfunction->message($lang['mesgAddContentSuccess'], $AMNewsAddSpecialContentUrl()));
         break;
     case 2:
-// 修改部分代码s
+// 修改部分代码
         if (!empty($id)) {
 // 添加部分限制代码
             empty($titleINPUT) && die($tfunction->message($lang['mesgTitleNotEmpty']));
@@ -163,13 +195,15 @@ switch ($act) {
                 $AMNewsImages($classifyIdINPUT, $id, $path);
             }
             empty($updateImgINPUT) or $imgRs = $AMNewsImages($classifyIdINPUT, $id, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
+
+
             die($tfunction->message($lang['mesgUpdateContentSuccess'], 'news.php'));
         }
         break;
     case 3:
 // 删除部分代码
         // 获取文章和栏目
-        $ajaxId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+        $ajaxId = (int) filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
         if (!$ajaxId) {
             $ajaxId = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_STRING);
             if (!$ajaxId) {
@@ -217,8 +251,8 @@ switch ($act) {
         break;
     case 4:
 // 特殊传值AJAx （设置审核流程）
-        $ajaxT = filter_input(INPUT_POST, 't', FILTER_VALIDATE_INT);
-        $ajaxId = filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
+        $ajaxT = (int) filter_input(INPUT_POST, 't', FILTER_VALIDATE_INT);
+        $ajaxId = (int) filter_input(INPUT_POST, 'id', FILTER_VALIDATE_INT);
         if (!$ajaxId) {
             $ajaxId = filter_input(INPUT_POST, 'id', FILTER_SANITIZE_STRING);
             if (!$ajaxId) {
@@ -234,31 +268,25 @@ switch ($act) {
         // 推送文章到专题文章下的结合中
 
         $newssubjectDataIdINPUT_ = join(',', $newssubjectDataIdINPUT);
+        print_r($newssubjectDataIdINPUT_);
 
-        $Rs = $conn->select(['newsIds'])->where('specialClassifyId =' . $newssubjectId . ' and newsIds in(' . $newssubjectDataIdINPUT_ . ')')->get('special_content');
+        $Rs = $conn->select(['newsIds'])->where('specialClassifyId =' . $newssubjectClassId . ' and newsIds in(' . $newssubjectDataIdINPUT_ . ')')->get('special_content');
         $newssubjectDataIdArr = [];
 
 
         foreach ($Rs as $v) {
             $newssubjectDataIdArr[] = $v['newsIds'];
         }
-       
+
         $newssubjectData = array_diff($newssubjectDataIdINPUT, $newssubjectDataIdArr);
 
         if (empty($newssubjectData)) {
-            die('false');
+            die(json_encode(['false', $AMNewsAddSpecialContentUrl()]));
         }
 
-        $sqlContent = 'insert into special_content (`specialClassifyId`,`newsIds`,`newTitle`,`sort`)values';
-        foreach ($newssubjectData as $v) {
-            if (is_numeric($v)) {
-                $sqlContent .=sprintf('("%s","%s","%s","%s"),', $newssubjectId, $v, $newssubjectDataContentINPUT[$v], 0);
-            }
-        }
+        $AMNewsAddSpecialContent($newssubjectData, $newssubjectDataContentINPUT);
 
-        $sql = substr($sqlContent, 0, -1);
-        $conn->aud($sql);
-        die('true');
+        die(json_encode(['true', $AMNewsAddSpecialContentUrl()]));
         break;
 }
 ?>
@@ -288,13 +316,15 @@ switch ($act) {
                     $query = filter_input(INPUT_GET, 'query');
                     $poUrl = '';
                     $dataClassifyClassName = $lang['newsAllArticles'];
+
+                    //获取未被假删除的文章
                     $where .=' and isdel=0 ';
                     if (!empty($query)) {
                         $timestart = filter_input(INPUT_GET, 'timestart', FILTER_SANITIZE_STRING);
                         $timeend = filter_input(INPUT_GET, 'timeend', FILTER_SANITIZE_STRING);
-                        $queryselect = filter_input(INPUT_GET, 'queryselect', FILTER_VALIDATE_INT);
+                        $queryselect = (int) filter_input(INPUT_GET, 'queryselect', FILTER_VALIDATE_INT);
                         $content = filter_input(INPUT_GET, 'content', FILTER_SANITIZE_STRING);
-                        $url = filter_input(INPUT_GET, 'url', FILTER_VALIDATE_INT);
+                        $url = (int) filter_input(INPUT_GET, 'url', FILTER_VALIDATE_INT);
 //                        $recovery = filter_input(INPUT_GET, 'recovery', FILTER_VALIDATE_BOOLEAN);
 
                         if (!empty($timestart)) {
@@ -347,6 +377,9 @@ switch ($act) {
 
                     $classifyJson = $classifyRsJson;
 
+                    //获取专题或是普通文章
+                    $where .= 'and style=' . (empty($newsStyle) ? 0 : ($newsStyle - 1));
+
                     $data = $conn->select(['checked', 'time', 'id', 'sort', 'title', 'classifyId'])->where('1=1 ' . $where)->order_by('id desc')->limit(10)->offset($pagec)->get('news_config');
 
                     $dataCount = $conn->select('count(id) as cid')->where('1=1 ' . $where)->get('news_config');
@@ -359,21 +392,26 @@ switch ($act) {
                             [<a href='?cpage=1'><?php echo $lang['newsAddArticle']; ?></a>]
                             [<a href='javascript:void(0)' id='retrievedArticles'><?php echo $lang['newsRetrievingArticle']; ?></a>]
                             [<a href='javascript:void(0)' id='column'><?php echo $lang['newsTopicManagement']; ?></a>]
-                            <?php if ($cpage !== 3): ?>
+                            <?php if (!empty($newssubjectId)): ?>
                                 [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
                                 [<a href='?cpage=1'><?php echo $lang['newsUpdateDocumentation']; ?></a>]
                                 [<a href='newsdustbin.php'><?php echo $lang['newsArticlesRecycling']; ?></a>]
                             <?php endif; ?>  
                         </span>
                         </dt>
-                        <?php if (!empty($data)): ?> 
-                            <dd>
+                        <dd <?php empty($data) && print( 'class = "notInfo"'); ?>>
+                            <div class="qmancmsmenu">
+                                <a class='<?php echo ($newsStyle == 1 || $newsStyle == 0) ? 'color' : '' ?>' href='?newsStyle=1'>普通文章</a>
+                                <a class='<?php echo ($newsStyle == 2) ? 'color' : '' ?>' href='?newsStyle=2'>专题文章</a>
+                            </div>
+                            <?php if (!empty($data)): ?> 
                                 <div class="list atable">
                                     <ul class="list atr" id="no">
                                         <li><?php echo $lang['choose']; ?></li>
                                         <li><?php echo $lang['id']; ?></li>
                                         <li><?php echo $lang['sort']; ?></li>
-                                        <li style="width: 10%"><?php echo $lang['columns']; ?></li>
+
+                                        <?php if (($newsStyle - 1) <= 0): ?> <li style="width: 10%"><?php echo $lang['columns']; ?></li><?php endif ?>
                                         <li style="width: 40%"><?php echo $lang['name']; ?></li>
                                         <li style="width: 5%"><?php echo $lang['check']; ?></li>
                                         <li style="width: 17%"><?php echo $lang['time']; ?></li>
@@ -386,7 +424,7 @@ switch ($act) {
                                             <li><input name="checkid" type="checkbox" value="<?php echo $rs['id'] ?>"></li>
                                             <li><?php echo $rs['id'] ?></li>
                                             <li><?php echo $rs['sort'] ?></li>
-                                            <li data-id="<?php echo $rs['classifyId'] ?>"></li>
+                                            <?php if (($newsStyle - 1) <= 0): ?> <li data-id="<?php echo $rs['classifyId'] ?>"></li><?php endif ?>
                                             <li><?php echo $rs['title'] ?></li>
                                             <li><?php
                                                 if (is_numeric($rs['checked'])) {
@@ -408,7 +446,7 @@ switch ($act) {
                                             <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
 
                                             <li>
-                                                <?php if ($cpage !== 3): ?> 
+                                                <?php if (!empty($newssubjectId)): ?> 
                                                     <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked"><?php echo $lang['check']; ?></a>
                                                     <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>"><?php echo $lang['reading']; ?></a>
                                                 <?php endif; ?>
@@ -422,7 +460,7 @@ switch ($act) {
                             <dd class='toolbar'>
                             <button type='button' id='all' onclick="javascript:$('input[name=checkid]').attr('checked', true).prop('checked', true)"><?php echo $lang['selectAll']; ?></button>
                             <button type='button' id='cancel' onclick="javascript:$('input[name=checkid]').removeAttr('checked', '').prop('checked', false)"><?php echo $lang['cancel']; ?></button>
-                            <?php if ($cpage === 3): ?>
+                            <?php if (!empty($newssubjectId)): ?>
                                 <button type='button' id='push'><?php echo $lang['push']; ?></button>
                             <?php endif; ?>
                             <button type='button' id='check' ><?php echo $lang['check']; ?></button>
@@ -441,11 +479,10 @@ switch ($act) {
                                 endfor;
                                 ?>
                                 <a href='?page=<?php echo ($page < $p['pageCount'] ? $page <= 0 ? $page + 2 : $page + 1 : $page) ?>&<?php echo $poUrl ?>'><?php echo $lang['nextPage'] ?></a>
-                            </dd>
-                        <?php else: ?>
-                            <dd class='notInfo'><span><?php echo $lang['notInfo'] ?></span></dd>
+                            <?php else: ?>
+                            <span><?php echo $lang['notInfo'] ?></span>
                         <?php endif; ?>
-
+                        </dd>
                     </dl>
 
                     <?php
@@ -496,28 +533,31 @@ switch ($act) {
                         <?php endif; ?>
                         <form method="post"  enctype="multipart/form-data" action="?act=<?php echo $cpage ?><?php !empty($id) && print('&id=' . $id) ?>">
                             <div class="list atable">
-                                <ul class="list a20_80">
-                                    <li>
-                                        <?php echo $lang['classifyName']; ?>:
-                                    </li>
-                                    <li>
-                                        <select style ="width:250px" name="classifyId" class="classifyId">
-                                            <option value="0"><?php $lang['classifyMain'] ?></option>
-                                            <?php
-                                            $classify = new tfunction($conn);
-                                            $data = $classify->classify();
-                                            foreach ($data as $rs):
-                                                if (empty($rs['setting'])):
-                                                    ?>
-                                                    <option value="<?php echo $rs['id'] ?>"  <?php !empty($rs['disabled']) && print($rs['disabled']); ?>><?php echo $rs['className'] ?></option>
-                                                    <?php
-                                                endif;
-                                            endforeach
-                                            ?>
 
-                                        </select>
-                                    </li>
-                                </ul>
+                                <?php if (empty($newssubjectClassId)): ?>
+                                    <ul class="list a20_80">
+                                        <li>
+                                            <?php echo $lang['classifyName']; ?>:
+                                        </li>
+                                        <li>
+                                            <select style ="width:250px" name="classifyId" class="classifyId">
+                                                <option value="0"><?php $lang['classifyMain'] ?></option>
+                                                <?php
+                                                $classify = new tfunction($conn);
+                                                $data = $classify->classify();
+                                                foreach ($data as $rs):
+                                                    if (empty($rs['setting'])):
+                                                        ?>
+                                                        <option value="<?php echo $rs['id'] ?>"  <?php !empty($rs['disabled']) && print($rs['disabled']); ?>><?php echo $rs['className'] ?></option>
+                                                        <?php
+                                                    endif;
+                                                endforeach
+                                                ?>
+
+                                            </select>
+                                        </li>
+                                    </ul>
+                                <?php endif; ?>
 
                                 <ul class="list a20_80">
                                     <li><?php echo $lang['sort']; ?></li>
@@ -713,23 +753,24 @@ switch ($act) {
                                     $('.list input[name=checkid]').each(function (i, p) {
                                         if ($(p).is(':checked')) {
                                             dataj.push($(p).val());
-                                            //datajC.add[$(p).val()] = $(this).parent().parent().find('li:eq(4)').html();
-                                            datajC[ $(p).val()] = $(this).parent().parent().find('li:eq(4)').html();
+
+<?php if (($newsStyle - 1) <= 0): ?>
+                                                datajC[ $(p).val()] = $(this).parent().parent().find('li:eq(4)').text();
+<?php else: ?>
+                                                datajC[ $(p).val()] = $(this).parent().parent().find('li:eq(3)').text();
+<?php endif ?>
+
                                         }
                                     });
 
                                     if (dataj.length > 0) {
                                         var data = {'newssubjectDataId[]': dataj, 'newssubjectDataContent': datajC};
-                                        $.post('?act=5&newssubjectId=<?php echo $newssubjectId ?>', data, function (data) {
+                                        $.post('?act=5&newssubjectClassId=<?php echo $newssubjectClassId ?>', data, function (data) {
                                             console.log(data);
-                                            if (data === true) {
-                                                alert('推送成功');
-                                                window.location.href = '<?php echo $_SERVER['HTTP_REFERER']; ?>'
-                                            } else
-                                            {
-                                                alert('信息已存在');
-                                                window.location.href = '<?php echo $_SERVER['HTTP_REFERER']; ?>'
-                                            }
+
+                                            alert(data[0] === true ? '推送成功' : '信息已存在');
+
+                                            // window.location.href = data[1]
                                         }, 'JSON');
                                     }
                                 });

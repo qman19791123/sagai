@@ -89,7 +89,7 @@ switch ($act) {
                             <span class="addLink">[ <a href='?u=<?php echo $cpage; ?>&cpage=4'>添加用户</a>  ]</span>
                         </dt>
                         <dd>
-                            <div class="menu">
+                            <div class="qmancmsmenu">
                                 <a class='<?php echo ($cpage == 0 || $cpage == 1) ? 'color' : '' ?>' href='?cpage=1'>用户</a>
                                 <a class='<?php echo ($cpage == 2) ? 'color' : '' ?>' href='?cpage=2'>管理员</a>
                             </div>
