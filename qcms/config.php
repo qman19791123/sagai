@@ -71,9 +71,13 @@ define('operationFunction', $operationFunction);
 define('install', __dir__ . $install);
 define('tempUrl', install . '/' . $tempUrl . '/');
 //系统文件
+define('core', install . 'qmancms/core/');
 define('lib', install . 'qmancms/lib/');
 define('plus', install . 'qmancms/plus/');
 define('lang', install . 'qmancms/language/');
+
+
+
 
 
 // 不可删除的管理员

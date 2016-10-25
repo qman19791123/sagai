@@ -35,10 +35,11 @@ $titleINPUT = filter_input(INPUT_POST, 'title', FILTER_CALLBACK, ['options' => '
 $titlePhotoINPUT = filter_input(INPUT_POST, 'titlePhoto', FILTER_SANITIZE_STRING);
 $updateImgINPUT = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
 $checkedINPUT = (int) filter_input(INPUT_POST, 'checked', FILTER_VALIDATE_INT);
-$newssubjectDataIdINPUT = (int) filter_input(INPUT_POST, 'newssubjectDataId', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
+$newssubjectDataIdINPUT = filter_input(INPUT_POST, 'newssubjectDataId', FILTER_VALIDATE_INT, FILTER_REQUIRE_ARRAY);
+
 $newssubjectDataContentINPUT = filter_input(INPUT_POST, 'newssubjectDataContent', FILTER_SANITIZE_STRING, FILTER_REQUIRE_ARRAY);
 
-
+// 新闻集合参数
 if (!empty($newssubjectClassId) && empty($_SESSION['newssubjectClassId'])) {
     $_SESSION['newssubjectClassId'] = $newssubjectClassId;
     $_SESSION['newssubjectId'] = $newssubjectId;
@@ -47,8 +48,14 @@ if (!empty($newssubjectClassId) && empty($_SESSION['newssubjectClassId'])) {
     $newssubjectId = $_SESSION['newssubjectId'];
 }
 
-$_SESSION['newsStyle'] = $newsStyleGET;
-$newsStyle = $_SESSION['newsStyle'];
+// 新闻心态
+if (!empty($newsStyleGET)) {
+    $_SESSION['newsStyle'] = $newsStyleGET;
+    $newsStyle = $newsStyleGET;
+} elseif (!empty($_SESSION['newsStyle'])) {
+    $newsStyle = $_SESSION['newsStyle'];
+}
+
 
 // 一个匿名方法 作用发布文章 
 $AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPUT)use($conn) {
@@ -165,7 +172,7 @@ switch ($act) {
 // 添加部分限制代码
             empty($titleINPUT) && die($tfunction->message($lang['mesgTitleNotEmpty']));
             empty($newTextINPUT) && die($tfunction->message($lang['mesgContentNotEmpty']));
-            empty($classifyIdINPUT) && die($tfunction->message($lang['mesgColumnsNotEmpty']));
+            (!$newssubjectClassId && empty($classifyIdINPUT)) && die($tfunction->message($lang['mesgColumnsNotEmpty']));
 // 图片上传功能
             $path = $AMNewsUploadImage($titlePhotoINPUT);
 // 查询文章是否存在
@@ -266,9 +273,7 @@ switch ($act) {
         break;
     case 5:
         // 推送文章到专题文章下的结合中
-
         $newssubjectDataIdINPUT_ = join(',', $newssubjectDataIdINPUT);
-        print_r($newssubjectDataIdINPUT_);
 
         $Rs = $conn->select(['newsIds'])->where('specialClassifyId =' . $newssubjectClassId . ' and newsIds in(' . $newssubjectDataIdINPUT_ . ')')->get('special_content');
         $newssubjectDataIdArr = [];
@@ -281,12 +286,12 @@ switch ($act) {
         $newssubjectData = array_diff($newssubjectDataIdINPUT, $newssubjectDataIdArr);
 
         if (empty($newssubjectData)) {
-            die(json_encode(['false', $AMNewsAddSpecialContentUrl()]));
+            die(json_encode([false, $AMNewsAddSpecialContentUrl()]));
         }
 
         $AMNewsAddSpecialContent($newssubjectData, $newssubjectDataContentINPUT);
 
-        die(json_encode(['true', $AMNewsAddSpecialContentUrl()]));
+        die(json_encode([true, $AMNewsAddSpecialContentUrl()]));
         break;
 }
 ?>
@@ -498,10 +503,11 @@ switch ($act) {
                     $keywords = '';
                     $description = '';
                     $checked = '';
+                    $style = 0;
                     if (!empty($id)) {
 
                         $Rs = $conn
-                                ->select(['classifyId', 'sort', 'tag', 'subtitle', 'title', 'titlePhoto', 'newText', 'keywords', 'description', 'checked'])
+                                ->select(['classifyId', 'style', 'sort', 'tag', 'subtitle', 'title', 'titlePhoto', 'newText', 'keywords', 'description', 'checked'])
                                 ->join('news_content', 'news_config.id = news_content.newsId', 'left')
                                 ->where(['id' => $id])
                                 ->get('news_config');
@@ -517,6 +523,7 @@ switch ($act) {
                         $description = $Rs[0]['description'];
                         $subtitle = $Rs[0]['subtitle'];
                         $checked = $Rs[0]['checked'];
+                        $style = $Rs[0]['style'];
                     }
                     ?>
                     <dl>
@@ -534,7 +541,7 @@ switch ($act) {
                         <form method="post"  enctype="multipart/form-data" action="?act=<?php echo $cpage ?><?php !empty($id) && print('&id=' . $id) ?>">
                             <div class="list atable">
 
-                                <?php if (empty($newssubjectClassId)): ?>
+                                <?php if ($style <= 0): ?>
                                     <ul class="list a20_80">
                                         <li>
                                             <?php echo $lang['classifyName']; ?>:
@@ -766,11 +773,8 @@ switch ($act) {
                                     if (dataj.length > 0) {
                                         var data = {'newssubjectDataId[]': dataj, 'newssubjectDataContent': datajC};
                                         $.post('?act=5&newssubjectClassId=<?php echo $newssubjectClassId ?>', data, function (data) {
-                                            console.log(data);
-
                                             alert(data[0] === true ? '推送成功' : '信息已存在');
-
-                                            // window.location.href = data[1]
+                                            window.location.href = data[1]
                                         }, 'JSON');
                                     }
                                 });

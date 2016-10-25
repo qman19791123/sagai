@@ -1,18 +1,26 @@
 <?php
 
+ini_set('date.timezone', 'Asia/Shanghai');
+define('noCache', TRUE);
 include 'config.php';
 header('Content-Type:text/html;charset=' . $webCharset);
-if (is_file(install . '/qmancms/language/' . $language)) {
-    include install . '/qmancms/language/' . $language;
+
+
+
+if (is_file(core . 'controllers.php')) {
+    include(core . 'controllers.php');
+}
+if (is_file(core . 'models.php')) {
+    include(core . 'models.php');
+}
+if (is_file(core . 'load.php')) {
+    include(core . 'load.php');
 }
 
-if (is_file(lang . $language)) {
-    include lang . $language;
-}
+$PATH_INFO = filter_input(INPUT_SERVER, 'PATH_INFO', FILTER_SANITIZE_MAGIC_QUOTES);
+isset($PATH_INFO) && $_AppPathArr = explode("/", $_SERVER ['PATH_INFO']);
+$class = empty($_AppPathArr [1]) ? "index" : $_AppPathArr [1];
+$class2 = empty($_AppPathArr [2]) ? "index" : $_AppPathArr [2];
 
-if (is_file(lib . '/conn.inc.php')) {
-    include lib . '/conn.inc.php';
-}
-if (is_file(lib . '/tmp.inc.php')) {
-    include lib . '/tmp.inc.php';
-}
+$load = new load();
+$load->show($class, $class2);

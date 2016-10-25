@@ -344,7 +344,12 @@ switch ($act) {
                                                         $CRs = $conn->where('specialClassifyId=' . $v['id'])->get('special_content');
                                                         foreach ($CRs as $cv):
                                                             ?>
-                                                            <span><?php echo $cv['newTitle'] ?><i><a class="nodedel" href="?act=8&id=<?php echo $cv['specialClassifyId'] ?>&newid=<?php echo $cv['newsIds'] ?>">删除</a></i></span>
+                                                            <span><?php echo $cv['newTitle'] ?>
+                                                                <i>
+                                                                    <a class="nodedel" href="news.php?cpage=2&id=<?php echo $cv['newsIds']?>&newssubjectClassId=<?php echo $v['id'];?>&newssubjectId=<?php echo $id;?>">编辑</a>
+                                                                    <a class="nodedel" href="?act=8&id=<?php echo $cv['specialClassifyId'] ?>&newid=<?php echo $cv['newsIds'] ?>">删除</a>
+                                                                </i>
+                                                            </span>
                                                         <?php endforeach; ?>
                                                     </p>
                                                     <p class="page"><p>
