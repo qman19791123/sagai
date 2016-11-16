@@ -28,4 +28,22 @@ class controllers {
         return $this->Cout;
     }
 
+    public function __get($name) {
+        if (empty($name)) {
+            return FALSE;
+        }
+        if (is_file(lib . 'qmanvmc/' . $name . '.php')) {
+            include lib . 'qmanvmc/' . $name . '.php';
+        } else {
+            die('<h1>err</h1>' . lib . 'qmanvmc/' . $name . '.php Non-existent');
+        }
+
+        if (class_exists($name)) {
+            $CMyControllersClass = new $name;
+        } else {
+            die('<h1>err</h1>' . $name . ' Non-existent');
+        }
+        return $CMyControllersClass;
+    }
+
 }

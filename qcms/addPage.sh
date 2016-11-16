@@ -20,18 +20,15 @@ if [ ! -z "${1}" ] ;  then
 
 # 1 视图文件
     Cout=""
-    Cout="<html>"$'\n'
     Cout="$Cout<?php \$${1}Cout = \$this->content();?>"$'\n'
-    Cout="$Cout<head><title><?php echo \$${1}Cout['title'];?></title></head>"$'\n'
-    Cout="$Cout<body>"$'\n'
-    Cout="$Cout<div><?php echo \$${1}Cout['content'];?></div>"$'\n'
-    Cout="$Cout</body>"$'\n'
-    Cout="$Cout</html>"
+    Cout="$Cout<xml><title><![CDATA[ <?php echo \$${1}Cout['title'];?>]]></title>"$'\n'
+    Cout="$Cout<styleContent><![CDATA[ <?php echo \$${1}Cout['content'];?>]]></styleContent>"$'\n'
+    Cout="$Cout</xml>"
         if [ ! -f "application/v/V${1}.php" ]; then
             echo "${Cout}" >> "application/v/V${1}.php"
         else
             notfile=1
-            echo "V${1}.php 文件已经存在"
+            echo "V${1}.php file already exists"
         fi
 
 # 2 控制层文件
@@ -45,7 +42,7 @@ if [ ! -z "${1}" ] ;  then
 
     Cout="${Cout}"$'\t'"public function __construct() {"$'\n'
     Cout="${Cout}"$'\t\t'"parent::__construct();"$'\n'
-    Cout="$Cout"$'\t\t'"# 请安需要装载框架,加载框架越多将会越慢"$'\n'
+    Cout="$Cout"$'\t\t'"# Asked the loading frame, a loading frame will be more and more slowly"$'\n'
     Cout="${Cout}"$'\t\t'"\$this->news=\$this->news();"$'\n'
      Cout="${Cout}"$'\t\t'"\$this->newssubject=\$this->newssubject();"$'\n'
     Cout="${Cout}"$'\t\t'"\$this->classify=\$this->classify();"$'\n'
@@ -63,7 +60,7 @@ if [ ! -z "${1}" ] ;  then
             echo "${Cout}" >> "application/c/C${1}.php"
         else
             notfile=1
-            echo "C${1}.php 文件已经存在"
+            echo "C${1}.php file already exists"
         fi
 
 # 3 模型层文件
@@ -79,7 +76,7 @@ if [ ! -z "${1}" ] ;  then
             echo "${Cout}" >> "application/m/M${1}.php"
         else
             notfile=1
-            echo "M${1}.php 文件已经存在"
+            echo "M${1}.php file already exists"
         fi
 
         #写入MVC 配置文件
@@ -98,7 +95,7 @@ if [ ! -z "${1}" ] ;  then
 
 
     else
-        echo "格式不真确"
+        echo "The format is not right"
     fi 
 
 

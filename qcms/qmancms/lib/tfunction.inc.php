@@ -213,7 +213,7 @@ class tfunction {
             file_put_contents(cacheData . '/classifyStyleArray.php', "<?php \n\r\$classifyStyleArray={$classifyArray} \r\n?>");
         } else {
             global $classifyStyleArray;
-            include cacheData  . '/classifyStyleArray.php';
+            include cacheData . '/classifyStyleArray.php';
             $data = $classifyStyleArray;
         }
 
@@ -221,7 +221,7 @@ class tfunction {
     }
 
     /**
-     *  <b>分类递归</b> 
+     *  <b>分类递归（数组）</b> 
      * @global type $classifyArray
      * @return type
      */
@@ -230,8 +230,8 @@ class tfunction {
         if (!is_file(cacheData . '/classifyArray.php')) {
             $data = $this->classifyAchievedArray();
             $classifyArray = var_export($data, true);
-         
-            
+
+
             file_put_contents(cacheData . '/classifyArray.php', "<?php \n\r\$classifyArray={$classifyArray} \r\n?>");
         } else {
             global $classifyArray;
@@ -272,9 +272,19 @@ class tfunction {
         return $rs;
     }
 
-    public function classifyAchievedArray($id = 0) {
+    /**
+     * <b>分类递归 （数组）</b>
+     * @param int $id  <p>编号
+     * <b>分类编号</b>
+     * </p>
+     * @param string $t <p>第归的格式
+     * <b>递归格式(空格)</b>
+     * </p>
+     */
+    protected function classifyAchievedArray($id = 0) {
         $arr = array();
-        $sql = 'select id,className as text ,pid from classify where pid =' . $id . ' order by px desc';
+        //'id', 'pid', 'px', 'className', 'url', 'setting', 'folder'
+        $sql = 'select id,pid,px,className as text,url,setting, folder from classify where pid =' . $id . ' order by px desc';
         $rs = $this->conn->query($sql);
         foreach ($rs as $value) {
 

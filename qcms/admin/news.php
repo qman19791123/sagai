@@ -21,6 +21,8 @@ $act = (int) filter_input(INPUT_GET, 'act', FILTER_VALIDATE_INT);
 $newssubjectClassId = filter_input(INPUT_GET, 'newssubjectClassId', FILTER_SANITIZE_STRING);
 $newssubjectId = filter_input(INPUT_GET, 'newssubjectId', FILTER_SANITIZE_STRING);
 $newsStyleGET = (int) filter_input(INPUT_GET, 'newsStyle', FILTER_VALIDATE_INT);
+$delSessionGET = filter_input(INPUT_GET, 'delSession', FILTER_VALIDATE_BOOLEAN);
+
 
 // post
 // 数据添加 删除 修改 操作
@@ -46,6 +48,11 @@ if (!empty($newssubjectClassId) && empty($_SESSION['newssubjectClassId'])) {
 } elseif (!empty($_SESSION['newssubjectClassId'])) {
     $newssubjectClassId = $_SESSION['newssubjectClassId'];
     $newssubjectId = $_SESSION['newssubjectId'];
+}
+
+if($delSessionGET){
+    unset($_SESSION['newssubjectClassId'], $_SESSION['newssubjectId']);
+    $newssubjectId=NULL;
 }
 
 // 新闻心态
@@ -383,7 +390,7 @@ switch ($act) {
                     $classifyJson = $classifyRsJson;
 
                     //获取专题或是普通文章
-                    $where .= 'and style=' . (empty($newsStyle) ? 0 : ($newsStyle - 1));
+                    $where .= ' and style=' . (empty($newsStyle) ? 0 : ($newsStyle - 1));
 
                     $data = $conn->select(['checked', 'time', 'id', 'sort', 'title', 'classifyId'])->where('1=1 ' . $where)->order_by('id desc')->limit(10)->offset($pagec)->get('news_config');
 
@@ -397,7 +404,7 @@ switch ($act) {
                             [<a href='?cpage=1'><?php echo $lang['newsAddArticle']; ?></a>]
                             [<a href='javascript:void(0)' id='retrievedArticles'><?php echo $lang['newsRetrievingArticle']; ?></a>]
                             [<a href='javascript:void(0)' id='column'><?php echo $lang['newsTopicManagement']; ?></a>]
-                            <?php if (!empty($newssubjectId)): ?>
+                            <?php if (!isset($newssubjectId)): ?>
                                 [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
                                 [<a href='?cpage=1'><?php echo $lang['newsUpdateDocumentation']; ?></a>]
                                 [<a href='newsdustbin.php'><?php echo $lang['newsArticlesRecycling']; ?></a>]
@@ -432,22 +439,22 @@ switch ($act) {
                                             <?php if (($newsStyle - 1) <= 0): ?> <li data-id="<?php echo $rs['classifyId'] ?>"></li><?php endif ?>
                                             <li><?php echo $rs['title'] ?></li>
                                             <li><?php
-                                                if (is_numeric($rs['checked'])) {
-                                                    switch ($rs['checked']) {
-                                                        case 0 :
-                                                            echo $lang['notPass'];
-                                                            break;
-                                                        case 1:
-                                                            echo $lang['wait'];
-                                                            break;
-                                                        case 999:
-                                                            echo $lang['pass'];
-                                                            break;
-                                                    }
-                                                } else {
-                                                    echo $lang['wait'];
-                                                }
-                                                ?></li>
+                            if (is_numeric($rs['checked'])) {
+                                switch ($rs['checked']) {
+                                    case 0 :
+                                        echo $lang['notPass'];
+                                        break;
+                                    case 1:
+                                        echo $lang['wait'];
+                                        break;
+                                    case 999:
+                                        echo $lang['pass'];
+                                        break;
+                                }
+                            } else {
+                                echo $lang['wait'];
+                            }
+                                            ?></li>
                                             <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
 
                                             <li>

@@ -11,9 +11,8 @@
  *
  * @author qman
  */
-class models {
+class models extends tfunction {
 
     //put your code here
-
 
 }

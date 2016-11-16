@@ -1,2 +1,2 @@
 <?php
-$qmanVMC['index']= 'index.php';
+$qmanVMC['test']= 'test.php';

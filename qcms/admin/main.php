@@ -47,7 +47,7 @@ $conn = $tfunction->conn;
                         <p><a class="fa" href="./classify.php?cpage=1" target="contentiframe">添加栏目</a></p>
                     </li>
                     <li class="fa"><span>内容管理</span>
-                        <p><a class="fa" href="./news.php" target="contentiframe">文章管理</a></p>
+                        <p><a class="fa" href="./news.php?delSession=1" target="contentiframe">文章管理</a></p>
                         <p><a class="fa" href="./newssubject.php" target="contentiframe">专题管理</a></p>
                     </li>
                     <li class="fa"><span>商店管理</span>
