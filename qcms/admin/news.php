@@ -463,7 +463,7 @@ switch ($act) {
                                                     <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>"><?php echo $lang['reading']; ?></a>
                                                 <?php endif; ?>
                                                 <a href="?cpage=2&id=<?php echo $rs['id'] ?>"><?php echo $lang['update']; ?></a>
-                                                <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?> ?>"><?php echo $lang['remove']; ?></a>
+                                                <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?> "><?php echo $lang['remove']; ?></a>
                                             </li>
                                         </ul>
                                     <?php endforeach; ?>

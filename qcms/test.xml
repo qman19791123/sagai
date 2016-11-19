@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Edited with XML Spy v2007 (http://www.altova.com) -->
+<?xml-stylesheet type="text/xsl" href="test.xsl"?>
+
+<xml>
+    <title><![CDATA[ hello world]]></title>
+    <styleContent><![CDATA[ This is the system information]]></styleContent>
+    <data>
+        <title>2016活动 asdasdasd</title>
+        <content>
+            <id><![CDATA[1]]></id>
+            <activityTitle><![CDATA[2016活动 asdasdasd]]></activityTitle>
+            <activityValue><![CDATA[DSASADADSDSA]]></activityValue>
+            <activityKey><![CDATA[p1]]></activityKey>
+            <activityInput><![CDATA[radio]]></activityInput>
+            <activitystate><![CDATA[asdasdasd,asdassaddsa,11111,fasdfasdasda,121212,asasdsadsa,]]></activitystate>
+            <activitystateList>
+                <team>
+                    asdasdasd                                    </team>
+                <team>
+                    asdassaddsa                                    </team>
+                <team>
+                    11111                                    </team>
+                <team>
+                    fasdfasdasda                                    </team>
+                <team>
+                    121212                                    </team>
+                <team>
+                    asasdsadsa                                    </team>
+                <team>
+                </team>
+            </activitystateList>
+
+        </content>
+        <content>
+            <id><![CDATA[1]]></id>
+            <activityTitle><![CDATA[2016活动 asdasdasd]]></activityTitle>
+            <activityValue><![CDATA[asddsadsadsa]]></activityValue>
+            <activityKey><![CDATA[p2]]></activityKey>
+            <activityInput><![CDATA[radio]]></activityInput>
+            <activitystate><![CDATA[aaaaa,11111111111111,2222222222,ddddddddddddd,dddddddddd,]]></activitystate>
+            <activitystateList>
+                <team>
+                    aaaaa                                    </team>
+                <team>
+                    11111111111111                                    </team>
+                <team>
+                    2222222222                                    </team>
+                <team>
+                    ddddddddddddd                                    </team>
+                <team>
+                    dddddddddd                                    </team>
+                <team>
+                </team>
+            </activitystateList>
+
+        </content>
+        <content>
+            <id><![CDATA[1]]></id>
+            <activityTitle><![CDATA[2016活动 asdasdasd]]></activityTitle>
+            <activityValue><![CDATA[112121212]]></activityValue>
+            <activityKey><![CDATA[p3]]></activityKey>
+            <activityInput><![CDATA[radio]]></activityInput>
+            <activitystate><![CDATA[1,23,123,123,123,123,1,3,]]></activitystate>
+            <activitystateList>
+                <team>
+                    1                                    </team>
+                <team>
+                    23                                    </team>
+                <team>
+                    123                                    </team>
+                <team>
+                    123                                    </team>
+                <team>
+                    123                                    </team>
+                <team>
+                    123                                    </team>
+                <team>
+                    1                                    </team>
+                <team>
+                    3                                    </team>
+                <team>
+                </team>
+            </activitystateList>
+
+        </content>
+    </data>
+</xml>
+

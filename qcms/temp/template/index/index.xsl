@@ -23,7 +23,7 @@
                             <li>
                                 <xsl:choose>
                                     <xsl:when test="setting = 0">
-                                        <a href="index.php?t={folder}&amp;p=list"> 
+                                        <a href="index.php/new/{folder}/list"> 
                                             <xsl:value-of select="text"/>
                                         </a>
                                     </xsl:when>

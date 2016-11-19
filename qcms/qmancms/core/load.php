@@ -15,14 +15,32 @@ class load extends tfunction {
 
     public $content;
     private $fun;
+    private $page;
+    private $act;
 
-    public function show($class = '', $fun = '') {
+    public function show($class = '', $fun = '', $page, $act) {
+
+       
+        ($class !== $fun && empty($act) && empty($page)) && die("Sorry, not this page");
 
         $not = 0;
         $temp = '';
 
-        $act = filter_input(INPUT_GET, 't', FILTER_SANITIZE_STRING);
-        $page = filter_input(INPUT_GET, 'p', FILTER_SANITIZE_STRING) == 'list' ? 'ntmp' : 'ctemp';
+        $this->page = $page;
+        $this->act = $act;
+        $page_ = $this->page === 'list' ? 'ntmp' : 'ctemp';
+
+
+        if (empty($act) && empty($page)) {
+            $this->page = 'index';
+        } else {
+            $temp = $this->conn->select([$page_])->where(['folder' => $act])->get('classify');
+            if (empty($temp)) {
+                $fun = $page;
+            }
+        }
+        $template = tempUrl . 'template/' . (!empty($temp) ? $class . '/' . $temp[0][$page_] : $class . '/' . $this->page . ".xsl" );
+       
 
         if (is_file('application/m/M' . $class . '.php')) {
             include('application/m/M' . $class . '.php');
@@ -38,6 +56,7 @@ class load extends tfunction {
             class_alias('C' . $class, 'Cmyclass');
             if (class_exists('Cmyclass')) {
                 $this->content = new Cmyclass();
+
                 $this->fun = $fun;
             } else {
                 $not = 1;
@@ -58,20 +77,8 @@ class load extends tfunction {
         ob_end_clean();
 
 
-        $not && die("对不起没有此页");
+        $not && die("Sorry, not this page");
 
-
-
-        if (empty($act)) {
-            $act = 'index.xsl';
-        } else {
-            $temp = $this->conn->select([$page])->where(['folder' => $act])->get('classify');
-        }
-        if ($class == '') {
-            return;
-        }
-
-        $template = tempUrl . 'template/' . (!empty($temp) ? $temp[0][$page] : $act);
         if (is_file($template)) {
             header('Content-Type:text/html;charset=' . dataCharset);
 
@@ -86,9 +93,8 @@ class load extends tfunction {
             print $xslt->transformToXML($XML);
         } else {
             header('Content-Type:text/xml;charset=' . dataCharset);
-            echo '<!-- Without template, template name is "' . $temp[0][$page] . '.xsl" -->';
+            echo '<!-- this\'s not existed template,   template\'s  address  "' . $template . '" -->';
             print $Show;
-            
         }
     }
 
@@ -96,12 +102,12 @@ class load extends tfunction {
 
         $fun = $this->fun;
         if (method_exists($this->content, $fun)) {
-            $this->content->$fun();
+            $this->content->$fun($this->act);
             $cout = $this->content->Cout;
             unset($this->content->Cout);
             return $cout;
         } else {
-            die("对不起没有此页");
+            die("Sorry, not this page");
         }
     }
 

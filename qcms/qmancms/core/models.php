@@ -15,4 +15,10 @@ class models extends tfunction {
 
     //put your code here
 
+    public function conn() {
+        $tfunction = new tfunction();
+        $Rs = $tfunction->conn;
+        return $Rs;
+    }
+
 }

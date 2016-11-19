@@ -43,9 +43,9 @@ if [ ! -z "${1}" ] ;  then
     Cout="${Cout}"$'\t'"public function __construct() {"$'\n'
     Cout="${Cout}"$'\t\t'"parent::__construct();"$'\n'
     Cout="$Cout"$'\t\t'"# Asked the loading frame, a loading frame will be more and more slowly"$'\n'
-    Cout="${Cout}"$'\t\t'"\$this->news=\$this->news();"$'\n'
-     Cout="${Cout}"$'\t\t'"\$this->newssubject=\$this->newssubject();"$'\n'
-    Cout="${Cout}"$'\t\t'"\$this->classify=\$this->classify();"$'\n'
+    Cout="${Cout}"$'\t\t'"\$this->news=\$this->news;"$'\n'
+    Cout="${Cout}"$'\t\t'"\$this->newssubject=\$this->newssubject;"$'\n'
+    Cout="${Cout}"$'\t\t'"\$this->classify=\$this->classify;"$'\n'
     Cout="${Cout}"$'\t'"}"$'\n'
 
     Cout="${Cout}"$'\t'"public function index() {"$'\n'
@@ -79,19 +79,6 @@ if [ ! -z "${1}" ] ;  then
             echo "M${1}.php file already exists"
         fi
 
-        #写入MVC 配置文件
-        if [ ! -f "mvc.php" ] ;then
-                Cout=""
-                Cout="${Cout}<?php"$'\n'
-                Cout="${Cout}\$qmanVMC['${1}']= '${1}.php';"
-                echo "${Cout}" >> "mvc.php" 
-        else
-            if  [ "${notfile}" -eq 0 ] ;then
-                Cout=""
-                Cout="${Cout}\$qmanVMC['${1}']= '${1}.php';"
-                echo "${Cout}" >> "mvc.php" 
-            fi
-        fi 
 
 
     else
