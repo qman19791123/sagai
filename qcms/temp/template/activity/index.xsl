@@ -22,8 +22,6 @@
                     <xsl:value-of select="xml/title"/>
                 </title>
                 <base href="/" />
-                <script type="text/javascript" src="js/angular.min.js"></script>
-                
                 <style>
                     *{
                     box-sizing: border-box;
@@ -85,7 +83,9 @@
                     line-height:50px;
                     border:1px solid #ccc;
                     }
-                    
+                    .Validator-error{
+                        font-size:14px;
+                    }
                     input[type=text]{
                     padding: 2%;
                     line-height:20px;
@@ -99,12 +99,13 @@
                 </div>
                 <xsl:choose>
                     <xsl:when test="xml/data/content">
-                        <form method="post" action="index.php/activity/index/1?activity=1">
+                        <form method="post" class="Validator" action="index.php/activity/index/1?activity=1">
                             
                             <xsl:for-each select="xml/data/content">
                                 <ul class="activity">
                                     <li> 
                                         
+                                        <!--/参数模版 start/-->
                                         <xsl:variable name="activityValue">
                                             <xsl:value-of select="activityValue"></xsl:value-of>
                                         </xsl:variable>
@@ -114,21 +115,20 @@
                                         <xsl:variable name="activityInput">
                                             <xsl:value-of select="activityInput"></xsl:value-of>
                                         </xsl:variable>
-                                        
-                                        
+                                        <!--/参数模版 end/-->
                                         
                                         <xsl:if test="activityInput='text'">
-                                            <input placeholder="{$activityValue}" name="{$activityKey}" type="{$activityInput}" /> 
+                                            <label></label>
+                                            <input placeholder="{$activityValue}" name="{$activityKey}" type="{$activityInput}" data-required="data-required" /> 
                                         </xsl:if>
-                                        
                                         
                                         <xsl:if test="activityInput='radio' or  activityInput='checkbox' or  activityInput='select'">
                                             <em>
                                                 <xsl:copy-of select="$activityValue"></xsl:copy-of>
                                             </em>
                                         </xsl:if>
+                                        
                                         <xsl:if test="activityInput='radio' or  activityInput='checkbox'">
-                                            
                                             <p>
                                                 <xsl:for-each select="activitystateList/team">
                                                     <xsl:variable name="team">
@@ -137,18 +137,15 @@
                                                     <xsl:variable name="id">
                                                         <xsl:value-of select="./@id"></xsl:value-of>
                                                     </xsl:variable>
-                                                    
-                                                
                                                     <label for="{$activityKey}-{$id}"> 
                                                         <span>
                                                             <xsl:copy-of select="$team" />
-                                                            <input value="{$team}"  name="{$activityKey}[]" id="{$activityKey}-{$id}" type="{$activityInput}" /> 
+                                                            <input value="{$team}"  name="{$activityKey}[]" id="{$activityKey}-{$id}" data-required='data-required' type="{$activityInput}" /> 
                                                         </span>
                                                     </label>
                                                 </xsl:for-each>
                                             </p>
                                         </xsl:if>
-                                        
                                         
                                         <xsl:if test="activityInput='select'">
                                             <p>
@@ -156,11 +153,7 @@
                                                     <xsl:for-each select="activitystateList/team">
                                                         <xsl:variable name="team">
                                                             <xsl:value-of select="."></xsl:value-of>
-                                                        </xsl:variable>
-                                                        <xsl:variable name="id">
-                                                            <xsl:value-of select="./@id"></xsl:value-of>
-                                                        </xsl:variable>
-                                               
+                                                        </xsl:variable>                                               
                                                         <option>
                                                             <xsl:copy-of select="$team"></xsl:copy-of>
                                                         </option>
@@ -168,8 +161,6 @@
                                                 </select>
                                             </p>
                                         </xsl:if>
-                                        
-                                        
                                         
                                     </li>
                                 </ul>
@@ -186,6 +177,8 @@
                         </div>
                     </xsl:otherwise>
                 </xsl:choose>
+                <script type="text/javascript" src="js/jquery.min.js"></script>
+                <script type="text/javascript" src="js/validate.min.js"></script>
             </body>
         </html>
     </xsl:template>

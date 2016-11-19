@@ -17,7 +17,7 @@
                 <script src="js/bootstrap/bootstrap.min.js"></script>
             </head>
             <body>
-                <div class="container">
+<!--                <div class="container">
                     <ul class="link">
                         <xsl:for-each select="xml/classify/content">
                             <li>
@@ -59,7 +59,7 @@
                         asdasd
                     </div>
                 </div>
-              
+              -->
                
             </body>
         </html>
