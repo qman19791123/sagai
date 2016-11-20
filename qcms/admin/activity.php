@@ -2,7 +2,10 @@
 define('noCache', TRUE);
 include '../config.php';
 include lib . 'tfunction.inc.php';
-include plus . 'upload/upload.php';
+
+include plus . 'Excel/PHPExcel.php';
+include plus . 'Excel/PHPExcel/Writer/Excel2007.php';
+
 include 'isadmin.php';
 include lang . $language;
 $tfunction = new tfunction();
@@ -30,8 +33,58 @@ $activityContentINPUT = filter_input(INPUT_POST, 'newText', FILTER_SANITIZE_STRI
 $timeINPUT = filter_input(INPUT_POST, 'time', FILTER_SANITIZE_STRING);
 $endtimeINPUT = filter_input(INPUT_POST, 'endtime', FILTER_SANITIZE_STRING);
 
+
+
+
+
 // $sql = 'INSERT INTO activity (`activityTitle`,`activityContent`,`time`,`endtime`) VALUES("%s","%s","%s","%s")';
 
+$AMActivityXLS = function ($id) use($conn) {
+
+    $name = date('Y-m-d');
+    error_reporting(E_ALL);
+    date_default_timezone_set('Europe/London');
+    $objPHPExcel = new PHPExcel();
+
+    $sql = 'select * from activity_content where activityId = "' . $id . '"';
+    $data = $conn->query($sql);
+
+
+
+
+    foreach ($data as $k => $v) {
+
+        $num = $k + 1;
+        $objPHPExcel->setActiveSheetIndex(0)
+                ->setCellValue('A' . $num, $v['p1'])
+                ->setCellValue('B' . $num, $v['p2'])
+                ->setCellValue('C' . $num, $v['p3'])
+                ->setCellValue('D' . $num, $v['p4'])
+                ->setCellValue('E' . $num, $v['p5'])
+                ->setCellValue('F' . $num, $v['p6'])
+                ->setCellValue('G' . $num, $v['p7'])
+                ->setCellValue('H' . $num, $v['p8'])
+                ->setCellValue('I' . $num, $v['p9'])
+                ->setCellValue('J' . $num, $v['p10'])
+                ->setCellValue('K' . $num, $v['p11'])
+                ->setCellValue('L' . $num, $v['p12'])
+                ->setCellValue('N' . $num, $v['p13'])
+                ->setCellValue('M' . $num, $v['p14'])
+                ->setCellValue('O' . $num, $v['p15'])
+                ->setCellValue('P' . $num, $v['p16'])
+                ->setCellValue('Q' . $num, $v['p17'])
+                ->setCellValue('R' . $num, $v['p18'])
+                ->setCellValue('S' . $num, $v['p19'])
+                ->setCellValue('T' . $num, $v['p20']);
+    }
+    $objPHPExcel->getActiveSheet()->setTitle('User');
+    $objPHPExcel->setActiveSheetIndex(0);
+    header('Content-Type: application/vnd.ms-excel');
+    header('Content-Disposition: attachment;filename="' . $name . '.xls"');
+    header('Cache-Control: max-age=0');
+    $objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
+    $objWriter->save('php://output');
+};
 
 $AMActivityConfig = function( $activityValueINPUT, $activityInputINPUT, $activitystateINPUT, $idGet) use($conn) {
     $activityCount = count($activityValueINPUT);
@@ -78,9 +131,22 @@ switch ($actGet) {
 
         break;
     case 4:
-        $sql = 'delete from activity_config where activityId = "' . $IdINPUT . '" and activityKey="' . $activityIdINPUT . '"';
-        $conn->aud($sql);
-        die('true');
+        if (!empty($IdINPUT) && !empty($activityIdINPUT)) {
+            $sql = 'delete from activity_config where activityId = "' . $IdINPUT . '" and activityKey="' . $activityIdINPUT . '"';
+            $conn->aud($sql);
+            die('true');
+        }
+        die("FALSE");
+        break;
+    case 5:
+        $AMActivityXLS($idGet);
+        break;
+    case 6:
+        if (!empty($idGet)) {
+            $sql = 'delete from activity_content where activityId = "' . $idGet . '"';
+            $conn->aud($sql);
+            die($tfunction->message('删除成功'));
+        }
         break;
 }
 ?>
@@ -162,8 +228,8 @@ switch ($actGet) {
                                         <li><?php echo date('Y-m-d h:i:s', $rs['endtime']); ?></li>
                                         <li>
                                             <a href="?cpage=2&id=<?php echo $rs['id'] ?>"><?php echo $lang['update']; ?></a>
-                                            
-                                            <a class="delmes " href="?cpage=3&id=<?php echo $rs['id'] ?> ">活动查看</a>
+                                            <a class="delmes" href="?cpage=3&id=<?php echo $rs['id'] ?> ">查看活动信息</a>
+                                            <a class="delmes" target="_blank" href="/index.php/activity/index/<?php echo $rs['id'] ?> ">查看活动页</a>
                                             <a class="delmes nopt" href="?act=3&id=<?php echo $rs['id'] ?> "><?php echo $lang['remove']; ?></a>
                                         </li>
                                     </ul>
@@ -189,7 +255,7 @@ switch ($actGet) {
                             $endtime = date('Y-m-d', $data[0]['endtime']);
                             $activityContent = $data[0]['activityContent'];
                         }
-                        $data_activity_config = $conn->where(['activityId' => $idGet])->get('activity_config');
+                        $data_activity_config = $conn->where(['activityId' => $idGet])->order_by('')->get('activity_config');
                     }
                     ?>
                     <form  method="post"  action="?act=<?php echo $cpageGet ?><?php !empty($idGet) && print('&id=' . $idGet) ?>">
@@ -214,10 +280,12 @@ switch ($actGet) {
                                         <li>
                                             开始时间：<input name="time" type="date" value="<?php echo $starttime; ?>" />
                                             结束时间： <input name="endtime" type="date" value="<?php echo $endtime; ?>"   />
-
                                         </li>
                                     </ul>   
-
+                                    <ul class="list a20_80">
+                                        <li></li>
+                                        <li></li>
+                                    </ul>
                                     <ul class="list a20_80">
                                         <li>
                                             活动内容:
@@ -278,24 +346,27 @@ switch ($actGet) {
                     break;
                 case 3:
                     $data_activity_config = $conn->where(['activityId' => $idGet])->get('activity_config');
-                    $data_activity_content = $conn->where(['id' => $idGet])->get('activity_content');
+                    $data_activity_content = $conn->where(['activityId' => $idGet])->get('activity_content');
                     ?>
                     <dl>
-                        <dt>活动管理  <span class="addLink"></span></dt>
+
+                        <dt>活动管理  <span class="addLink"><a href="?act=5&id=<?php echo $idGet; ?>">下载</a></span></dt>
                         <dd>
                             <div class="list atable">
                                 <ul class="list atr" id="no">
                                     <?php foreach ($data_activity_config as $v): ?>
                                         <li><?php echo $v['activityValue'] ?></li>
                                     <?php endforeach; ?>
+                                    <li>操作</li>
                                 </ul>
-                                <ul class="list atr">
-                                    <?php foreach ($data_activity_config as $v): ?>
-                                        <?php foreach ($data_activity_content as $vs): ?>
+                                <?php foreach ($data_activity_content as $vs): ?>
+                                    <ul class="list atr">
+                                        <?php foreach ($data_activity_config as $v): ?>
                                             <li><?php echo $vs[$v['activityKey']] ?></li>
                                         <?php endforeach; ?>
-                                    <?php endforeach; ?>
-                                </ul>
+                                        <li><a href="?act=6&id=<?php echo $vs['id'] ?>">删除</a></li>
+                                    </ul>
+                                <?php endforeach; ?>
                             </div>
                         </dd>
                     </dl>

@@ -94,6 +94,7 @@
                 </style>
             </head>
             <body>
+                
                 <div class="top"> 
                     <xsl:value-of select="xml/data/title"/>
                 </div>
@@ -173,10 +174,13 @@
                     </xsl:when>
                     <xsl:otherwise>
                         <div>
-                            aaa
+                            <xsl:value-of select="xml/errContent"/>
                         </div>
                     </xsl:otherwise>
                 </xsl:choose>
+                
+               
+                
                 <script type="text/javascript" src="js/jquery.min.js"></script>
                 <script type="text/javascript" src="js/validate.min.js"></script>
             </body>

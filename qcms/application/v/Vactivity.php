@@ -35,6 +35,8 @@
                     </content>
                 <?php endforeach; ?>
             </data>
+        <?php else: ?>
+        <errContent><![CDATA[<?php echo $activityCout['errMes'];?>]]></errContent>
         <?php endif; ?>
     <?php endif; ?>
 </xml>

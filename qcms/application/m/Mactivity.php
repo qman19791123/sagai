@@ -20,8 +20,7 @@ class Mactivity extends models {
     }
 
     public function queryActivity($user, $id) {
-        $Rs = $this->conn->query('select * from activity_content where p1="' . $id . '" and id="' . $id . '"');
-        return empty($Rs);
+        return $this->conn->query('select * from activity_content where p1="' . $user . '" and id="' . $id . '"');
     }
 
     public function queryActivitySheet11($user, $count) {

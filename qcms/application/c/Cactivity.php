@@ -7,6 +7,7 @@ class Cactivity extends controllers {
     var $classify;
     private $conn = '';
     private $activity;
+    private $activityCookie_1 = '';
 
     public function __construct() {
         parent::__construct();
@@ -31,33 +32,55 @@ class Cactivity extends controllers {
 
     private function activity_1($value, $p) {
 
+        $this->activityCookie_1 = filter_input(INPUT_COOKIE, 'isnot', FILTER_VALIDATE_INT);
+
+
         $data = ['title' => 'hello world', 'content' => 'This is the system information'];
-        $data['data'] = $this->conn->activityContent($p);
 
-        switch ($this->activity) {
-            case 1:
-                $this->add($data['data']);
-                break;
+        if ($this->activityCookie_1 >= 3) {
+            $data['errMes'] = '信息不可被录入，请与管理员联系';
+            $this->Cout($data);
+        } else {
+            $data['data'] = $this->conn->activityContent($p);
+
+            switch ($this->activity) {
+                case 1:
+                    $this->add($data['data']);
+                    break;
+            }
+
+            $this->Cout($data);
         }
-
-        $this->Cout($data);
     }
 
     private function add($data) {
-        $da['id'] = $data[0]['id'];
-        foreach ($data as $val) {
-            $da[$val['activityKey']] = filter_input(INPUT_POST, $val['activityKey'], FILTER_CALLBACK, ['options' => 'tfunction::encode']);
-        }
 
-        if ($this->conn->queryActivity($da['id'], $da['p1'])) {
-            die($this->conn->message('信息已录入'));
-        }
-        $Rs = $this->conn->queryActivitySheet11($da['p1'], $da['p4']);
-        if ($Rs === TRUE) {
-            $val = $this->conn->activityAdd($da);
-            ($val) && die($this->conn->message("发布成功"));
+        if ($this->activityCookie_1 >= 3) {
+            $data['errMes'] = '信息不可被录入，请与管理员联系';
+            $this->Cout($data);
         } else {
-            die($this->conn->message($Rs));
+
+            $this->activityCookie_1+=1;
+            setcookie('isnot', $this->activityCookie_1, time() + 24 * 60 * 60 * 10);
+
+            $da['activityId'] = $data[0]['id'];
+            foreach ($data as $val) {
+                $da[$val['activityKey']] = filter_input(INPUT_POST, $val['activityKey'], FILTER_CALLBACK, ['options' => 'tfunction::encode']);
+            }
+            $queryActivity = $this->conn->queryActivity($da['p1'], $da['activityId']);
+
+            if ($queryActivity) {
+                empty($queryActivity) || die($this->conn->message('信息已录入'));
+            }
+
+            $Rs = $this->conn->queryActivitySheet11($da['p1'], $da['p4']);
+            if ($Rs === TRUE) {
+                $val = $this->conn->activityAdd($da);
+                setcookie('isnot', '', 0);
+                ($val) && die($this->conn->message("发布成功"));
+            } else {
+                die($this->conn->message($Rs));
+            }
         }
     }
 
