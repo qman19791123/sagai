@@ -21,8 +21,8 @@ if [ ! -z "${1}" ] ;  then
 # 1 视图文件
     Cout=""
     Cout="$Cout<?php \$${1}Cout = \$this->content();?>"$'\n'
-    Cout="$Cout<xml><title><![CDATA[ <?php echo \$${1}Cout['title'];?>]]></title>"$'\n'
-    Cout="$Cout<styleContent><![CDATA[ <?php echo \$${1}Cout['content'];?>]]></styleContent>"$'\n'
+    Cout="$Cout<xml>"$'\n'
+    Cout="$Cout<?php print \$this->arrayToXml(\$indexCout); ?>"$'\n'
     Cout="$Cout</xml>"
         if [ ! -f "application/v/V${1}.php" ]; then
             echo "${Cout}" >> "application/v/V${1}.php"
@@ -35,27 +35,17 @@ if [ ! -z "${1}" ] ;  then
     Cout=""
     Cout="<?php "$'\n'
     Cout="${Cout}class C${1} extends controllers {"$'\n'
-   
-    Cout=$Cout$'\t'"var \$news ;"$'\n'
-    Cout=$Cout$'\t'"var \$newssubject ;"$'\n'
-    Cout=$Cout$'\t'"var \$classify;"$'\n'
-
+    Cout=$Cout$'\t'"private \$loadingSystemClass ;"$'\n'
     Cout="${Cout}"$'\t'"public function __construct() {"$'\n'
     Cout="${Cout}"$'\t\t'"parent::__construct();"$'\n'
     Cout="$Cout"$'\t\t'"# Asked the loading frame, a loading frame will be more and more slowly"$'\n'
-    Cout="${Cout}"$'\t\t'"\$this->news=\$this->news;"$'\n'
-    Cout="${Cout}"$'\t\t'"\$this->newssubject=\$this->newssubject;"$'\n'
-    Cout="${Cout}"$'\t\t'"\$this->classify=\$this->classify;"$'\n'
+    Cout="${Cout}"$'\t\t'"\$this->slefNewssubject=\$this->newssubject;"$'\n'
     Cout="${Cout}"$'\t'"}"$'\n'
-
     Cout="${Cout}"$'\t'"public function index() {"$'\n'
     Cout="${Cout}"$'\t\t'"\$data=['title'=>'hello world','content'=>'This is the system information'];"$'\n'
     Cout="${Cout}"$'\t\t'"\$this->Cout(\$data);"$'\n'
     Cout="${Cout}"$'\t'"}"$'\n'
-
-
     Cout="${Cout}}"$'\n'
-
         if [ ! -f "application/c/C${1}.php" ]; then
             echo "${Cout}" >> "application/c/C${1}.php"
         else
@@ -71,15 +61,12 @@ if [ ! -z "${1}" ] ;  then
     Cout="${Cout}"$'\t\t'"parent::__construct();"$'\n'
     Cout="${Cout}"$'\t'"}"$'\n'
     Cout="${Cout}}"$'\n'
-    
         if [ ! -f "application/m/M${1}.php" ]; then 
             echo "${Cout}" >> "application/m/M${1}.php"
         else
             notfile=1
             echo "M${1}.php file already exists"
         fi
-
-
 
     else
         echo "The format is not right"

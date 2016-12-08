@@ -1,6 +1,8 @@
 <xml>
     <?php
+   
     $activityCout = $this->content();
+    
     if (!empty($activityCout)):
         ?>
         <title><![CDATA[ <?php empty($activityCout['title']) || print $activityCout['title']; ?>]]></title>
@@ -36,7 +38,7 @@
                 <?php endforeach; ?>
             </data>
         <?php else: ?>
-        <errContent><![CDATA[<?php echo $activityCout['errMes'];?>]]></errContent>
+            <errContent><![CDATA[<?php echo $activityCout['errMes']; ?>]]></errContent>
         <?php endif; ?>
     <?php endif; ?>
 </xml>

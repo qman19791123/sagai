@@ -254,7 +254,7 @@ class tfunction {
      * </p>
      */
     private function classifyAchieved(&$data, $id = '', $t = '', $v = '') {
-        $t.='　　';
+        $t .= '　　';
         $sql = 'select id,px,className,pid,setting from classify where pid =' . $id . ' order by px desc';
         $rs = $this->conn->query($sql);
 
@@ -396,6 +396,30 @@ class tfunction {
         $Content = str_replace('"', '', $Content);
         $Content = filter_var($Content, FILTER_SANITIZE_STRING);
         return $Content;
+    }
+
+    public function arrayToXml($source, $charset = 'utf8') {
+        if (empty($source)) {
+            return false;
+        }
+
+        $xml = '';
+        $xml .= $this->change($source);
+        return $xml;
+    }
+
+    private function change($source) {
+        $string = "";
+        foreach ($source as $k => $v) {
+            $string .= "<" . $k . ">";
+            if (is_array($v) || is_object($v)) {
+                $string .= $this->change($v) . "</" . $k . ">\r\n";
+            } else {
+                $string .= "<![CDATA[" . $v . "]]></" . $k . ">\r\n";
+            }
+            $string .= "";
+        }
+        return $string;
     }
 
 }

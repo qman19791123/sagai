@@ -13,101 +13,127 @@
  */
 class load extends tfunction {
 
-    public $content;
-    private $fun;
-    private $page;
-    private $act;
+    private $Cmyclass;
+    private $Err;
+    private $id;
+    private $M, $V, $C, $class, $fun;
+    private $fileExists;
+    private $template;
 
-    public function show($class = '', $fun = '', $page, $act) {
+    public function __construct($class) {
+        parent::__construct();
 
-       
-        ($class !== $fun && empty($act) && empty($page)) && die("Sorry, not this page");
+        $this->Err = 'Sorry, this page no';
 
-        $not = 0;
-        $temp = '';
+        $this->fileExists = FALSE;
+        if (!empty($class)) {
+            $this->fileExists = TRUE;
+            $this->M = 'application/m/M' . $class . '.php';
+            $this->C = 'application/c/C' . $class . '.php';
+            $this->V = 'application/v/V' . $class . '.php';
 
-        $this->page = $page;
-        $this->act = $act;
-        $page_ = $this->page === 'list' ? 'ntmp' : 'ctemp';
+            $this->fileExists = is_file($this->C);
+            ($this->fileExists == TRUE) && $this->fileExists = is_file($this->M);
+            ($this->fileExists == TRUE) && $this->fileExists = is_file($this->V);
 
-
-        if (empty($act) && empty($page)) {
-            $this->page = 'index';
-        } else {
-            $temp = $this->conn->select([$page_])->where(['folder' => $act])->get('classify');
-            if (empty($temp)) {
-                $fun = $page;
-            }
-        }
-        $template = tempUrl . 'template/' . (!empty($temp) ? $class . '/' . $temp[0][$page_] : $class . '/' . $this->page . ".xsl" );
-       
-
-        if (is_file('application/m/M' . $class . '.php')) {
-            include('application/m/M' . $class . '.php');
-        } else {
-            $not = 1;
-        }
-
-        ob_start();
-
-        if (!$not && is_file('application/c/C' . $class . '.php')) {
-
-            include('application/c/C' . $class . '.php');
-            class_alias('C' . $class, 'Cmyclass');
-            if (class_exists('Cmyclass')) {
-                $this->content = new Cmyclass();
-
-                $this->fun = $fun;
-            } else {
-                $not = 1;
-            }
-        } else {
-            $not = 1;
-        }
-
-
-        if (!$not && is_file('application/v/V' . $class . '.php')) {
-            include('application/v/V' . $class . '.php');
-        } else {
-            $not = 1;
-        }
-
-
-        $Show = ob_get_contents();
-        ob_end_clean();
-
-
-        $not && die("Sorry, not this page");
-
-        if (is_file($template)) {
-            header('Content-Type:text/html;charset=' . dataCharset);
-
-            $XML = new DOMDocument();
-            $XML->loadXML($Show);
-
-            $xslt = new XSLTProcessor();
-            $XSL = new DOMDocument();
-
-            $XSL->load($template);
-            $xslt->importStylesheet($XSL);
-            print $xslt->transformToXML($XML);
-        } else {
-            header('Content-Type:text/xml;charset=' . dataCharset);
-            echo '<!-- this\'s not existed template,   template\'s  address  "' . $template . '" -->';
-            print $Show;
+            $this->class = $class;
         }
     }
 
-    public function content() {
+    public function show($fun = '', $page = array()) {
 
-        $fun = $this->fun;
-        if (method_exists($this->content, $fun)) {
-            $this->content->$fun($this->act);
-            $cout = $this->content->Cout;
-            unset($this->content->Cout);
+        if ($this->fileExists === FALSE || empty($fun)) {
+            goto err;
+        }
+
+        $this->fun = strtolower($fun) == "home" ? "index" : "content";
+        $this->id = !empty($page[0]) ? $page[0] : [];
+
+        if ($this->classExist() === TRUE) {
+            call_user_func_array([$this->Cmyclass, $this->fun], $page);
+            $cout = $this->Cmyclass->Cout;
+
+            if (is_array($cout)) {
+                ob_start();
+                include($this->V);
+                $cout_ = ob_get_contents();
+                ob_end_clean();
+                $cout = $this->templateExist($cout_);
+            }
+
+            print $cout;
+            return;
+        }
+        err:
+        echo $this->Err;
+    }
+
+    private function templateExist($content) {
+
+        $menu ['activity'] = ['table' => 'activity', 'index' => 'template', 'content' => 'templateContent'];
+        $menu ['special'] = ['table' => 'special_config', 'index' => 'template', 'content' => 'templateContent'];
+        $menu ['news'] = ['table' => 'special_config', 'index' => 'ntmp', 'content' => 'ctemp'];
+        if ($this->class !== 'index') {
+            $Rs = ( $this->conn->query('select ' . $menu[$this->class][$this->fun] . ' as temp from ' . $menu[$this->class]['table'] . ' where id=' . $this->id));
+        } else {
+            $Rs[0]['temp'] = $this->class;
+        }
+        $template = $this->generateHtml($content, $this->template($this->class, $Rs));
+        return $template;
+        
+    }
+
+    private function template($tempURL, $tempName) {
+
+        $this->template = 'template/' . $tempURL . '/' . $tempName[0]['temp'] . ".xsl";
+        $template = tempUrl . $this->template;
+        return is_file($template) ? $template : FALSE;
+        
+    }
+
+    private function generateHtml($content, $template) {
+        if ($template !== FALSE) {
+            header('Content-Type:text/html;charset=' . dataCharset);
+            $XML = new DOMDocument();
+            $XML->loadXML($content);
+            $xslt = new XSLTProcessor();
+            $xslt->registerPHPFunctions();
+            $XSL = new DOMDocument();
+            $XSL->load($template);
+            $xslt->importStylesheet($XSL);
+            return $xslt->transformToXML($XML);
+        } else {
+            header('Content-Type:text/xml;charset=' . dataCharset);
+            return sprintf('<!-- this\'s not existed template,   template\'s  address  "%s" -->%s', $this->template, $content);
+        }
+    }
+
+    //  
+    private function classExist() {
+
+        include($this->C);
+        include($this->M);
+        class_alias('C' . $this->class, 'Cmyclass');
+        class_alias('M' . $this->class, 'Mmyclass');
+
+        if (!class_exists('Cmyclass')) {
+            return FALSE;
+        }
+        if (!class_exists('Mmyclass')) {
+            return FALSE;
+        }
+        $this->Cmyclass = new Cmyclass();
+        return TRUE;
+    }
+
+    public function content() {
+        $fun = $this->Cmyclass->Cout;
+        if (!empty($fun)) {
+            $cout = $fun;
+            unset($fun);
             return $cout;
         } else {
-            die("Sorry, not this page");
+            return FALSE;
         }
     }
 

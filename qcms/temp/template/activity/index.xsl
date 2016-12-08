@@ -8,13 +8,25 @@
         Purpose of transformation follows.
 -->
 
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
-    <xsl:output method="html"/>
-
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
+                xmlns:php="http://php.net/xsl"
+                xsl:extension-element-prefixes="php"
+>
+    
+    
+    <xsl:output
+        method="html"
+        doctype-system="about:legacy-compat"
+        encoding="UTF-8"
+        indent="yes" 
+    />
+    
+    <xsl:include href="content.xsl"></xsl:include>
     <!-- TODO customize transformation rules 
          syntax recommendation http://www.w3.org/TR/xslt 
     -->
     <xsl:template match="/">
+        
         <html>
             <head>
                 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
@@ -84,7 +96,7 @@
                     border:1px solid #ccc;
                     }
                     .Validator-error{
-                        font-size:14px;
+                    font-size:14px;
                     }
                     input[type=text]{
                     padding: 2%;
@@ -93,8 +105,9 @@
                     }
                 </style>
             </head>
-            <body>
-                
+            <body>   
+
+                <xsl:call-template name="header"></xsl:call-template>
                 <div class="top"> 
                     <xsl:value-of select="xml/data/title"/>
                 </div>
@@ -178,12 +191,11 @@
                         </div>
                     </xsl:otherwise>
                 </xsl:choose>
-                
-               
-                
                 <script type="text/javascript" src="js/jquery.min.js"></script>
                 <script type="text/javascript" src="js/validate.min.js"></script>
             </body>
         </html>
+        
     </xsl:template>
+   
 </xsl:stylesheet>
