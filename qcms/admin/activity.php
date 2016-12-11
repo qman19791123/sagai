@@ -28,13 +28,16 @@ $activitystateINPUT = filter_input(INPUT_POST, 'activitystate', FILTER_SANITIZE_
 
 
 $activityTitleINPUT = filter_input(INPUT_POST, 'activityTitle', FILTER_SANITIZE_STRING);
-$activityContentINPUT = filter_input(INPUT_POST, 'newText', FILTER_SANITIZE_STRING);
+$activityContentINPUT = filter_input(INPUT_POST, 'newText', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
 
 $timeINPUT = filter_input(INPUT_POST, 'time', FILTER_SANITIZE_STRING);
 $endtimeINPUT = filter_input(INPUT_POST, 'endtime', FILTER_SANITIZE_STRING);
 
+$updateImgINPUT = filter_input(INPUT_POST, 'updateImg', FILTER_UNSAFE_RAW);
 
 
+$templateINPUT = filter_input(INPUT_POST, 'template', FILTER_SANITIZE_STRING);
+$templateContentINPUT = filter_input(INPUT_POST, 'templateContent', FILTER_SANITIZE_STRING);
 
 
 // $sql = 'INSERT INTO activity (`activityTitle`,`activityContent`,`time`,`endtime`) VALUES("%s","%s","%s","%s")';
@@ -86,6 +89,26 @@ $AMActivityXLS = function ($id) use($conn) {
     $objWriter->save('php://output');
 };
 
+// 一个匿名方法 作用记录此新闻使用过的图片
+$AMNewsImages = function($Rsid, $updateImg = '')use($conn) {
+    $jsonImagesSqlT = $jsonImagesSql = '';
+    if (is_array($updateImg)) {
+        foreach ($updateImg as $valueJsonImages) {
+            $jsonImagesSqlT .= sprintf('("%s","%s","%s","%s"),', $Rsid, $valueJsonImages, time(), 2);
+        }
+    } else if (is_string($updateImg) && !empty($updateImg)) {
+        $jsonImagesSqlT .= sprintf('("%s","%s","%s","%s"),', $Rsid, $updateImg, time(), 2);
+    }
+
+    $jsonImagesSql = 'INSERT INTO `Images` (`IDNo`,`images`,`time`,`style`) VALUES' . trim($jsonImagesSqlT, ',');
+
+    $conn->aud($jsonImagesSql);
+
+    $jsonImagesSql = 'delete from images where id not in ( select id from images as a   Group By images Having count(*)>=1)';
+    $conn->aud($jsonImagesSql);
+};
+
+
 $AMActivityConfig = function( $activityValueINPUT, $activityInputINPUT, $activitystateINPUT, $idGet) use($conn) {
     $activityCount = count($activityValueINPUT);
     $sql = 'INSERT INTO  activity_config (`activityValue`,`activityId`,`activityInput`,`activitystate`,`activityKey`) values ';
@@ -102,15 +125,19 @@ $AMActivityConfig = function( $activityValueINPUT, $activityInputINPUT, $activit
 
 switch ($actGet) {
     case 1:
-        $sql_activity = 'INSERT INTO activity (`activityTitle`,`activityContent`,`time`,`endtime`) VALUES("%s","%s","%s","%s")';
-        $rsId = $conn->aud(sprintf($sql_activity, $activityTitleINPUT, $activityContentINPUT, strtotime($timeINPUT), strtotime($endtimeINPUT)));
+        $sql_activity = 'INSERT INTO activity (`activityTitle`,`activityContent`,`time`,`endtime`,`template`,`templateContent`) VALUES("%s","%s","%s","%s","%s","%s")';
+        $rsId = $conn->aud(sprintf($sql_activity, $activityTitleINPUT, $activityContentINPUT, strtotime($timeINPUT), strtotime($endtimeINPUT), $templateINPUT, $templateContentINPUT));
 
         $AMActivityConfig($activityValueINPUT, $activityInputINPUT, $activitystateINPUT, $rsId);
+
+        empty($updateImgINPUT) or $AMNewsImages($rsId, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
+
         die($tfunction->message('编辑成功', 'activity.php'));
+
         break;
     case 2:
-        $sql_activity = 'update activity set `activityTitle`="%s" ,`activityContent`="%s" ,`time`="%s",`endtime`="%s" where id = "%s"';
-        $conn->aud(sprintf($sql_activity, $activityTitleINPUT, $activityContentINPUT, strtotime($timeINPUT), strtotime($endtimeINPUT), $idGet));
+        $sql_activity = 'update activity set `activityTitle`="%s" ,`activityContent`="%s" ,`time`="%s",`endtime`="%s" ,`template`="%s",`templateContent`="%s" where id = "%s"';
+        $conn->aud(sprintf($sql_activity, $activityTitleINPUT, $activityContentINPUT, strtotime($timeINPUT), strtotime($endtimeINPUT), $templateINPUT, $templateContentINPUT, $idGet));
 
         $sql_activity_config = 'delete from activity_config where activityId = "' . $idGet . '"';
 
@@ -118,7 +145,12 @@ switch ($actGet) {
 
         $AMActivityConfig($activityValueINPUT, $activityInputINPUT, $activitystateINPUT, $idGet);
 
+
+        empty($updateImgINPUT) or $AMNewsImages($idGet, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
+
         die($tfunction->message('编辑成功', 'activity.php'));
+
+
         break;
     case 3:
 
@@ -246,6 +278,8 @@ switch ($actGet) {
                     $starttime = '';
                     $endtime = '';
                     $activityContent = '';
+                    $template = '';
+                    $templateContent = '';
 
                     if ($cpageGet == 2) {
                         $data = $conn->where(['id' => $idGet])->limit(1)->get('activity');
@@ -254,6 +288,8 @@ switch ($actGet) {
                             $starttime = date('Y-m-d', $data[0]['time']);
                             $endtime = date('Y-m-d', $data[0]['endtime']);
                             $activityContent = $data[0]['activityContent'];
+                            $template = $data[0]['template'];
+                            $templateContent = $data[0]['templateContent'];
                         }
                         $data_activity_config = $conn->where(['activityId' => $idGet])->order_by('')->get('activity_config');
                     }
@@ -283,8 +319,30 @@ switch ($actGet) {
                                         </li>
                                     </ul>   
                                     <ul class="list a20_80">
-                                        <li></li>
-                                        <li></li>
+                                        <li>活动列表模板:</li>
+                                        <li><input name="template" value="<?php echo $template; ?>"   style="width: 80%;"></li>
+                                    </ul>
+                                    <ul class="list a20_80">
+                                        <li>活动内容模板:</li>
+                                        <li><input name="templateContent" value="<?php echo $templateContent; ?>"   style="width: 80%;"></li>
+                                    </ul>
+
+                                    <ul class="list a20_80">
+                                        <li>上传活动对照数据:</li>
+                                        <li><input name="templateContent" value="<?php echo $templateContent; ?>"   style="width: 80%;">
+                                        <h3>对照数据表</h3>
+                                         <table>
+                                            <tr>
+                                            <td>aa</td><td>aa</td><td>aa</td>
+                                            </tr>
+                                            <tr>
+                                            <td>aa</td><td>aa</td><td>aa</td>
+                                            </tr>
+                                        </table>
+                                        
+                                        </li>
+                                       
+                                        
                                     </ul>
                                     <ul class="list a20_80">
                                         <li>
@@ -336,6 +394,7 @@ switch ($actGet) {
                             </dd>
                         </dl>
                         <div class="tijiao">
+                            <input type="hidden" value="" name="updateImg"/>
                             <button type="submit"><?php echo $lang['submit']; ?></button>
                             <button type="reset"><?php echo $lang['reset']; ?></button>
                             <button type="button" id='fanhui'><?php echo $lang['back']; ?></button>

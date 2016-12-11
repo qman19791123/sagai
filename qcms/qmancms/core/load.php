@@ -46,7 +46,7 @@ class load extends tfunction {
             goto err;
         }
 
-        $this->fun = strtolower($fun) == "home" ? "index" : "content";
+        $this->fun = strtolower($fun) == "index" ? "index" : "content";
         $this->id = !empty($page[0]) ? $page[0] : [];
 
         if ($this->classExist() === TRUE) {

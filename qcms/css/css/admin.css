@@ -328,6 +328,7 @@ textarea {
   .adminContent fieldset ul li strong.newlist i a {
     display: inline-block;
     float: right;
+    padding: 0 10px;
   }
   .adminContent fieldset ul li strong {
     font-weight: normal;
@@ -774,6 +775,7 @@ textarea {
   .adminContent fieldset ul li strong.newlist i a {
     display: inline-block;
     float: right;
+    padding: 0 10px;
   }
   .adminContent fieldset ul li strong {
     font-weight: normal;

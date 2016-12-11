@@ -19,21 +19,17 @@ class Mactivity extends models {
         return true;
     }
 
-    public function queryActivity($user, $id) {
-        return $this->conn->query('select * from activity_content where p1="' . $user . '" and id="' . $id . '"');
-    }
+    public function queryActivity($da) {
 
-    public function queryActivitySheet11($user, $count) {
-        $Rs = $this->conn->query('select * from sheet1 where p1="' . $user . '"');
-        if (empty($Rs)) {
-            return '用户不存在';
-        } else {
-            if ($Rs[0]['p2'] != $count) {
-                return "增仓数不正确";
-            } else {
-                return TRUE;
-            }
+        $keys = array_keys($da);
+        $values = array_values($da);
+
+        $sql = '';
+        foreach ($keys as $k => $v) {
+            $sql .=$v . '="' . $values[$k] . '" and ';
         }
+
+        return $this->conn->query('select * from activity_content where ' . $sql . ' 1=1');
     }
 
 }
