@@ -42,10 +42,18 @@ class load extends tfunction {
 
     public function show($fun = '', $page = array()) {
 
+        
+        
         if ($this->fileExists === FALSE || empty($fun)) {
             goto err;
         }
 
+
+     
+        
+        
+        
+        
         $this->fun = strtolower($fun) == "index" ? "index" : "content";
         $this->id = !empty($page[0]) ? $page[0] : [];
 

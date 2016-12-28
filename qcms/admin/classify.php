@@ -24,8 +24,8 @@ $folder = $tfunction->py($className, 'tfunction::ZNSymbolFilter');
 
 // 一个匿名方法 作用删除栏目缓存数据
 $AMNewsCacheClassifty = function () use($conn) {
-    @unlink(install . '/cacheData/classifyArray.php');
-    @unlink(install . '/cacheData/classifyStyleArray.php');
+    @unlink(cacheData . '/classifyArray.php');
+    @unlink(cacheData . '/classifyStyleArray.php');
 };
 switch ($act) {
     case 1:

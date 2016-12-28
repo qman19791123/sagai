@@ -42,6 +42,7 @@ $cacheOpen = TRUE;
 $cachedTime = '90000000';
 //缓存目录
 $cachedPath = 'cache';
+//$cachedPath = 'php://temp';
 //缓存数据目录
 $cacheData = 'cacheData';
 //页面是否压缩
@@ -107,7 +108,7 @@ if (StaticOpen && !is_dir(staticFloder)) {
     mkdir(staticFloder, 0777);
 }
 
-if (!is_dir(cacheData)) {
+if ($cachedPath !=='php://temp' && $cachedPath !=='php://memory' && !is_dir(cacheData)) {
     mkdir(cacheData, 0777);
 }
 
