@@ -6,6 +6,6 @@
     xsl:extension-element-prefixes="php"
 >
     <xsl:template  name="header">
-        <xsl:value-of  select="php:functionString('date','Y-m-d H:i:s')"/>
+<!--        <xsl:value-of  select="php:functionString('date','Y-m-d H:i:s')"/>-->
     </xsl:template>
 </xsl:stylesheet>

@@ -42,22 +42,16 @@ class load extends tfunction {
 
     public function show($fun = '', $page = array()) {
 
-        
-        
         if ($this->fileExists === FALSE || empty($fun)) {
-            goto err;
+            return $this->Err;
         }
 
+        $cout = $this->cache->get($this->cache->cacheKey);
+        if (empty($cout) && $this->classExist() === TRUE) {
 
-     
-        
-        
-        
-        
-        $this->fun = strtolower($fun) == "index" ? "index" : "content";
-        $this->id = !empty($page[0]) ? $page[0] : [];
+            $this->fun = strtolower($fun) == "index" ? "index" : "content";
+            $this->id = !empty($page[0]) ? $page[0] : [];
 
-        if ($this->classExist() === TRUE) {
             call_user_func_array([$this->Cmyclass, $this->fun], $page);
             $cout = $this->Cmyclass->Cout;
 
@@ -68,35 +62,35 @@ class load extends tfunction {
                 ob_end_clean();
                 $cout = $this->templateExist($cout_);
             }
-
-            print $cout;
-            return;
+        } elseif (empty($cout)) {
+            return $this->Err;
         }
-        err:
-        echo $this->Err;
+        return $cout;
     }
 
     private function templateExist($content) {
-
+        
+        /* 数据库名 不统一的 后遗症 嗨  start */
         $menu ['activity'] = ['table' => 'activity', 'index' => 'template', 'content' => 'templateContent'];
         $menu ['special'] = ['table' => 'special_config', 'index' => 'template', 'content' => 'templateContent'];
         $menu ['news'] = ['table' => 'special_config', 'index' => 'ntmp', 'content' => 'ctemp'];
+        /* 数据库名 不统一的 后遗症 嗨  end */
+        
         if ($this->class !== 'index') {
             $Rs = ( $this->conn->query('select ' . $menu[$this->class][$this->fun] . ' as temp from ' . $menu[$this->class]['table'] . ' where id=' . $this->id));
         } else {
             $Rs[0]['temp'] = $this->class;
         }
-        $template = $this->generateHtml($content, $this->template($this->class, $Rs));
-        return $template;
-        
+        $template = $this->template($this->class, $Rs);
+        $htmlContent = $this->generateHtml($content, $template);
+        $template && $this->cache->set($this->cache->cacheKey, $htmlContent);
+        return $htmlContent;
     }
 
     private function template($tempURL, $tempName) {
-
         $this->template = 'template/' . $tempURL . '/' . $tempName[0]['temp'] . ".xsl";
         $template = tempUrl . $this->template;
         return is_file($template) ? $template : FALSE;
-        
     }
 
     private function generateHtml($content, $template) {
@@ -118,7 +112,6 @@ class load extends tfunction {
 
     //  
     private function classExist() {
-
         include($this->C);
         include($this->M);
         class_alias('C' . $this->class, 'Cmyclass');

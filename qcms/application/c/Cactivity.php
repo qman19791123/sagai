@@ -16,9 +16,8 @@ class Cactivity extends controllers {
         $this->activity = filter_input(INPUT_GET, 'activity', FILTER_VALIDATE_INT);
     }
 
-    public function index($p) {
+    public function index($p='') {
         if (!empty($p)) {
-
             $this->activity($p);
         }
     }
@@ -34,7 +33,6 @@ class Cactivity extends controllers {
     private function activity($p) {
         $this->isnot = 'isnot' . $p;
         $this->activityCookie = filter_input(INPUT_COOKIE, $this->isnot, FILTER_VALIDATE_INT);
-
 
         $data = ['title' => 'hello world', 'content' => 'This is the system information'];
 

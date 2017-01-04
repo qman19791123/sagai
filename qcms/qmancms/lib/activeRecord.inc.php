@@ -1,7 +1,7 @@
 <?php
 
-include lib.'/ActiveRecord/DB_driver.php';
-include lib.'/ActiveRecord/CI_DB_query_builder.php';
+include lib.'/activeRecord/DB_driver.php';
+include lib.'/activeRecord/CI_DB_query_builder.php';
 /**
  * 
  * @author qman

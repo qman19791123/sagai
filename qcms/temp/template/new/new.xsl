@@ -19,7 +19,7 @@
             <head>
                 <title> <xsl:value-of select="xml/title"/></title>
             </head>
-            <body>aaa
+            <body>
             </body>
         </html>
     </xsl:template>

@@ -38,13 +38,16 @@ $language = 'cn.php';
 $yzcode = 'qman';
 //是否开启缓存
 $cacheOpen = TRUE;
+//是否开启页面缓存
+$cachePageOpen = FALSE;
 //缓存时间（以秒为单位）
 $cachedTime = '90000000';
 //缓存目录
 $cachedPath = 'cache';
-//$cachedPath = 'php://temp';
 //缓存数据目录
 $cacheData = 'cacheData';
+//缓存数据方法
+$cacheDataFun = 'file'; //file //memcache //redis
 //页面是否压缩
 $compression = False;
 //是否开启静态
@@ -87,29 +90,36 @@ define('unableRemoveManager', 'admin');
 define('compression', $compression);
 //开启页面缓存
 define('cacheOpen', $cacheOpen);
+//是否开启页面缓存
+define('cachePageOpen', $cachePageOpen);
+
 //缓存目录
-define('cacheFloder', install . $cachedPath);
+define('cacheFloder', install . $cachedPath . '/');
 //缓存数据目录
-define('cacheData', install . $cachedPath . '/' . $cacheData);
+define('cacheData', install . $cachedPath . '/' . $cacheData . '/');
+//缓存时间
+define('cachedTime', $cachedTime);
+//缓存数据方法
+define('cacheDataFun', $cacheDataFun);
+
 //是否开启静态
 define('StaticOpen', $StaticOpen);
 //静态目录
 define('staticFloder', install . $staticFloder);
 
+define('systemName', $systemName);
 header("Content-type:text/html;charset=utf-8");
 
 if (cacheOpen && !is_dir(cacheFloder)) {
     @mkdir(cacheFloder, 0777);
 }
 
-
 if (StaticOpen && !is_dir(staticFloder)) {
-
-    mkdir(staticFloder, 0777);
+    @mkdir(staticFloder, 0777);
 }
 
-if ($cachedPath !=='php://temp' && $cachedPath !=='php://memory' && !is_dir(cacheData)) {
-    mkdir(cacheData, 0777);
+if ($cachedPath !== 'php://temp' && $cachedPath !== 'php://memory' && !is_dir(cacheData)) {
+    @mkdir(cacheData, 0777);
 }
 
 
@@ -131,7 +141,7 @@ if (empty($cookiesSystemName)) {
 
 $If_Modified_Since = filter_input(INPUT_SERVER, 'HTTP_IF_MODIFIED_SINCE');
 $seconds_to_cache = 300;
-if (!defined('noCache')) {
+if (cachePageOpen === TRUE) {
     if (!empty($If_Modified_Since) && strtotime($If_Modified_Since) > time() && cacheOpen) {
         header("Expires: $If_Modified_Since");
         header('Last-Modified: ' . $If_Modified_Since, true, 200);

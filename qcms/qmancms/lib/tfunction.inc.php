@@ -2,18 +2,19 @@
 
 class tfunction {
 
-    public $conn, $less;
+    public $conn, $less, $cache;
     private $zd;
 
     function __construct() {
         if (!class_exists('activeRecord') && !class_exists('conn')) {
-            include lib . 'activeRecord.php';
+            include lib . 'activeRecord.inc.php';
         }
         if (!class_exists('lessc')) {
             include plus . '/lessc.inc.php';
         }
         $this->conn = new activeRecord();
         $this->less = new lessc;
+        $this->cache = new tcache();
     }
 
     /**
