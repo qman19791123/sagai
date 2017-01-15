@@ -22,7 +22,7 @@ if [ ! -z "${1}" ] ;  then
     Cout=""
     Cout="$Cout<?php \$${1}Cout = \$this->content();?>"$'\n'
     Cout="$Cout<xml>"$'\n'
-    Cout="$Cout<?php print \$this->arrayToXml(\$indexCout); ?>"$'\n'
+    Cout="$Cout<?php print \$this->arrayToXml(\$${1}Cout); ?>"$'\n'
     Cout="$Cout</xml>"
         if [ ! -f "application/v/V${1}.php" ]; then
             echo "${Cout}" >> "application/v/V${1}.php"

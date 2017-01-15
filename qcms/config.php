@@ -37,7 +37,7 @@ $language = 'cn.php';
 //后台登陆验证码
 $yzcode = 'qman';
 //是否开启缓存
-$cacheOpen = TRUE;
+$cacheOpen = FALSE;
 //是否开启页面缓存
 $cachePageOpen = FALSE;
 //缓存时间（以秒为单位）
@@ -80,10 +80,6 @@ define('lib', install . 'qmancms/lib/');
 define('plus', install . 'qmancms/plus/');
 define('lang', install . 'qmancms/language/');
 
-
-
-
-
 // 不可删除的管理员
 define('unableRemoveManager', 'admin');
 //页面压缩
@@ -101,25 +97,24 @@ define('cacheData', install . $cachedPath . '/' . $cacheData . '/');
 define('cachedTime', $cachedTime);
 //缓存数据方法
 define('cacheDataFun', $cacheDataFun);
-
 //是否开启静态
 define('StaticOpen', $StaticOpen);
 //静态目录
 define('staticFloder', install . $staticFloder);
-
+//
 define('systemName', $systemName);
 header("Content-type:text/html;charset=utf-8");
 
-if (cacheOpen && !is_dir(cacheFloder)) {
-    @mkdir(cacheFloder, 0777);
+if (!is_dir(cacheFloder)) {
+    @mkdir(cacheFloder, 0744);
 }
 
 if (StaticOpen && !is_dir(staticFloder)) {
-    @mkdir(staticFloder, 0777);
+    @mkdir(staticFloder, 0744);
 }
 
-if ($cachedPath !== 'php://temp' && $cachedPath !== 'php://memory' && !is_dir(cacheData)) {
-    @mkdir(cacheData, 0777);
+if (!is_dir(cacheData)) {
+    @mkdir(cacheData, 0744);
 }
 
 

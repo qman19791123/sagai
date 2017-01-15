@@ -1,4 +1,27 @@
 <?php
+/*
+ * The MIT License
+ *
+ * Copyright 2017 qman.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 define('noCache', TRUE);
 include '../config.php';
 include lib . 'tfunction.inc.php';
@@ -13,6 +36,7 @@ $sort = '0';
 $classifyJson = [];
 $adminId = $_SESSION['adminId'];
 
+$newsStyle = 0;
 // get
 $cpage = (int) filter_input(INPUT_GET, 'cpage', FILTER_VALIDATE_INT);
 $page = (int) filter_input(INPUT_GET, 'page', FILTER_VALIDATE_INT);
@@ -62,7 +86,6 @@ if (!empty($newsStyleGET)) {
 } elseif (!empty($_SESSION['newsStyle'])) {
     $newsStyle = $_SESSION['newsStyle'];
 }
-
 
 // 一个匿名方法 作用发布文章 
 $AMNewsContent = function($Rsid, $newTextINPUT, $keywordsINPUT, $descriptionINPUT)use($conn) {
@@ -117,7 +140,7 @@ $AMNewsAddSpecialContent = function($newssubjectData = '', $newssubjectDataConte
     $sqlContent = 'insert into special_content (`specialClassifyId`,`newsIds`,`newTitle`,`sort`)values';
     foreach ($newssubjectData as $v) {
         if (is_numeric($v)) {
-            $sqlContent .=sprintf('("%s","%s","%s","%s"),', $newssubjectClassId, $v, $newssubjectDataContent[$v], 0);
+            $sqlContent .= sprintf('("%s","%s","%s","%s"),', $newssubjectClassId, $v, $newssubjectDataContent[$v], 0);
         }
     }
     $sql = substr($sqlContent, 0, -1);
@@ -333,7 +356,7 @@ switch ($act) {
                     $dataClassifyClassName = $lang['newsAllArticles'];
 
                     //获取未被假删除的文章
-                    $where .=' and isdel=0 ';
+                    $where .= ' and isdel=0 ';
                     if (!empty($query)) {
                         $timestart = filter_input(INPUT_GET, 'timestart', FILTER_SANITIZE_STRING);
                         $timeend = filter_input(INPUT_GET, 'timeend', FILTER_SANITIZE_STRING);
@@ -365,11 +388,11 @@ switch ($act) {
                             //这个可能到后期需要更改
                             $dataClassify = $conn->select('id,className')->or_where(['pid' => $url, 'id' => $url])->order_by('id')->get('classify');
                             foreach ($dataClassify as $value) {
-                                $inlClassify.=',' . $value['id'];
+                                $inlClassify .= ',' . $value['id'];
                                 (int) $value['id'] === $url && $dataClassifyClassName = $value['className'];
                             }
                             $inlClassify = ltrim($inlClassify, ',');
-                            $where.=' and classifyId in (' . $inlClassify . ')';
+                            $where .= ' and classifyId in (' . $inlClassify . ')';
                         }
 
                         $arr = filter_input_array(INPUT_GET);
@@ -442,22 +465,22 @@ switch ($act) {
                                             <?php if (($newsStyle - 1) <= 0): ?> <li data-id="<?php echo $rs['classifyId'] ?>"></li><?php endif ?>
                                             <li><?php echo $rs['title'] ?></li>
                                             <li><?php
-                            if (is_numeric($rs['checked'])) {
-                                switch ($rs['checked']) {
-                                    case 0 :
-                                        echo $lang['notPass'];
-                                        break;
-                                    case 1:
-                                        echo $lang['wait'];
-                                        break;
-                                    case 999:
-                                        echo $lang['pass'];
-                                        break;
-                                }
-                            } else {
-                                echo $lang['wait'];
-                            }
-                                            ?></li>
+                                                if (is_numeric($rs['checked'])) {
+                                                    switch ($rs['checked']) {
+                                                        case 0 :
+                                                            echo $lang['notPass'];
+                                                            break;
+                                                        case 1:
+                                                            echo $lang['wait'];
+                                                            break;
+                                                        case 999:
+                                                            echo $lang['pass'];
+                                                            break;
+                                                    }
+                                                } else {
+                                                    echo $lang['wait'];
+                                                }
+                                                ?></li>
                                             <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
 
                                             <li>
@@ -627,10 +650,8 @@ switch ($act) {
                                         <?php echo $lang['check']; ?>
                                     </li>
                                     <li>
-
-
                                         <?php echo $lang['pass']; ?>:<input type="radio" <?php $checked == 999 && print('checked="checked"') ?>  name="checked" value="1"/>
-                                        <?php echo $lang['wait']; ?>:<input type="radio" <?php $checked == 0 && print('checked="checked"') ?>  name="checked" value="0"/>
+                                        <?php echo $lang['wait']; ?>:<input type="radio" <?php ($checked == 1 || $checked == 0) && print('checked="checked"') ?>  name="checked" value="0"/>
                                     </li>
                                 </ul>
                             </div>
@@ -687,8 +708,6 @@ switch ($act) {
             </div>
         </div>
         <!--检索 end-->
-
-
 
         <!--栏目 start-->
         <div class='dialogMsg column'>

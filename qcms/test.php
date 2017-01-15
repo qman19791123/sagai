@@ -27,12 +27,13 @@
 //    $cx[] = ord($this->isFile[$i++]);
 //} while (!empty($this->isFile[$i]));
 //$cc = (int) join(array_slice($cx, 4, 8)) + (int) join(array_slice($cx, 0, 4)) + (int) join(array_slice($cx, 8, 15)) + (int) join(array_slice($cx, 8, 12));
-
 //$shmid = shmop_open($cc, 'c', 0755, 1024);
 ////shmop_write($shmid, 111111, 0);
 //echo shmop_read($shmid, 0, 20);
 //shmop_close($shmid);
 //for ($key = array(); sizeof($key) < strlen($filename); $key[] = ord(substr($filename, sizeof($key), 1)))
 //    ;
-//return dechex(array_sum($key));
+//return dechex(array_sum($key))
+//
+//
 

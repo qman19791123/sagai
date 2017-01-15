@@ -12,6 +12,9 @@ class tfunction {
         if (!class_exists('lessc')) {
             include plus . '/lessc.inc.php';
         }
+        if (!class_exists('tcache')) {
+            include lib . '/tcache.inc.php';
+        }
         $this->conn = new activeRecord();
         $this->less = new lessc;
         $this->cache = new tcache();
@@ -231,8 +234,6 @@ class tfunction {
         if (!is_file(cacheData . '/classifyArray.php')) {
             $data = $this->classifyAchievedArray();
             $classifyArray = var_export($data, true);
-
-
             file_put_contents(cacheData . '/classifyArray.php', "<?php \n\r\$classifyArray={$classifyArray} \r\n?>");
         } else {
             global $classifyArray;
@@ -411,12 +412,17 @@ class tfunction {
 
     private function change($source) {
         $string = "";
+        $tag = '';
         foreach ($source as $k => $v) {
-            $string .= "<" . $k . ">";
+            if (is_numeric($k)) {
+                $k = '';
+                $tag = 'node';
+            }
+            $string .= "<" . $tag . $k . ">";
             if (is_array($v) || is_object($v)) {
-                $string .= $this->change($v) . "</" . $k . ">\r\n";
+                $string .= $this->change($v) . "</" . $tag . $k . ">\r\n";
             } else {
-                $string .= "<![CDATA[" . $v . "]]></" . $k . ">\r\n";
+                $string .= "<![CDATA[" . $v . "]]></" . $tag . $k . ">\r\n";
             }
             $string .= "";
         }

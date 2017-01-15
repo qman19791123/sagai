@@ -1,4 +1,28 @@
 <?php
+/*
+ * The MIT License
+ *
+ * Copyright 2017 qman.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
 define('noCache', TRUE);
 include '../config.php';
 include lib . 'tfunction.inc.php';
@@ -51,9 +75,6 @@ $AMActivityXLS = function ($id) use($conn) {
 
     $sql = 'select * from activity_content where activityId = "' . $id . '"';
     $data = $conn->query($sql);
-
-
-
 
     foreach ($data as $k => $v) {
 
@@ -113,7 +134,7 @@ $AMActivityConfig = function( $activityValueINPUT, $activityInputINPUT, $activit
     $activityCount = count($activityValueINPUT);
     $sql = 'INSERT INTO  activity_config (`activityValue`,`activityId`,`activityInput`,`activitystate`,`activityKey`) values ';
     for ($i = 0; $i < $activityCount; ++$i) {
-        $sql .='("' . $activityValueINPUT[$i] . '","';
+        $sql .= '("' . $activityValueINPUT[$i] . '","';
         $sql .= $idGet . '","';
         $sql .= $activityInputINPUT[$i] . '","';
         $sql .= $activitystateINPUT[$i] . '","';
@@ -125,7 +146,7 @@ $AMActivityConfig = function( $activityValueINPUT, $activityInputINPUT, $activit
 
 switch ($actGet) {
     case 1:
-        $sql_activity = 'INSERT INTO activity (`activityTitle`,`activityContent`,`time`,`endtime`,`template`,`templateContent`) VALUES("%s","%s","%s","%s","%s","%s")';
+        $sql_activity = 'INSERT INTO activity_classify (`activityTitle`,`activityContent`,`time`,`endtime`,`template`,`templateContent`) VALUES("%s","%s","%s","%s","%s","%s")';
         $rsId = $conn->aud(sprintf($sql_activity, $activityTitleINPUT, $activityContentINPUT, strtotime($timeINPUT), strtotime($endtimeINPUT), $templateINPUT, $templateContentINPUT));
 
         $AMActivityConfig($activityValueINPUT, $activityInputINPUT, $activitystateINPUT, $rsId);
@@ -136,7 +157,7 @@ switch ($actGet) {
 
         break;
     case 2:
-        $sql_activity = 'update activity set `activityTitle`="%s" ,`activityContent`="%s" ,`time`="%s",`endtime`="%s" ,`template`="%s",`templateContent`="%s" where id = "%s"';
+        $sql_activity = 'update activity_classify set `activityTitle`="%s" ,`activityContent`="%s" ,`time`="%s",`endtime`="%s" ,`template`="%s",`templateContent`="%s" where id = "%s"';
         $conn->aud(sprintf($sql_activity, $activityTitleINPUT, $activityContentINPUT, strtotime($timeINPUT), strtotime($endtimeINPUT), $templateINPUT, $templateContentINPUT, $idGet));
 
         $sql_activity_config = 'delete from activity_config where activityId = "' . $idGet . '"';
@@ -157,7 +178,7 @@ switch ($actGet) {
         $sql_activity_config = 'delete from activity_config where activityId = "' . $idGet . '"';
         $conn->aud($sql_activity_config);
 
-        $sql_activity_config = 'delete from activity where id = "' . $idGet . '"';
+        $sql_activity_config = 'delete from activity_classify where id = "' . $idGet . '"';
         $conn->aud($sql_activity_config);
         die($tfunction->message('编辑成功', 'activity.php'));
 
@@ -175,7 +196,7 @@ switch ($actGet) {
         break;
     case 6:
         if (!empty($idGet)) {
-            $sql = 'delete from activity_content where activityId = "' . $idGet . '"';
+            $sql = 'delete from activity_content where id = "' . $idGet . '"';
             $conn->aud($sql);
             die($tfunction->message('删除成功'));
         }
@@ -249,15 +270,15 @@ switch ($actGet) {
                                     <li style="width: 20%">操作</li>
                                 </ul>
                                 <?php
-                                $data = $conn->get('activity');
+                                $data = $conn->get('activity_classify');
                                 foreach ($data as $rs):
                                     ?>
 
                                     <ul class="list atr">
                                         <li><input name="checkid" type="checkbox" value="<?php echo $rs['id'] ?>"></li>
                                         <li><?php echo $rs['activityTitle'] ?></li>
-                                        <li><?php echo date('Y-m-d h:i:s', $rs['time']); ?></li>
-                                        <li><?php echo date('Y-m-d h:i:s', $rs['endtime']); ?></li>
+                                        <li><?php echo empty($rs['time']) ? '未设置' : date('Y-m-d', $rs['time']); ?></li>
+                                        <li><?php echo empty($rs['endtime']) ? '未设置' : date('Y-m-d', $rs['endtime']); ?></li>
                                         <li>
                                             <a href="?cpage=2&id=<?php echo $rs['id'] ?>"><?php echo $lang['update']; ?></a>
                                             <a class="delmes" href="?cpage=3&id=<?php echo $rs['id'] ?> ">查看活动信息</a>
@@ -282,7 +303,7 @@ switch ($actGet) {
                     $templateContent = '';
 
                     if ($cpageGet == 2) {
-                        $data = $conn->where(['id' => $idGet])->limit(1)->get('activity');
+                        $data = $conn->where(['id' => $idGet])->limit(1)->get('activity_classify');
                         if (!empty($data)) {
                             $activityTitle = $data[0]['activityTitle'];
                             $starttime = date('Y-m-d', $data[0]['time']);
@@ -327,23 +348,23 @@ switch ($actGet) {
                                         <li><input name="templateContent" value="<?php echo $templateContent; ?>"   style="width: 80%;"></li>
                                     </ul>
 
-                                    <ul class="list a20_80">
-                                        <li>上传活动对照数据:</li>
-                                        <li><input name="templateContent" value="<?php echo $templateContent; ?>"   style="width: 80%;">
-                                        <h3>对照数据表</h3>
-                                         <table>
-                                            <tr>
-                                            <td>aa</td><td>aa</td><td>aa</td>
-                                            </tr>
-                                            <tr>
-                                            <td>aa</td><td>aa</td><td>aa</td>
-                                            </tr>
-                                        </table>
-                                        
-                                        </li>
-                                       
-                                        
-                                    </ul>
+                                    <!--                                    <ul class="list a20_80">
+                                                                            <li>上传活动对照数据:</li>
+                                                                            <li><input name="" value="<?php echo $templateContent; ?>"   style="width: 80%;">
+                                                                            <h3>对照数据表</h3>
+                                                                            <table>
+                                                                                <tr>
+                                                                                <td>aa</td><td>aa</td><td>aa</td>
+                                                                                </tr>
+                                                                                <tr>
+                                                                                <td>aa</td><td>aa</td><td>aa</td>
+                                                                                </tr>
+                                                                            </table>
+                                    
+                                                                            </li>
+                                    
+                                    
+                                                                        </ul>-->
                                     <ul class="list a20_80">
                                         <li>
                                             活动内容:

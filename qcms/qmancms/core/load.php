@@ -1,15 +1,27 @@
 <?php
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- * Description of load
+/* 
+ * The MIT License
  *
- * @author qman
+ * Copyright 2017 qman.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 class load extends tfunction {
 
@@ -19,6 +31,7 @@ class load extends tfunction {
     private $M, $V, $C, $class, $fun;
     private $fileExists;
     private $template;
+    private $compression = compression;
 
     public function __construct($class) {
         parent::__construct();
@@ -40,7 +53,13 @@ class load extends tfunction {
         }
     }
 
-    public function show($fun = '', $page = array()) {
+    /**
+     *  输出页面内容及内容
+     * @param string $fun 所需结构
+     * @param array $page 参数结构
+     * @return string 输出页面内容及内容
+     */
+    public function cout($fun = '', $page = array()) {
 
         if ($this->fileExists === FALSE || empty($fun)) {
             return $this->Err;
@@ -58,9 +77,9 @@ class load extends tfunction {
             if (is_array($cout)) {
                 ob_start();
                 include($this->V);
-                $cout_ = ob_get_contents();
+                $Vcontent = ob_get_contents();
                 ob_end_clean();
-                $cout = $this->templateExist($cout_);
+                $cout = $this->templateExist($Vcontent);
             }
         } elseif (empty($cout)) {
             return $this->Err;
@@ -68,14 +87,19 @@ class load extends tfunction {
         return $cout;
     }
 
+    /**
+     * 输出结构体积内容
+     * @param string  $content  视图层生成的 xml 数据
+     * @return string
+     */
     private function templateExist($content) {
-        
+
         /* 数据库名 不统一的 后遗症 嗨  start */
         $menu ['activity'] = ['table' => 'activity', 'index' => 'template', 'content' => 'templateContent'];
         $menu ['special'] = ['table' => 'special_config', 'index' => 'template', 'content' => 'templateContent'];
-        $menu ['news'] = ['table' => 'special_config', 'index' => 'ntmp', 'content' => 'ctemp'];
+        $menu ['news'] = ['table' => 'classify', 'index' => 'template', 'content' => 'templateContent'];
         /* 数据库名 不统一的 后遗症 嗨  end */
-        
+
         if ($this->class !== 'index') {
             $Rs = ( $this->conn->query('select ' . $menu[$this->class][$this->fun] . ' as temp from ' . $menu[$this->class]['table'] . ' where id=' . $this->id));
         } else {
@@ -83,16 +107,36 @@ class load extends tfunction {
         }
         $template = $this->template($this->class, $Rs);
         $htmlContent = $this->generateHtml($content, $template);
-        $template && $this->cache->set($this->cache->cacheKey, $htmlContent);
-        return $htmlContent;
+
+        $str = str_replace(' xmlns:php="http://php.net/xsl"', '', $htmlContent);
+
+        // 文件压缩
+        if ($this->compression === TRUE) {
+            $str = ltrim(rtrim(preg_replace(array("/> *([^ ]*) *</", "//", "'/\*[^*]*\*/'", "/\r\n/", "/\n/", "/\t/", '/>[ ]+</'), array(">\\1<", '', '', '', '', '', '><'), $str)));
+        }
+
+        $template && $this->cache->set($this->cache->cacheKey, $str);
+        return $str;
     }
 
+    /**
+     * 获取模版
+     * @param type $tempURL
+     * @param type $tempName
+     * @return type
+     */
     private function template($tempURL, $tempName) {
         $this->template = 'template/' . $tempURL . '/' . $tempName[0]['temp'] . ".xsl";
         $template = tempUrl . $this->template;
         return is_file($template) ? $template : FALSE;
     }
 
+    /**
+     * 将xml 数据与 xsl 模版 组合 生成html  
+     * @param string $content
+     * @param string $template
+     * @return string
+     */
     private function generateHtml($content, $template) {
         if ($template !== FALSE) {
             header('Content-Type:text/html;charset=' . dataCharset);
@@ -110,10 +154,14 @@ class load extends tfunction {
         }
     }
 
-    //  
+    /**
+     * 所需类是否存在
+     * @return boolean
+     */
     private function classExist() {
         include($this->C);
         include($this->M);
+       
         class_alias('C' . $this->class, 'Cmyclass');
         class_alias('M' . $this->class, 'Mmyclass');
 
@@ -127,6 +175,10 @@ class load extends tfunction {
         return TRUE;
     }
 
+    /**
+     * 暴露接口 
+     * @return object
+     */
     public function content() {
         $fun = $this->Cmyclass->Cout;
         if (!empty($fun)) {

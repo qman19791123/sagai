@@ -1,0 +1,340 @@
+body,
+html,
+p,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+ul,
+li,
+ol,
+dt,
+dd,
+dl,
+header,
+center,
+footer {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: "Segoe UI", Arial, "Microsoft Yahei", sans-serif;
+    color: #666;
+}
+
+.index {
+    width: 1000px;
+}
+
+.index header {
+    width: 100%;
+    display: inline-block;
+}
+
+.index header .top {
+    width: 100%;
+    background: #000;
+    display: inline-block;
+    color: #999;
+    line-height: 30px;
+    padding: 0 10px;
+    font-size: 12px;
+}
+
+.index header .link {
+    width: 1000px;
+    margin: auto;
+}
+
+.index header .link ul {
+    width: 100%;
+    font-size: 0;
+}
+
+.index header .link ul li {
+    display: inline-block;
+    font-size: 12px;
+    padding: 10px;
+    vertical-align: middle;
+}
+
+.index header .link ul li.logo {
+    width: 150px;
+    text-align: center;
+    border: 1px solid #ccc;
+    height: 55px;
+}
+
+.index header .link ul li.menu {
+    width: 850px;
+    font-size: 0;
+}
+
+.index header .link ul li.menu span {
+    padding: 10px;
+    display: inline-block;
+    width: 16.66%;
+    font-size: 12px;
+    text-align: center;
+}
+
+.index header .headquery {
+    width: 1000px;
+    margin: auto;
+    background: #ccc;
+    padding: 5px 20px;
+    font-size: 0;
+}
+
+.index header .headquery p,
+.index header .headquery .query {
+    display: inline-block;
+    line-height: 30px;
+    font-size: 12px;
+}
+
+.index header .headquery .host {
+    width: 75%;
+}
+
+.index header .headquery .query {
+    width: 25%;
+    font-size: 0;
+    background: #fff;
+}
+
+.index header .headquery .query input {
+    width: 89%;
+    border: 0;
+    padding: 5px;
+    outline:0px;
+}
+
+.index header .headquery .query button {
+    border: 0;
+    background: #fff;
+    padding: 7px 0;
+    outline:0px;
+}
+
+.index .p1 {
+    width: 1000px;
+    margin: auto;
+    display: block;
+}
+
+.index .p1 .content {
+    width: 100%;
+    font-size: 0;
+}
+
+.index .p1 .content .l,
+.index .p1 .content .r {
+    display: inline-block;
+}
+
+.index .p1 .content .l {
+    width: 74%;
+    margin-right: 3%;
+    vertical-align: top;
+}
+
+.index .p1 .content .r {
+    width: 23%;
+    font-size: 12px;
+}
+
+.index .p1 .content .l dl {
+    width: 48%;
+    display: inline-block;
+    font-size: 12px;
+    vertical-align: top;
+    margin-right: 1%;
+    margin-bottom: 15px;
+}
+
+.index .p1 .content .l dt,
+.index .p1 .content .r dt {
+    line-height: 50px;
+    font-size: 20px;
+    font-weight: bolder;
+    font-size: 16px;
+}
+
+.index .p1 .content .l dd ul {
+    width: 100%;
+    padding: 5px;
+    font-size: 0;
+}
+
+.index .p1 .content .l dd ul li img {
+    width: 100%;
+    height: 100px;
+}
+
+.index .p1 .content .l dd ul li img+span {
+    width: 100%;
+    display: inline-block;
+    padding: 10px;
+    font-size: 13.3px;
+    text-align: left;
+}
+
+.index .p1 .content .l dd ul li span {
+    font-size: 12px;
+    line-height: 25px;
+    display: inline-block;
+    float: left;
+    padding: 0 10px;
+}
+
+.index .p1 .content .l dd ul li {
+    text-align: right;
+    display: inline-block;
+    font-size: 12px;
+    width: 100%;
+    line-height: 25px;
+}
+
+.index .p1 .content .r .news {
+    width: 100%;
+}
+
+.index .p1 .content .r .news li {
+    line-height: 25px;
+}
+
+.index .p1 .content .l .newstop {
+    width: 100%;
+    display: inline-block;
+}
+
+.index .p1 .content .l .newstop p {
+    width: 50%;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.index .p1 .content .l .newstop p span {
+    font-size: 12px;
+    display: inline-block;
+    width: 100%;
+    padding: 5px 0;
+}
+
+.index .p1 .content .l .newstop p span img {
+    width: 80px;
+    height: 50px;
+    float: left;
+    margin: 0 10px;
+}
+
+.index .p1 .content .l .newstop h2 {
+    width: 100%;
+    line-height: 30px;
+    font-size: 15.3px;
+    padding: 0 10px;
+}
+
+.index .p1 .content .l .newstop h2 + strong {
+    font-size: 14px;
+    font-weight: normal;
+    padding: 10px;
+    display: inline-block;
+}
+
+.index .p2 .content {
+    font-size: 0;
+}
+
+.index .p2 .content .l,
+.index .p2 .content .c,
+.index .p2 .content .r {
+    display: inline-block;
+    vertical-align: top;
+    padding: 5px;
+}
+
+.index .p2 .content .l,
+.index .p2 .content .r {
+    width: 25%;
+    font-size: 12px;
+}
+
+.index .p2 .content .c {
+    width: 50%;
+    font-size: 12px;
+}
+
+.index .p2 .content .l-content strong,
+.index .p2 .content .c-content strong,
+.index .p2 .content .r-content strong {
+    display: block;
+    line-height: 30px;
+    font-size: 16px;
+    margin-top: -8px;
+}
+
+.index .p2 .content .l-content li,
+.index .p2 .content .c-content li,
+.index .p2 .content .r-content li {
+    width: 100%;
+    display: inline-block;
+    padding: 10px;
+}
+
+.index .p2 .content .l-content img,
+.index .p2 .content .c-content img,
+.index .p2 .content .r-content img {
+    width: 100px;
+    height: 85px;
+    float: left;
+    margin: 0 10px;
+}
+
+
+/*----------------------------------------------------------------------------------------------------*/
+
+.login {
+    width: 100%;
+}
+
+.login li {
+    width: 100%;
+    display: inline-block;
+    font-size: 0;
+    line-height: 35px;
+}
+
+.login li input {
+    display: inline-block;
+    float: right;
+    font-size: 12px;
+    width: 150px;
+    padding: 2px 5px;
+    outline:0px;
+}
+
+.login li span {
+    display: inline-block;
+    font-size: 12px;
+}
+
+.login button {
+    float: right;
+    outline:0px;
+}
+
+.add {
+    margin: 10px 0;
+    padding: 10px;
+    width: 100%;
+    height: 100px;
+    border: 1px solid #ccc;
+}

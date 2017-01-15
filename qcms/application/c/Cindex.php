@@ -1,5 +1,6 @@
 <?php
-/* 
+
+/*
  * The MIT License
  *
  * Copyright 2017 qman.
@@ -23,25 +24,23 @@
  * THE SOFTWARE.
  */
 
-include ('qmancms/plus/Excel/PHPExcel.php');
-include ('qmancms/plus/Excel/PHPExcel/Writer/Excel2007.php');
-$name =date('Y-m-d');
-error_reporting(E_ALL);
-date_default_timezone_set('Europe/London');
-$objPHPExcel = new PHPExcel();
+class Cindex extends controllers {
 
-foreach ($data as $k => $v) {
-    $num = $k + 1;
-    $objPHPExcel->setActiveSheetIndex(0)
-            ->setCellValue('A' . $num, $v[0])
-            ->setCellValue('B' . $num, $v[1])
-            ->setCellValue('C' . $num, $v[2]);
+    //put your code here
+    private $index = '';
+    private $loadingModel = null;
+
+    public function __construct() {
+        parent::__construct();
+        $this->index = new Mindex();
+        $this->loadingModel = $this->loadingModel('news');
+    }
+
+    public function index($p = '') {
+        $data = [];
+        $data['news'] = $this->loadingModel->news->json();
+        $data['class'] = $this->index->classifyArray();
+        $data['topNews'] = $this->Cout($data);
+    }
+
 }
-$objPHPExcel->getActiveSheet()->setTitle('User');
-$objPHPExcel->setActiveSheetIndex(0);
-header('Content-Type: application/vnd.ms-excel');
-header('Content-Disposition: attachment;filename="' . $name . '.xls"');
-header('Cache-Control: max-age=0');
-$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel5');
-$objWriter->save('php://output');
-

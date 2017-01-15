@@ -1,4 +1,27 @@
 <?php
+/*
+ * The MIT License
+ *
+ * Copyright 2017 qman.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 define('noCache', TRUE);
 include '../config.php';
 include lib . 'tfunction.inc.php';
@@ -33,7 +56,7 @@ switch ($act) {
         $Rs = $conn->query($sql);
         if (empty($Rs[0]['count'])) {
             $sql = 'INSERT INTO';
-            $sql .= ' `classify` (`pid`,`px`,`className`,`Content`,`ntmp`,`ctemp`,`url`,`setting`,`folder`) VALUES ';
+            $sql .= ' `classify` (`pid`,`px`,`className`,`Content`,`template`,`templateContent`,`url`,`setting`,`folder`) VALUES ';
             $sql .= sprintf('("%s","%s","%s","%s","%s","%s","%s","%s","%s");', $pid, $px, $className, $Content, $ntmp, $ctemp, $url, $setting, $folder);
             $Rs = $conn->aud($sql);
             if ($Rs) {
@@ -54,8 +77,8 @@ switch ($act) {
         $sql .='`px` = "' . $px . '",';
         $sql .='`className` = "' . $className . '",';
         $sql .='`Content` = "' . $Content . '",';
-        $sql .='`ntmp` = "' . $ntmp . '",';
-        $sql .='`ctemp` = "' . $ctemp . '",';
+        $sql .='`template` = "' . $ntmp . '",';
+        $sql .='`templateContent` = "' . $ctemp . '",';
         $sql .='`url` = "' . $url . '",';
         $sql .='`setting` = "' . $setting . '"';
         $sql .=' where id=' . $id;
@@ -294,11 +317,11 @@ switch ($act) {
 
                                     <ul class="list a20_80">
                                         <li><?php echo $lang['templateList'] ?>:</li>
-                                        <li><input style="width: 80%;" name="ntmp" value="<?php echo $Rs[0]['ntmp'] ?>"/></li>
+                                        <li><input style="width: 80%;" name="ntmp" value="<?php echo $Rs[0]['template'] ?>"/></li>
                                     </ul>
                                     <ul class="list a20_80">
                                         <li><?php echo $lang['templateContent'] ?>:</li>
-                                        <li><input style="width: 80%;" name="ctemp" value="<?php echo $Rs[0]['ctemp'] ?>"/></li>
+                                        <li><input style="width: 80%;" name="ctemp" value="<?php echo $Rs[0]['templateContent'] ?>"/></li>
                                     </ul>
                                     <ul class="list a20_80" style="height: 450px">
                                         <li class="top"><?php echo $lang['classifyBrief'] ?>:</li>
