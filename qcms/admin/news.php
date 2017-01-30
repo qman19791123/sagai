@@ -225,7 +225,7 @@ switch ($act) {
                 'classifyId' => $classifyIdINPUT,
                 'sort' => $sortINPUT,
                 'tag' => $tagINPUT,
-                'subtitle' => $titleINPUT,
+                'subtitle' => $subtitleINPUT,
                 'title' => $titleINPUT,
                 'titlePhoto' => $path,
                 'checked' => $checkedINPUT >= 1 ? 999 : 1

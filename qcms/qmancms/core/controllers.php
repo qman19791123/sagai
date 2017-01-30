@@ -44,9 +44,8 @@ class controllers {
     public function loadingModel() {
         $p = func_get_args();
         $p = array_unique($p);
-
+        $CMyControllersClass = (object) [];
         foreach ($p as $val) {
-            $CMyControllersClass = (object) [];
             $class = 'M' . $val;
             $file = 'application/m/' . $class . '.php';
             if (is_file($file)) {

@@ -190,4 +190,9 @@ class load extends tfunction {
         }
     }
 
+    public static function fun($fun, $value) {
+        $tfunction = new tfunction();
+        return  $tfunction->$fun($value);
+}
+
 }

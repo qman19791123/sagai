@@ -1,8 +1,7 @@
 <xml>
     <?php
-   
     $activityCout = $this->content();
-    
+
     if (!empty($activityCout)):
         ?>
         <title><![CDATA[ <?php empty($activityCout['title']) || print $activityCout['title']; ?>]]></title>
@@ -15,8 +14,6 @@
                         <?php foreach ($activityCoutData as $k => $v): ?>
                             <?php printf("<%s><![CDATA[%s]]></%s>\n", $k, $v, $k) ?>
                         <?php endforeach; ?>
-
-
 
                         <?php if ($activityCoutData['activityInput'] == 'radio' || $activityCoutData['activityInput'] == 'checkbox' || $activityCoutData['activityInput'] == 'select'): ?>
                             <activitystateList>

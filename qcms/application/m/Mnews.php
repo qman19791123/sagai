@@ -27,12 +27,36 @@
 class Mnews extends models {
 
     //put your code here
-    public function json() {
-        return 'aaa';
+    public function indexNew($id = 0) {
+        if (empty($id)) {
+            return FALSE;
+        }
+        $sql = 'select * from news_config where classifyId = ' . $id;
+        return $this->conn->query($sql);
     }
 
-    public function news() {
-        $sql = 'select * from ';
+    public function noticeNew($id = 0) {
+        if (empty($id)) {
+            return FALSE;
+        }
+        $sql = "select news_config.* from classify left join news_config on classify.id = news_config.classifyId where classify.id= " . $id . ' and isdel = 0';
+        return $this->conn->query($sql);
+    }
+
+    public function contentNew($id = 0) {
+        if (empty($id)) {
+            return FALSE;
+        }
+        $sql = 'select * from news_config left join news_content on news_config.id = news_content.newsId  where id = ' . $id;
+        return $this->conn->query($sql);
+    }
+
+    public function listContentNew($id = 0) {
+        if (empty($id)) {
+            return FALSE;
+        }
+        $sql = 'select news_config.*,news_content.description,news_content.keywords from news_config left join news_content on news_config.id = news_content.newsId  where news_config.classifyId = ' . $id;
+        return $this->conn->query($sql);
     }
 
 }

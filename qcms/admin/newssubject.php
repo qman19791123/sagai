@@ -116,7 +116,10 @@ switch ($act) {
         break;
     case 5:
         //修改分集
-        if (!empty($idINPUT) && !empty($Rs = $conn->select('count(id) as cid,id')->where('id=' . $idINPUT)->get('special_classify')) && !empty($Rs[0]['cid'])) {
+        $Rs = $conn->select('count(id) as cid,id')->where('id=' . $idINPUT)->get('special_classify');
+        if (!empty($idINPUT) &&
+                !empty($Rs) &&
+                !empty($Rs[0]['cid'])) {
             //print_r([$classifyNameINPUT, $templateINPUT, $templateContentINPUT, $idINPUT]);
 
             if ($Rs[0]['id'] == $pIdINPUT) {
@@ -133,9 +136,9 @@ switch ($act) {
         die(json_encode([FALSE, 0]));
         break;
     case 6:
-
         //添加分集
-        if (!empty($idINPUT) && !empty($Rs = $conn->select('count(id) as cid')->where('id=' . $idINPUT)->get('special_config')) && (!empty($Rs[0]['cid']))) {
+        $Rs = $conn->select('count(id) as cid')->where('id=' . $idINPUT)->get('special_config');
+        if (!empty($idINPUT) && !empty($Rs) && (!empty($Rs[0]['cid']))) {
             $conn->insert('special_classify', ['id' => trim($uuid), 'specialId' => trim($idINPUT), 'time' => microtime(TRUE), 'sort' => 0, 'pid' => 0]);
             exit(json_encode([TRUE, $uuid]));
         }
@@ -192,13 +195,13 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            <?php echo $lang['specialArticleManager']; ?>
-                            <span class="addLink">
-                                [<a href='?cpage=1'><?php echo $lang['specialAddTheme']; ?></a>]
-                                [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
-                                [<a href='?cpage=1'><?php echo $lang['newsUpdateDocumentation']; ?></a>]
-                                [<a href='#'><?php echo $lang['specialThemeRecycling']; ?></a>]
-                            </span>
+                        <?php echo $lang['specialArticleManager']; ?>
+                        <span class="addLink">
+                            [<a href='?cpage=1'><?php echo $lang['specialAddTheme']; ?></a>]
+                            [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
+                            [<a href='?cpage=1'><?php echo $lang['newsUpdateDocumentation']; ?></a>]
+                            [<a href='#'><?php echo $lang['specialThemeRecycling']; ?></a>]
+                        </span>
                         </dt>
                         <?php if (!empty($data)): ?> 
 
@@ -280,7 +283,7 @@ switch ($act) {
 
                     <dl>
                         <dt>
-                            <?php echo $lang['specialArticleManager']; ?>
+                        <?php echo $lang['specialArticleManager']; ?>
                         </dt>
                         <dd>
 
@@ -369,7 +372,7 @@ switch ($act) {
                                                             ?>
                                                             <span><?php echo $cv['newTitle'] ?>
                                                                 <i>
-                                                                    <a class="nodedel" href="news.php?cpage=2&id=<?php echo $cv['newsIds']?>&newssubjectClassId=<?php echo $v['id'];?>&newssubjectId=<?php echo $id;?>">编辑</a>
+                                                                    <a class="nodedel" href="news.php?cpage=2&id=<?php echo $cv['newsIds'] ?>&newssubjectClassId=<?php echo $v['id']; ?>&newssubjectId=<?php echo $id; ?>">编辑</a>
                                                                     <a class="nodedel" href="?act=8&id=<?php echo $cv['specialClassifyId'] ?>&newid=<?php echo $cv['newsIds'] ?>">删除</a>
                                                                 </i>
                                                             </span>
@@ -394,7 +397,7 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            aaa 3
+                        aaa 3
                         </dt>
                     </dl>
                     <?php
@@ -403,7 +406,7 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            aaa 4
+                        aaa 4
                         </dt>
                     </dl>
             <?php endswitch; ?> 
@@ -434,16 +437,16 @@ switch ($act) {
                                                                         'introduction': $('textarea[name=introduction]').val(),
                                                                         'id': id
                                                                     },
-                                                                    function (data) {
-                                                                        if (data)
-                                                                        {
-                                                                            $.post('?act=6', {'id': id}, function (data) {
-                                                                                console.log(data);
-                                                                                window.location.href = '?cpage=2&id=' + id;
-                                                                                // cpage=2&id=9818a68685cf5c5fbcab0212ac27394e
-                                                                            });
-                                                                        }
+                                                            function (data) {
+                                                                if (data)
+                                                                {
+                                                                    $.post('?act=6', {'id': id}, function (data) {
+                                                                        console.log(data);
+                                                                        window.location.href = '?cpage=2&id=' + id;
+                                                                        // cpage=2&id=9818a68685cf5c5fbcab0212ac27394e
                                                                     });
+                                                                }
+                                                            });
                                                         }
                                                         return NULL;
                                                     } else {

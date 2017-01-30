@@ -211,7 +211,7 @@ class tfunction {
      */
     public function classify() {
         $data = [];
-        if (!is_file(install . '/cacheData/classifyStyleArray.php')) {
+        if (!is_file(cacheData . '/classifyStyleArray.php')) {
             $this->classifyAchieved($data, 0);
             $classifyArray = var_export($data, true);
             file_put_contents(cacheData . '/classifyStyleArray.php', "<?php \n\r\$classifyStyleArray={$classifyArray} \r\n?>");
@@ -257,7 +257,7 @@ class tfunction {
      */
     private function classifyAchieved(&$data, $id = '', $t = '', $v = '') {
         $t .= '　　';
-        $sql = 'select id,px,className,pid,setting from classify where pid =' . $id . ' order by px desc';
+        $sql = 'select id,px,className,pid,setting,hide from classify where pid =' . $id . ' order by px desc';
         $rs = $this->conn->query($sql);
 
         foreach ($rs as $value) {
@@ -266,6 +266,7 @@ class tfunction {
             $data [$value['id']]['px'] = $value['px'];
             $data [$value['id']]['className'] = $t . $v . $value['className'];
             $data[$value['id']]['setting'] = $value['setting'];
+            $data[$value['id']]['hide'] = $value['hide'];
             $s = $this->classifyAchieved($data, $value['id'], $t, '├');
             if (!empty($s)) {
                 $data [$value['id']]['disabled'] = 'disabled';
@@ -286,7 +287,7 @@ class tfunction {
     protected function classifyAchievedArray($id = 0) {
         $arr = array();
         //'id', 'pid', 'px', 'className', 'url', 'setting', 'folder'
-        $sql = 'select id,pid,px,className as text,url,setting, folder from classify where pid =' . $id . ' order by px desc';
+        $sql = 'select id,pid,px,className as text,url,setting, folder,hide from classify where pid =' . $id . ' order by px desc';
         $rs = $this->conn->query($sql);
         foreach ($rs as $value) {
 
@@ -380,7 +381,7 @@ class tfunction {
      * @param string  $Content 内容
      * @return string
      */
-    function encode($Content) {
+    public static function encode($Content) {
         return htmlspecialchars($Content, ENT_QUOTES);
     }
 
@@ -389,11 +390,11 @@ class tfunction {
      * @param string $Content 内容
      * @return string
      */
-    public function decode($Content) {
+    public static  function decode($Content) {
         return html_entity_decode($Content, ENT_QUOTES);
     }
 
-    public function dropQuote($Content) {
+    public static function dropQuote($Content) {
         $Content = str_replace('\'', '', $Content);
         $Content = str_replace('"', '', $Content);
         $Content = filter_var($Content, FILTER_SANITIZE_STRING);

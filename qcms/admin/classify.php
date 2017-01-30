@@ -38,7 +38,7 @@ $px = (int) filter_input(INPUT_POST, 'px', FILTER_VALIDATE_INT);
 $className = filter_input(INPUT_POST, 'className', FILTER_SANITIZE_STRING);
 //格式化带有HTML标签内容
 $Content = filter_input(INPUT_POST, 'Content', FILTER_CALLBACK, ['options' => 'tfunction::encode']);
-
+$showINPUT = (int) filter_input(INPUT_POST, 'show', FILTER_VALIDATE_INT) ? 1 : 0;
 $ntmp = filter_input(INPUT_POST, 'ntmp', FILTER_SANITIZE_STRING);
 $ctemp = filter_input(INPUT_POST, 'ctemp', FILTER_SANITIZE_STRING);
 $url = filter_input(INPUT_POST, 'url', FILTER_SANITIZE_URL);
@@ -56,8 +56,8 @@ switch ($act) {
         $Rs = $conn->query($sql);
         if (empty($Rs[0]['count'])) {
             $sql = 'INSERT INTO';
-            $sql .= ' `classify` (`pid`,`px`,`className`,`Content`,`template`,`templateContent`,`url`,`setting`,`folder`) VALUES ';
-            $sql .= sprintf('("%s","%s","%s","%s","%s","%s","%s","%s","%s");', $pid, $px, $className, $Content, $ntmp, $ctemp, $url, $setting, $folder);
+            $sql .= ' `classify` (`pid`,`px`,`className`,`Content`,`template`,`templateContent`,`url`,`setting`,`folder`,`hide`) VALUES ';
+            $sql .= sprintf('("%s","%s","%s","%s","%s","%s","%s","%s","%s","%s");', $pid, $px, $className, $Content, $ntmp, $ctemp, $url, $setting, $folder, $showINPUT);
             $Rs = $conn->aud($sql);
             if ($Rs) {
                 if (StaticOpen) {
@@ -80,7 +80,8 @@ switch ($act) {
         $sql .='`template` = "' . $ntmp . '",';
         $sql .='`templateContent` = "' . $ctemp . '",';
         $sql .='`url` = "' . $url . '",';
-        $sql .='`setting` = "' . $setting . '"';
+        $sql .='`setting` = "' . $setting . '",';
+        $sql .='`hide` = "' . $showINPUT . '"';
         $sql .=' where id=' . $id;
 
         $Rs = $conn->aud($sql);
@@ -125,8 +126,8 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            <?php echo $lang['classifyManagement']; ?>
-                            <span class="addLink">[ <a href='?cpage=1'><?php echo $lang['classifyAdd']; ?></a>  ]</span>
+                        <?php echo $lang['classifyManagement']; ?>
+                        <span class="addLink">[ <a href='?cpage=1'><?php echo $lang['classifyAdd']; ?></a>  ]</span>
                         </dt>
                         <dd>
                             <div class="list atable">
@@ -172,8 +173,8 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            <?php echo $lang['classifyManagement']; ?>
-                            <span class="addLink">[ <a href='?cpage=1'><?php echo $lang['classifyAdd']; ?></a>  ]</span>
+                        <?php echo $lang['classifyManagement']; ?>
+                        <span class="addLink">[ <a href='?cpage=1'><?php echo $lang['classifyAdd']; ?></a>  ]</span>
                         </dt>
                         <dd>
                             <form method="post" action="?act=1">
@@ -186,6 +187,7 @@ switch ($act) {
                                                 <?php
                                                 $classify = new tfunction($conn);
                                                 $data = $classify->classify();
+
                                                 foreach ($data as $rs):
                                                     ?>
                                                     <option value="<?php echo $rs['id'] ?>"><?php echo $rs['className'] ?></option>
@@ -214,6 +216,10 @@ switch ($act) {
                                         </li>
                                     </ul>
                                     <ul class="list a20_80">
+                                        <li>显示</li>
+                                        <li><input type="checkbox" name="show" value="1" checked=""/></li>
+                                    </ul>
+                                    <ul class="list a20_80">
                                         <li><?php echo $lang['classifyName']; ?>:</li>
                                         <li><input style="width: 80%;" name="className" /></li>
                                     </ul>
@@ -226,6 +232,8 @@ switch ($act) {
                                         <li><?php echo $lang['templateContent']; ?>:</li>
                                         <li><input style="width: 80%;" name="ctemp" /></li>
                                     </ul>
+
+
                                     <ul class="list a20_80" style="height: 450px">
                                         <li class="top"><?php echo $lang['classifyBrief']; ?>:</li>
                                         <li class="top">
@@ -258,8 +266,8 @@ switch ($act) {
                     ?>
                     <dl>
                         <dt>
-                            <?php echo $lang['classifyManagement']; ?>
-                            <span class="addLink">[ <a href='?cpage=1'><?php echo $lang['classifyAdd'] ?></a>  ]</span>
+                        <?php echo $lang['classifyManagement']; ?>
+                        <span class="addLink">[ <a href='?cpage=1'><?php echo $lang['classifyAdd'] ?></a>  ]</span>
                         </dt>
                         <dd>
                             <form method="post" action="?act=2&id=<?php echo $t_id ?>">
@@ -308,6 +316,10 @@ switch ($act) {
                                         </li>
                                     </ul>
                                     <ul class="list a20_80">
+                                        <li>显示</li>
+                                        <li><input type="checkbox" name="show" value="1" <?php !empty($Rs[0]['hide']) && print( 'checked'); ?>/></li>
+                                    </ul>
+                                    <ul class="list a20_80">
                                         <li><?php echo $lang['classifyName'] ?>:</li>
                                         <li>
                                             <input style="width: 80%;" name="className" value="<?php echo $Rs[0]['className'] ?>" />
@@ -319,6 +331,7 @@ switch ($act) {
                                         <li><?php echo $lang['templateList'] ?>:</li>
                                         <li><input style="width: 80%;" name="ntmp" value="<?php echo $Rs[0]['template'] ?>"/></li>
                                     </ul>
+
                                     <ul class="list a20_80">
                                         <li><?php echo $lang['templateContent'] ?>:</li>
                                         <li><input style="width: 80%;" name="ctemp" value="<?php echo $Rs[0]['templateContent'] ?>"/></li>
@@ -326,7 +339,11 @@ switch ($act) {
                                     <ul class="list a20_80" style="height: 450px">
                                         <li class="top"><?php echo $lang['classifyBrief'] ?>:</li>
                                         <li class="top">
-                                            <textarea name="Content" id="editor1" ><?php echo tfunction::decode($Rs[0]['Content']) ?></textarea>
+                                            <textarea name="Content" id="editor1" ><?php
+                                                if (!empty($Rs[0]['Content'])):
+                                                    echo tfunction::decode($Rs[0]['Content']);
+                                                endif;
+                                                ?></textarea>
                                         </li>
                                     </ul>
                                     <ul class="list a20_80">

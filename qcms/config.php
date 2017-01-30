@@ -103,6 +103,18 @@ define('StaticOpen', $StaticOpen);
 define('staticFloder', install . $staticFloder);
 //
 define('systemName', $systemName);
+
+
+
+$host = filter_input(INPUT_SERVER, 'HTTP_HOST', FILTER_SANITIZE_URL);
+$serverName = filter_input(INPUT_SERVER, 'SERVER_NAME', FILTER_SANITIZE_URL);
+$addr = filter_input(INPUT_SERVER, 'SERVER_ADDR', FILTER_SANITIZE_URL);
+$serverPort = filter_input(INPUT_SERVER, 'SERVER_PORT', FILTER_SANITIZE_NUMBER_INT);
+$isIpFun = empty($host) ? $addr : $serverName;
+$serverPort = (!empty($serverPort) && $serverPort !== '80') ? ':' . $serverPort :'';
+define('HTTP_SERVER', 'http://' . $isIpFun . $serverPort.'/');
+
+
 header("Content-type:text/html;charset=utf-8");
 
 if (!is_dir(cacheFloder)) {
