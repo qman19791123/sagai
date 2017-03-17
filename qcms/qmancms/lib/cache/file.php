@@ -31,10 +31,11 @@ class file {
     private $cachedTime = cachedTime;
 
     public function set($key, $value) {
-        $this->init($key);
-        $v = gzcompress(serialize($value), 9);
-        file_put_contents($this->cache, sprintf('<?php defined("systemName") ||die("404");?>%s' . "\r\n", $v));
-        return TRUE;
+        if (!$this->init($key) || filemtime($this->cache) + $this->cachedTime < time()){
+            $v = gzcompress(serialize($value), 9);
+            file_put_contents($this->cache, sprintf('<?php defined("systemName") ||die("404");?>%s' . "\r\n", $v));
+            return TRUE;
+        }
     }
 
     public function get($key) {

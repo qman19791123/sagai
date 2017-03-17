@@ -481,8 +481,7 @@ switch ($act) {
                                                     echo $lang['wait'];
                                                 }
                                                 ?></li>
-                                            <li><?php echo date('Y-m-d H:i:s', $rs['time']) ?></li>
-
+                                            <li><?php echo date('Y-n-d G:i', $rs['time']) ?></li>
                                             <li>
                                                 <?php if (!empty($newssubjectId)): ?> 
                                                     <a href="javascript:void(0)" data-id="<?php echo $rs['id'] ?>" class="checked"><?php echo $lang['check']; ?></a>
@@ -573,7 +572,6 @@ switch ($act) {
                         <?php endif; ?>
                         <form method="post"  enctype="multipart/form-data" action="?act=<?php echo $cpage ?><?php !empty($id) && print('&id=' . $id) ?>">
                             <div class="list atable">
-
                                 <?php if ($style <= 0): ?>
                                     <ul class="list a20_80">
                                         <li>
@@ -593,7 +591,6 @@ switch ($act) {
                                                     endif;
                                                 endforeach
                                                 ?>
-
                                             </select>
                                         </li>
                                     </ul>
@@ -713,16 +710,13 @@ switch ($act) {
         <div class='dialogMsg column'>
             <div class='dialogContent columnContent'>
                 <form id='query'>
-
                     <div class='tree'></div>
-
-
                 </form>
             </div>
         </div>
         <!--栏目 end-->
 
-        <!--KindEditor-->
+    <!--KindEditor-->
     <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
     <link rel="stylesheet" href="../js/KindEditor/plugins/code/prettify.css" />
     <script charset="utf-8" src="../js/KindEditor/kindeditor-all-min.js"></script>
@@ -738,224 +732,224 @@ switch ($act) {
 
     <script type="text/javascript">
 <?php printf('var classifyJson =%s;', json_encode($classifyJson)); ?>
-                    var mesgConfirmDeletion = '<?php echo $lang['mesgConfirmDeletion']; ?>';
-                    $('.atable ul li').each(function (i, p) {
-                        if ($(p).attr('data-id'))
-                        {
-                            $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
-                        }
-                    });
-
-
-
-                    $('#delete').on('click', function () {
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: '<?php echo $lang['mesgIsRemoveSomeContent']; ?>',
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '500px',
-                            ok: function () {
-                                this.title('<?php echo $lang['mesgDeletion']; ?>');
-                                this.content("<?php echo $lang['mesgRemovePleaseWait']; ?>");
-                                var checkboxp = '';
-                                $('input[name=checkid]:checked').each(function (i, p) {
-                                    checkboxp += $(p).val() + ',';
+                                var mesgConfirmDeletion = '<?php echo $lang['mesgConfirmDeletion']; ?>';
+                                $('.atable ul li').each(function (i, p) {
+                                    if ($(p).attr('data-id'))
+                                    {
+                                        $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
+                                    }
                                 });
-                                if (checkboxp) {
-                                    checkboxp = checkboxp.substr(0, checkboxp.length - 1);
-                                    $.ajax({
-                                        type: "GET",
-                                        data: {'id': checkboxp},
-                                        url: '?p=on&act=3',
-                                        success: function (e) {
-                                            if (Boolean(e) === true) {
-                                                history.go(0);
-                                            }
-                                        }
-                                    });
-                                }
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-                    });
 
-                    //推送文章到专题文章下的结合中 code start
-                    $('.toolbar').on('click', '#push', function () {
-                        var dataj = [];
-                        var datajC = {};
-                        $('.list input[name=checkid]').each(function (i, p) {
-                            if ($(p).is(':checked')) {
-                                dataj.push($(p).val());
+
+
+                                $('#delete').on('click', function () {
+                                    dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: '<?php echo $lang['mesgIsRemoveSomeContent']; ?>',
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '500px',
+                                        ok: function () {
+                                            this.title('<?php echo $lang['mesgDeletion']; ?>');
+                                            this.content("<?php echo $lang['mesgRemovePleaseWait']; ?>");
+                                            var checkboxp = '';
+                                            $('input[name=checkid]:checked').each(function (i, p) {
+                                                checkboxp += $(p).val() + ',';
+                                            });
+                                            if (checkboxp) {
+                                                checkboxp = checkboxp.substr(0, checkboxp.length - 1);
+                                                $.ajax({
+                                                    type: "GET",
+                                                    data: {'id': checkboxp},
+                                                    url: '?p=on&act=3',
+                                                    success: function (e) {
+                                                        if (Boolean(e) === true) {
+                                                            history.go(0);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+                                });
+
+                                //推送文章到专题文章下的结合中 code start
+                                $('.toolbar').on('click', '#push', function () {
+                                    var dataj = [];
+                                    var datajC = {};
+                                    $('.list input[name=checkid]').each(function (i, p) {
+                                        if ($(p).is(':checked')) {
+                                            dataj.push($(p).val());
 
 <?php if (($newsStyle - 1) <= 0): ?>
-                                    datajC[ $(p).val()] = $(this).parent().parent().find('li:eq(4)').text();
+                                                datajC[ $(p).val()] = $(this).parent().parent().find('li:eq(4)').text();
 <?php else: ?>
-                                    datajC[ $(p).val()] = $(this).parent().parent().find('li:eq(3)').text();
+                                                datajC[ $(p).val()] = $(this).parent().parent().find('li:eq(3)').text();
 <?php endif ?>
 
-                            }
-                        });
-
-                        if (dataj.length > 0) {
-                            var data = {'newssubjectDataId[]': dataj, 'newssubjectDataContent': datajC};
-                            $.post('?act=5&newssubjectClassId=<?php echo $newssubjectClassId ?>', data, function (data) {
-                                alert(data[0] === true ? '推送成功' : '信息已存在');
-                                window.location.href = data[1]
-                            }, 'JSON');
-                        }
-                    });
-                    //推送文章到专题文章下的结合中 code end
-
-                    //指定文章输出栏目 [栏目管理] code start
-                    $('#column').on('click', function () {
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: $('.column').html(),
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '700px',
-                            ok: function () {
-                                var query = $('.searchContent').eq(1).find('#query').serialize();
-                                self.location = ('?query=yes&' + query);
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-
-                        $('.columnContent').eq(1).find('.tree').tree({
-                            data: <?php echo json_encode($tfunction->classifyArray()) ?>,
-                            onClick: function (node) {
-                                self.location = ('?query=yes&url=' + node.id);
-                            }
-                        });
-                    });
-                    //指定文章输出栏目 [栏目管理] code end
-
-                    //检索（查询） 文章 code start
-                    $('#retrievedArticles').on('click', function () {
-                        $('.combo').hide();
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: $('.search').html(),
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '700px',
-                            height: '180px',
-                            ok: function () {
-                                var query = $('.searchContent').eq(1).find('#query');
-                                // if(query.find('select[name="queryselect"]').val()<=0){
-                                //     alert('请选择搜索的范围');
-                                //     return false;
-                                // }
-                                self.location = ('news.php?query=yes&' + query.serialize());
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-                        $('.searchContent .times').datebox({});
-                    });
-                    //检索（查询） 文章 code end
-
-
-                    //文章审核code start
-                    // 文章 审核 提醒
-                    $('#off').on('click', function () {
-                        $(this).parent('span').hide();
-                    });
-                    //对单个文章进行审核设置
-                    $('.checked').on('click', function () {
-                        var id = $(this).attr('data-id');
-                        var dialog_ = dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt']; ?>',
-                            content: $('.audit').html(),
-                            okValue: '<?php echo $lang['ok']; ?>',
-                            width: '300px',
-                            height: '80px',
-                            ok: function () {
-                                var tt = $('.auditContent').eq(1).find('select').val();
-                                if (tt !== '<?php echo $lang['choose']; ?>') {
-                                    this.title('<?php echo $lang['mesgSubmitting']; ?>');
-                                    this.title('<?php echo $lang['mesgSubmittPleaseWait']; ?>');
-                                    $.ajax({
-                                        type: "POST",
-                                        url: '?act=4',
-                                        data: {"t": tt, "id": id},
-                                        success: function (e) {
-                                            if (Boolean(e) === true) {
-                                                history.go(0);
-                                            }
                                         }
                                     });
-                                }
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel']; ?>',
-                            cancel: function () {}
-                        }).showModal();
-                    });
-                    //对文章批量确定审核
-                    $('#check').on('click', function () {
-                        var checkboxp = '';
-                        $('input[name=checkid]:checked').each(function (i, p) {
-                            checkboxp += $(p).val() + ',';
-                        });
-                        if (checkboxp) {
 
-                            checkboxp = checkboxp.substr(0, checkboxp.length - 1)
-                            $.ajax({
-                                type: "POST",
-                                url: '?act=4',
-                                data: {'t': '999', 'id': checkboxp},
-                                success: function (e) {
-                                    if (Boolean(e) === true) {
-                                        history.go(0);
+                                    if (dataj.length > 0) {
+                                        var data = {'newssubjectDataId[]': dataj, 'newssubjectDataContent': datajC};
+                                        $.post('?act=5&newssubjectClassId=<?php echo $newssubjectClassId ?>', data, function (data) {
+                                            alert(data[0] === true ? '推送成功' : '信息已存在');
+                                            window.location.href = data[1]
+                                        }, 'JSON');
                                     }
-                                }
-                            });
-                        }
-                        return false;
-                    });
+                                });
+                                //推送文章到专题文章下的结合中 code end
 
-                    //文章审核code end
+                                //指定文章输出栏目 [栏目管理] code start
+                                $('#column').on('click', function () {
+                                    dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: $('.column').html(),
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '700px',
+                                        ok: function () {
+                                            var query = $('.searchContent').eq(1).find('#query').serialize();
+                                            self.location = ('?query=yes&' + query);
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+
+                                    $('.columnContent').eq(1).find('.tree').tree({
+                                        data: <?php echo json_encode($tfunction->classifyArray()) ?>,
+                                        onClick: function (node) {
+                                            self.location = ('?query=yes&url=' + node.id);
+                                        }
+                                    });
+                                });
+                                //指定文章输出栏目 [栏目管理] code end
+
+                                //检索（查询） 文章 code start
+                                $('#retrievedArticles').on('click', function () {
+                                    $('.combo').hide();
+                                    dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: $('.search').html(),
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '700px',
+                                        height: '180px',
+                                        ok: function () {
+                                            var query = $('.searchContent').eq(1).find('#query');
+                                            // if(query.find('select[name="queryselect"]').val()<=0){
+                                            //     alert('请选择搜索的范围');
+                                            //     return false;
+                                            // }
+                                            self.location = ('news.php?query=yes&' + query.serialize());
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+                                    $('.searchContent .times').datebox({});
+                                });
+                                //检索（查询） 文章 code end
+
+
+                                //文章审核code start
+                                // 文章 审核 提醒
+                                $('#off').on('click', function () {
+                                    $(this).parent('span').hide();
+                                });
+                                //对单个文章进行审核设置
+                                $('.checked').on('click', function () {
+                                    var id = $(this).attr('data-id');
+                                    var dialog_ = dialog({
+                                        backdropBackground: '',
+                                        title: '<?php echo $lang['prompt']; ?>',
+                                        content: $('.audit').html(),
+                                        okValue: '<?php echo $lang['ok']; ?>',
+                                        width: '300px',
+                                        height: '80px',
+                                        ok: function () {
+                                            var tt = $('.auditContent').eq(1).find('select').val();
+                                            if (tt !== '<?php echo $lang['choose']; ?>') {
+                                                this.title('<?php echo $lang['mesgSubmitting']; ?>');
+                                                this.title('<?php echo $lang['mesgSubmittPleaseWait']; ?>');
+                                                $.ajax({
+                                                    type: "POST",
+                                                    url: '?act=4',
+                                                    data: {"t": tt, "id": id},
+                                                    success: function (e) {
+                                                        if (Boolean(e) === true) {
+                                                            history.go(0);
+                                                        }
+                                                    }
+                                                });
+                                            }
+                                            return false;
+                                        },
+                                        cancelValue: '<?php echo $lang['cancel']; ?>',
+                                        cancel: function () {}
+                                    }).showModal();
+                                });
+                                //对文章批量确定审核
+                                $('#check').on('click', function () {
+                                    var checkboxp = '';
+                                    $('input[name=checkid]:checked').each(function (i, p) {
+                                        checkboxp += $(p).val() + ',';
+                                    });
+                                    if (checkboxp) {
+
+                                        checkboxp = checkboxp.substr(0, checkboxp.length - 1)
+                                        $.ajax({
+                                            type: "POST",
+                                            url: '?act=4',
+                                            data: {'t': '999', 'id': checkboxp},
+                                            success: function (e) {
+                                                if (Boolean(e) === true) {
+                                                    history.go(0);
+                                                }
+                                            }
+                                        });
+                                    }
+                                    return false;
+                                });
+
+                                //文章审核code end
 
 
 
-                    //定位文章 栏目 select selected 挑选出来的选项位置 code start
-                    $('.classifyId option').each(function (i, v) {
-                        t = (parseInt($(v).val()) === parseInt(<?php echo $classifyId ?>));
-                        $(v).attr('selected', t);
-                    });
-                    //定位文章 栏目 select selected 挑选出来的选项位置 code end
+                                //定位文章 栏目 select selected 挑选出来的选项位置 code start
+                                $('.classifyId option').each(function (i, v) {
+                                    t = (parseInt($(v).val()) === parseInt(<?php echo $classifyId ?>));
+                                    $(v).attr('selected', t);
+                                });
+                                //定位文章 栏目 select selected 挑选出来的选项位置 code end
 
 
-                    // 图片选择 code start
-                    $('.file').hide();
-                    $('.showfile').on('click', function () {
-                        var th = $(this);
-                        $('#file_input').click();
-                        $('#file_input').checkFileTypeAndSize({
-                            allowedExtensions: ['jpg', 'png', 'gif'],
-                            maxSize: 500,
-                            success: function () {
-                                th.val($('#file_input').val());
-                            },
-                            extensionerror: function () {
-                                alert('<?php echo $lang['mesgPhotoNotEmpty']; ?>');
-                                return;
-                            },
-                            sizeerror: function () {
-                                alert('<?php echo $lang['mesgPhotoNotMax']; ?>');
-                                return;
-                            }
-                        });
-                    });
-                    // 图片选择 code end
+                                // 图片选择 code start
+                                $('.file').hide();
+                                $('.showfile').on('click', function () {
+                                    var th = $(this);
+                                    $('#file_input').click();
+                                    $('#file_input').checkFileTypeAndSize({
+                                        allowedExtensions: ['jpg', 'png', 'gif'],
+                                        maxSize: 500,
+                                        success: function () {
+                                            th.val($('#file_input').val());
+                                        },
+                                        extensionerror: function () {
+                                            alert('<?php echo $lang['mesgPhotoNotEmpty']; ?>');
+                                            return;
+                                        },
+                                        sizeerror: function () {
+                                            alert('<?php echo $lang['mesgPhotoNotMax']; ?>');
+                                            return;
+                                        }
+                                    });
+                                });
+                                // 图片选择 code end
     </script>
     <script src="../js/qmancms.js" type="text/javascript"></script>
 </body>

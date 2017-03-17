@@ -37,7 +37,7 @@ $language = 'cn.php';
 //后台登陆验证码
 $yzcode = 'qman';
 //是否开启缓存
-$cacheOpen = FALSE;
+$cacheOpen = True;
 //是否开启页面缓存
 $cachePageOpen = FALSE;
 //缓存时间（以秒为单位）
@@ -47,7 +47,8 @@ $cachedPath = 'cache';
 //缓存数据目录
 $cacheData = 'cacheData';
 //缓存数据方法
-$cacheDataFun = 'file'; //file //memcache //redis
+// zip 与 dba 缓存请根据本身空间提供商所提供的 PHP 插件来进行设置
+$cacheDataFun = 'file'; //file //mencache //zip //dba
 //页面是否压缩
 $compression = False;
 //是否开启静态

@@ -48,7 +48,11 @@ class Cnews extends controllers {
     }
 
     public function content($p = '') {
+        $data=[];
+        $data["aaa"] = "123";
+        $this->Cout($data);
+    }
+    public function json(){
         
     }
-
 }

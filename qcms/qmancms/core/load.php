@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 qman.
@@ -23,6 +23,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 class load extends tfunction {
 
     private $Cmyclass;
@@ -68,9 +69,12 @@ class load extends tfunction {
         $cout = $this->cache->get($this->cache->cacheKey);
         if (empty($cout) && $this->classExist() === TRUE) {
 
-            $this->fun = strtolower($fun) == "index" ? "index" : "content";
+            $this->fun = strtolower($fun);
             $this->id = !empty($page[0]) ? $page[0] : [];
-
+            
+            if (!method_exists($this->Cmyclass, $this->fun)) {
+                return $this->Err;
+            }
             call_user_func_array([$this->Cmyclass, $this->fun], $page);
             $cout = $this->Cmyclass->Cout;
 
@@ -88,17 +92,25 @@ class load extends tfunction {
     }
 
     /**
+     * 模板数据库的方法
+     */
+    private function templateDBWay() {
+        /* 数据库名 不统一的 后遗症 嗨  start */
+        $menu ['activity'] = ['table' => 'activity', 'index' => 'template', 'content' => 'templateContent'];
+        $menu ['special'] = ['table' => 'special_config', 'index' => 'template', 'content' => 'templateContent'];
+        $menu ['news'] = ['table' => 'classify', 'index' => 'template', 'content' => 'templateContent'];
+        return $menu;
+        /* 数据库名 不统一的 后遗症 嗨  end */
+    }
+
+    /**
      * 输出结构体积内容
      * @param string  $content  视图层生成的 xml 数据
      * @return string
      */
     private function templateExist($content) {
 
-        /* 数据库名 不统一的 后遗症 嗨  start */
-        $menu ['activity'] = ['table' => 'activity', 'index' => 'template', 'content' => 'templateContent'];
-        $menu ['special'] = ['table' => 'special_config', 'index' => 'template', 'content' => 'templateContent'];
-        $menu ['news'] = ['table' => 'classify', 'index' => 'template', 'content' => 'templateContent'];
-        /* 数据库名 不统一的 后遗症 嗨  end */
+        $menu = $this->templateDBWay();
 
         if ($this->class !== 'index') {
             $Rs = ( $this->conn->query('select ' . $menu[$this->class][$this->fun] . ' as temp from ' . $menu[$this->class]['table'] . ' where id=' . $this->id));
@@ -161,7 +173,7 @@ class load extends tfunction {
     private function classExist() {
         include($this->C);
         include($this->M);
-       
+
         class_alias('C' . $this->class, 'Cmyclass');
         class_alias('M' . $this->class, 'Mmyclass');
 
@@ -190,9 +202,15 @@ class load extends tfunction {
         }
     }
 
+    /**
+     * 暴露tfunction 方法接口 
+     * @param type $fun
+     * @param type $value
+     * @return type
+     */
     public static function fun($fun, $value) {
         $tfunction = new tfunction();
-        return  $tfunction->$fun($value);
-}
+        return $tfunction->{$fun}($value);
+    }
 
 }

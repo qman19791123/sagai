@@ -44,7 +44,7 @@
                 //获取文件的后缀名
                 var extension = fileLowerPath.substring(fileLowerPath.lastIndexOf('.') + 1);
                 //判断后缀名是否包含在预先设置的、所允许的后缀名数组中
-                if ($.inArray(extension, options.allowedExtensions) == -1) {
+                if ($.inArray(extension, options.allowedExtensions) === -1) {
                     options.extensionerror();
                     $(this).focus();
                 } else {
