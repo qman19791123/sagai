@@ -32,19 +32,19 @@ class Cindex extends controllers {
     public function __construct() {
         parent::__construct();
         $this->index = new Mindex();
-        $this->loadingModel = $this->loadingModel('news','');
+        $this->loadingModel = $this->loadingModel('news', '');
     }
 
     public function index($p = '') {
         $data = [];
         //$data['news'] = $this->loadingModel->news->json();
-        $data['class']  = $this->index->classifyArray();
+        $data['class'] = $this->index->classifyArray();
         $data['notice'] = $this->loadingModel->news->noticeNew(32);
         $data['DeveloperDynamics'] = $this->loadingModel->news->listContentNew(27);
         $data['DevelopmentManual'] = $this->loadingModel->news->listContentNew(28);
         $data['HTTP_SERVER'] = HTTP_SERVER;
-        
-         $this->Cout($data);
+
+        $this->Cout($data);
     }
 
 }

@@ -47,9 +47,12 @@ class Cnews extends controllers {
         $this->Cout($data);
     }
 
-    public function content($p = '') {
+    public function content($p,$a) {
         $data=[];
-        $data["aaa"] = "123";
+        $data['class'] = $this->news->classifyArray();
+        $data['notice'] = $this->news->noticeNew(32);
+        $data['list'] = $this->news->contentNew($a);
+        $data['HTTP_SERVER'] = HTTP_SERVER;
         $this->Cout($data);
     }
     public function json(){

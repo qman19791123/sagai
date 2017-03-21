@@ -42,14 +42,14 @@
                                                 <xsl:if test="hide=1">
                                                     <span>
                                                         <xsl:if test="setting=0">
-                                                        <a href="index.php/news/index/{id}">
-                                                            <xsl:value-of select="text"/>
-                                                        </a>
+                                                            <a href="index.php/news/index/{id}">
+                                                                <xsl:value-of select="text"/>
+                                                            </a>
                                                         </xsl:if>
                                                         <xsl:if test="setting=1">
                                                             <a href="{url}">
                                                                 <xsl:value-of select="text"/>
-                                                                </a>
+                                                            </a>
                                                         </xsl:if>
                                                         
                                                     </span>

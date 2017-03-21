@@ -37,7 +37,7 @@ $language = 'cn.php';
 //后台登陆验证码
 $yzcode = 'qman';
 //是否开启缓存
-$cacheOpen = True;
+$cacheOpen = False;
 //是否开启页面缓存
 $cachePageOpen = FALSE;
 //缓存时间（以秒为单位）

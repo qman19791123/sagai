@@ -118,7 +118,7 @@
                             <xsl:for-each select="xml/data/content">
                                 <ul class="activity">
                                     <li> 
-                                        
+                                      
                                         <!--/参数模版 start/-->
                                         <xsl:variable name="activityValue">
                                             <xsl:value-of select="activityValue"></xsl:value-of>
