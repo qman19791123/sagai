@@ -58,5 +58,4 @@ class Mnews extends models {
         $sql = 'select news_config.*,news_content.description,news_content.keywords from news_config left join news_content on news_config.id = news_content.newsId  where news_config.classifyId = ' . $id;
         return $this->conn->query($sql);
     }
-
 }

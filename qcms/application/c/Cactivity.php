@@ -48,7 +48,7 @@ class Cactivity extends controllers {
                     break;
             }
 
-            $this->Cout($data);
+            $this->cout($data);
         }
     }
 

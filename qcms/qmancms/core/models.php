@@ -1,5 +1,6 @@
 <?php
-/* 
+
+/*
  * The MIT License
  *
  * Copyright 2017 qman.
@@ -22,14 +23,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+
 class models extends tfunction {
 
-    //put your code here
-
-    public function conn() {
-        $tfunction = new tfunction();
-        $Rs = $tfunction->conn;
-        return $Rs;
+    public function __construct() {
+        parent::__construct();
     }
 
 }

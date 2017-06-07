@@ -76,7 +76,7 @@ class load extends tfunction {
                 return $this->Err;
             }
             call_user_func_array([$this->Cmyclass, $this->fun], $page);
-            $cout = $this->Cmyclass->Cout;
+            $cout = $this->Cmyclass->cout;
 
             if (is_array($cout)) {
                 ob_start();
@@ -192,7 +192,7 @@ class load extends tfunction {
      * @return object
      */
     public function content() {
-        $fun = $this->Cmyclass->Cout;
+        $fun = $this->Cmyclass->cout;
         if (!empty($fun)) {
             $cout = $fun;
             unset($fun);

@@ -44,7 +44,7 @@ class Cindex extends controllers {
         $data['DevelopmentManual'] = $this->loadingModel->news->listContentNew(28);
         $data['HTTP_SERVER'] = HTTP_SERVER;
 
-        $this->Cout($data);
+        $this->cout($data);
     }
 
 }

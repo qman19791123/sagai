@@ -458,6 +458,241 @@ menu {
   line-height: 50px;
   float: right;
 }
+.newcontent .top {
+  background: #000;
+}
+.newcontent .top .header {
+  width: 100%;
+  border-bottom: 1px solid #666;
+}
+.newcontent .top .logo {
+  font-size: 16px;
+  color: #fff;
+  text-transform: uppercase;
+  line-height: 50px;
+}
+.newcontent .top .link {
+  text-align: right;
+}
+.newcontent .top .link nav {
+  text-align: right;
+  width: 70%;
+  display: inline-block;
+}
+.newcontent .top .link nav .index {
+  border-radius: 5px;
+  background: rgba(255,255,255,0.3);
+  line-height: 25px;
+}
+.newcontent .top .link nav span {
+  line-height: 50px;
+  vertical-align: middle;
+  display: inline-block;
+}
+.newcontent .top .link nav span a {
+  line-height: 20px;
+  display: inline-block;
+  color: #fff;
+  font-size: 12px;
+  vertical-align: middle;
+  padding: 0 25px;
+}
+.newcontent .top .link form {
+  background: #fff;
+  display: inline-block;
+  vertical-align: middle;
+  width: 30%;
+  border-radius: 5px;
+  padding: 0 5px;
+}
+.newcontent .top .link form input {
+  width: 90%;
+  font-size: 12px;
+  border: none;
+  padding: 5px;
+}
+.newcontent .top .link form button {
+  width: 10%;
+  background: inherit;
+  border: none;
+  font-size: 14px;
+}
+.newcontent .top .moblielogo .logo {
+  font-size: 16px;
+  color: #fff;
+  text-transform: uppercase;
+  line-height: 50px;
+  font-size: 12px;
+}
+.newcontent .top .moblielink {
+  text-align: right;
+}
+.newcontent .top .moblielink span {
+  font-size: 12px;
+  line-height: 50px;
+  color: #fff;
+}
+.newcontent .top .banner {
+  width: 100%;
+  background: url('../../images/384401502_07b98d5247_mod.jpg') no-repeat fixed center top #000000;
+  height: 200px;
+}
+.newcontent .top .banner p {
+  margin: auto;
+  display: block;
+  width: 70%;
+  padding: 80px 0;
+}
+.newcontent .top .banner p strong {
+  font-size: 25px;
+  margin: auto;
+  color: #fff;
+  display: inline-block;
+  line-height: 30px;
+  width: 100%;
+}
+.newcontent .top .banner p strong span {
+  color: #FF5202;
+  font-size: 22px;
+}
+.newcontent .top .banner p span {
+  font-size: 12px;
+  color: #fff;
+  display: inline-block;
+  line-height: 20px;
+}
+.newcontent .notice {
+  background: #666;
+}
+.newcontent .notice li {
+  padding: 5px;
+}
+.newcontent .notice li .title {
+  display: inline-block;
+  background: #D54401;
+  width: 85%;
+  padding-left: 10px;
+  line-height: 25px;
+  color: #fff;
+  font-size: 13.3px;
+}
+.newcontent .notice li .swiper-container li a {
+  width: 100%;
+  font-size: 13.3px;
+  display: inline-block;
+  color: #fff;
+}
+.newcontent .notice li .annstati {
+  display: inline-block;
+  line-height: 25px;
+  color: #fff;
+  font-size: 13.3px;
+}
+.newcontent .content {
+  color: #454545;
+  margin-top: 30px;
+}
+.newcontent .content h2 {
+  font-size: 16px;
+  font-weight: bolder;
+  line-height: 35px;
+  display: inline-block;
+  vertical-align: bottom;
+}
+.newcontent .content h2 + span {
+  display: inline-block;
+  padding-left: 10px;
+  font-size: 12px;
+  line-height: 35px;
+  color: #FF5202;
+  font-weight: bolder;
+  vertical-align: bottom;
+}
+.newcontent .content .classify {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.newcontent .content .classify dt {
+  font-size: 16px;
+  font-weight: bolder;
+  line-height: 35px;
+  padding: 10px 0;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #ccc;
+}
+.newcontent .content .classify dt span {
+  display: inline-block;
+  padding-left: 10px;
+  font-size: 12px;
+  line-height: 35px;
+  color: #FF5202;
+  font-weight: bolder;
+  vertical-align: bottom;
+}
+.newcontent .content .classify dd {
+  width: 95%;
+}
+.newcontent .content .classify dd section {
+  font-size: 12px;
+  line-height: 20px;
+  padding-left: 5px;
+}
+.newcontent .content .r {
+  border-right: 1px dashed #ccc;
+}
+.newcontent .content .infolist {
+  width: 100%;
+  display: inline-block;
+  height: 1500px;
+  color: #7c7c7b;
+}
+.newcontent .content .infolist h3 {
+  width: 100%;
+  font-size: 20px;
+  font-weight: bolder;
+  text-align: left;
+  letter-spacing: 2px;
+}
+.newcontent .content .infolist content {
+  width: 100%;
+  display: inline-block;
+}
+.newcontent .content .infolist content time {
+  line-height: 45px;
+  font-size: 12px;
+  letter-spacing: 2px;
+}
+.newcontent .content .infolist article {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 10px;
+  width: 100%;
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 14px;
+  line-height: 30px;
+}
+.newcontent .content .infolist .info * {
+  font-size: 14px;
+  line-height: 30px;
+}
+.newcontent .fool {
+  width: 100%;
+  background: #000;
+  margin-top: 40px;
+}
+.newcontent .fool .logo {
+  font-size: 16px;
+  color: #fff;
+  text-transform: uppercase;
+  line-height: 50px;
+}
+.newcontent .fool .webinfo {
+  color: #fff;
+  font-size: 12px;
+  line-height: 50px;
+  float: right;
+}
 @media (max-width: 750px) {
   .index .fool .logo {
     line-height: 25px;

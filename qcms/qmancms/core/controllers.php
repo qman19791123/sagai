@@ -26,20 +26,26 @@
 
 class controllers {
 
-    public $Cout;
+    public $cout;
 
     //put your code here
     public function __construct() {
         
     }
 
-    public function Cout($obj) {
-        $this->Cout = $obj;
+    public function cout($obj) {
+        if (is_array($obj) || is_object($obj)) {
+            $this->cout = $obj;
+        } else {
+            $this->getJson($obj);
+        }
     }
 
     public function content() {
-        return $this->Cout;
+        return $this->cout;
     }
+
+
 
     public function loadingModel() {
         $p = func_get_args();
@@ -55,5 +61,16 @@ class controllers {
         }
         return $CMyControllersClass;
     }
-
+    private function getJson($obj) {
+        json_decode($obj);
+        if (json_last_error() == JSON_ERROR_NONE){
+            print($obj);
+        }
+        else
+        {
+            print(json_last_error_msg());
+            die();
+        }
+        
+    }
 }

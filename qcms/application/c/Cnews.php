@@ -44,18 +44,19 @@ class Cnews extends controllers {
         $data['pId'] = $p;
         $data['HTTP_SERVER'] = HTTP_SERVER;
         
-        $this->Cout($data);
+        $this->cout($data);
     }
 
     public function content($p,$a) {
         $data=[];
         $data['class'] = $this->news->classifyArray();
         $data['notice'] = $this->news->noticeNew(32);
-        $data['list'] = $this->news->contentNew($a);
+        $data['content'] = $this->news->contentNew($a);
         $data['HTTP_SERVER'] = HTTP_SERVER;
-        $this->Cout($data);
+        $this->cout($data);
     }
     public function json(){
-        
-    }
+       $data['class'] = $this->news->classifyArray();
+       $this->cout(json_encode($data,JSON_UNESCAPED_UNICODE));
+    } 
 }
