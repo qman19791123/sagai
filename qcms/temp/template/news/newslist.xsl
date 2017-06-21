@@ -5,201 +5,89 @@
     xmlns:php="http://php.net/xsl"
     xsl:extension-element-prefixes="php"
 >
+    
     <xsl:output
         method="html"
         doctype-system="about:legacy-compat"
         encoding="UTF-8"
-        indent="yes" 
+        indent="yes"    
     />
+    
+    <xsl:include href="../public/head.xsl"></xsl:include>
+    <xsl:include href="../public/temp.xsl"></xsl:include>
     <xsl:template match="/">
-        
-        <xsl:variable name="pId">
-            <xsl:value-of select="xml/pId"></xsl:value-of>
+        <xsl:variable name="title" >
+            <xsl:choose>
+                <xsl:when test="xml/pId=27"> 开发日志 Developer dynamics </xsl:when>
+                <xsl:when test="xml/pId=28"> CMS手册  Development Manual </xsl:when>
+                <xsl:when test="xml/pId=29"> 程序下载  Program download </xsl:when>
+            </xsl:choose>
         </xsl:variable>
         
         <html lang="en">
+            <!--head.xsl->header 包含 头部css js 等全局 文件 -->
             <head>
-                <base href="{xml/HTTP_SERVER}" />
-                <title>Document</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1, user-scalable=no" />
-                <meta content="email=no" name="format-detection" />
-                <meta name="format-detection" content="telephone=no" />
-                <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css" type="text/css" />
-                <link rel="stylesheet" href="/css/Font-Awesome/css/font-awesome.min.css" type="text/css"/>
-                <link rel="stylesheet" href="/css/Swiper/swiper.min.css"  type="text/css"/>
-                <link rel="stylesheet" href="/{php:function('load::fun','lessc','qcmsindex.less')}" type="text/css"/>
+                <title>
+                    <xsl:value-of select="$title" disable-output-escaping="no"/>
+                </title>
+                <xsl:call-template name="header"></xsl:call-template>
             </head>
             <body>
                 <div class="log">
-                    <div class="top">
-                        <div class="header">
-                            <div class="container">
-                                <ul class="row  hidden-xs">
-                                    <li class="col-sm-3">
-                                        <h1 class="logo">qman-cms</h1>
-                                    </li>
-                                    <li class="col-sm-9 link">
-                                        <nav>
-                                            <span >
-                                                <a href="/">首页</a>
-                                            </span>
-
-                                            <xsl:for-each select="xml/class/node">
-                                                <xsl:if test="hide=1">
-                                                   
-                                                    <xsl:variable name="ppId">
-                                                        <xsl:if test="$pId=id">index</xsl:if>
-                                                    </xsl:variable>
-                                                    
-                                                    <span  class="{$ppId}">
-                                                        <xsl:if test="setting=0">
-                                                            <a href="index.php/news/index/{id}">
-                                                                <xsl:value-of select="text"/>
-                                                            </a>
-                                                        </xsl:if>
-                                                        <xsl:if test="setting=1">
-                                                            <a href="{url}">
-                                                                <xsl:value-of select="text"/>
-                                                            </a>
-                                                        </xsl:if>
-                                                    </span>
-                                                    
-                                                </xsl:if>
-                                            </xsl:for-each>
-                                        </nav>
-                                        <form>
-                                            <input placeholder="查询" />
-                                            <button class="fa fa-search"></button>
-                                        </form>
-                                    </li>
-                                </ul>
-                                <ul class="row visible-xs-block ">
-                                    <li class="col-xs-9 moblielogo">
-                                        <h1 class="logo">qman-cms</h1>
-                                    </li>
-                                    <li class="col-xs-3 moblielink">
-                                        <span class="fa fa-bars"></span>
-
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="banner">
-                            <p>
-                                <strong>Welcome <span>QMAN-CMS</span></strong>
-                                <!--  <span>www.gong-z.com</span> -->
-                            </p>
-                        </div>
-                    </div>
-                    <div class="notice hidden-xs">
-                        <div class="container">
-                            <ul class="row">
-                                <li class="col-sm-2 ">
-                                    <span class="title">公告</span>
-                                </li>
-                                <li class="col-sm-7">
-                                    <div class="swiper-container">
-                                        <ul class="swiper-wrapper">
-                                            <xsl:for-each select="xml/notice/node">
-                                                <li class="swiper-slide">
-                                                    <a href="index.php/news/content/{classifyId}/{id}">
-                                                        <xsl:value-of select='title'/>
-                                                    </a>
-                                                </li>
-                                            </xsl:for-each>
-                                        </ul>
-                                    </div>
-                                </li>
-                                <li class="col-sm-3">
-                                    <span class="annstati">qman-cms 国内完全开源及免费的cms</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
+                    <!--temp.xsl->top 通用文件 -->
+                    <xsl:call-template name="top"></xsl:call-template>
                     <div class="content">
                         <div class="container">
                             <ul class="row">
                                 <li class="col-sm-9 r">
                                     
                                     <xsl:choose>
-                                        <xsl:when test="$pId=27">
+                                        <xsl:when test="xml/pId=27">
                                             <h2>开发日志</h2>
                                             <span>Developer dynamics</span>
                                         </xsl:when>
-                                        <xsl:when test="$pId=28">
+                                        <xsl:when test="xml/pId=28">
                                             <h2>CMS手册</h2>
                                             <span>Development Manual</span>
                                         </xsl:when>
-                                        <xsl:when test="$pId=29">
+                                        <xsl:when test="xml/pId=29">
                                             <h2>程序下载</h2>
                                             <span> Program download</span>
                                         </xsl:when>
                                     </xsl:choose>
                                     
                                     <div class="infolist">
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section> 
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section> 
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section> 
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section>
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section> 
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section> 
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section> 
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section> 
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section> 
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section> 
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section> 
-                                        <section>
-                                            冷天的周末，窝在租处中。拖延了好几天<span class="hidden-xs">[2016-11-12]</span>
-                                        </section>  
+                                        
+                                        <xsl:for-each select="xml/list/page/node">
+                                            <section>
+                                                <a href="index.php/news/content/{classifyId}/{id}">  
+                                                    <xsl:value-of select="title"/>
+                                                </a>
+                                                <span class="hidden-xs">[<xsl:value-of select="php:function('date','Y-m-d',string(time))"/>]</span>
+                                            </section> 
+                                        </xsl:for-each>
+                                        
                                     </div>
                                     <div class="page">
                                         <nav aria-label="Page navigation">
                                             <ul class="pagination">
                                                 <li>
-                                                    <a href="#" aria-label="Previous">
+                                                    
+                                                    <a href="index.php/news/index/{xml/pId}/{xml/upPage}" aria-label="Previous">
+                                                   
                                                         <span aria-hidden="true">«</span>
                                                     </a>
                                                 </li>
+                                                <xsl:call-template name="page">
+                                                    <xsl:with-param name="i"> 
+                                                        <xsl:value-of select="xml/list/count/pageStart"/>
+                                                    </xsl:with-param>
+                                                    <xsl:with-param name="count">
+                                                        <xsl:value-of select="xml/list/count/pageEnd"/>
+                                                    </xsl:with-param>
+                                                </xsl:call-template>
                                                 <li>
-                                                    <a href="#">1</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#">2</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#">3</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#">4</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#">5</a>
-                                                </li>
-                                                <li>
-                                                    <a href="#" aria-label="Next">
+                                                    <a href="index.php/news/index/{xml/pId}/{xml/downPage}" aria-label="Next">
                                                         <span aria-hidden="true">»</span>
                                                     </a>
                                                 </li>
@@ -254,18 +142,8 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="fool">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <h1 class="logo">qman-cms</h1>
-                                </div>
-                                <div class="col-sm-8">
-                                    <span class="webinfo">站为开源项目QMAN-CMS技术分享与开发讨论社区平台</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!--temp.xsl->fool 通用文件 -->
+                    <xsl:call-template name="fool"></xsl:call-template>
                 </div>
                 <script type="text/javascript" src="/js/jquery.min.js"></script>
                 <script type="text/javascript" src="/js/bootstrap/bootstrap.min.js"></script>

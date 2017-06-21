@@ -198,9 +198,9 @@ switch ($act) {
                         <?php echo $lang['specialArticleManager']; ?>
                         <span class="addLink">
                             [<a href='?cpage=1'><?php echo $lang['specialAddTheme']; ?></a>]
-                            [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
+<!--                            [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
                             [<a href='?cpage=1'><?php echo $lang['newsUpdateDocumentation']; ?></a>]
-                            [<a href='#'><?php echo $lang['specialThemeRecycling']; ?></a>]
+                            [<a href='#'><?php echo $lang['specialThemeRecycling']; ?></a>]-->
                         </span>
                         </dt>
                         <?php if (!empty($data)): ?> 

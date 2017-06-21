@@ -38,25 +38,40 @@ class Cnews extends controllers {
         $this->news = new Mnews();
     }
 
-    public function index($p = '') {
-        $data['class'] = $this->news->classifyArray();
-        $data['notice'] = $this->news->noticeNew(32);
-        $data['pId'] = $p;
-        $data['HTTP_SERVER'] = HTTP_SERVER;
+    public function index($p = '', $limit = 0) {
+
+        $data = $this->publicFun();
         
+        $limits = $limit > 0 ? [ ($limit - 1) * 10, 10] : [0, 10];
+        $data['list'] = $this->news->listContentNew($p, $limits);
+        $data['pId'] = $p;
+        $data['upPage'] = $limit - 1 > 0 ? $limit - 1 : 1;
+        $data['downPage'] = $limit + 1 < $data['list']['count']['pageCount'] ? $limit + 1 : $data['list']['count']['pageCount'];
+        $data['HTTP_SERVER'] = HTTP_SERVER;
         $this->cout($data);
     }
 
-    public function content($p,$a) {
-        $data=[];
-        $data['class'] = $this->news->classifyArray();
-        $data['notice'] = $this->news->noticeNew(32);
+    public function content($p = 0, $a = 0) {
+
+        $data = $this->publicFun();
         $data['content'] = $this->news->contentNew($a);
+        $data['lrpage'] = $this->news->lrpage($p, $a);
+        $data['pId'] = $p;
         $data['HTTP_SERVER'] = HTTP_SERVER;
+
         $this->cout($data);
     }
-    public function json(){
-       $data['class'] = $this->news->classifyArray();
-       $this->cout(json_encode($data,JSON_UNESCAPED_UNICODE));
-    } 
+
+    private function publicFun() {
+        $data = [];
+        $data['class'] = $this->news->classifyArray();
+        $data['notice'] = $this->news->noticeNew(32);
+        return $data;
+    }
+
+    public function json() {
+        $data['class'] = $this->news->classifyArray();
+        $this->cout(json_encode($data, JSON_UNESCAPED_UNICODE));
+    }
+
 }

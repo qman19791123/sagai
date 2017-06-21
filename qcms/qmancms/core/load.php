@@ -65,30 +65,27 @@ class load extends tfunction {
         if ($this->fileExists === FALSE || empty($fun)) {
             return $this->Err;
         }
+        
+        if (!empty($cout = $this->cache->get($this->cache->cacheKey))) {
+            return $cout;
+        }
 
-        $cout = $this->cache->get($this->cache->cacheKey);
-        if (empty($cout) && $this->classExist() === TRUE) {
+        // 判断所有需要class 和方法 是否存在。
+        if ($this->classExist() === TRUE && method_exists($this->Cmyclass, $fun)) {
+            $this->id = !empty($page[0]) ? $page[0] : 0;
 
-            $this->fun = strtolower($fun);
-            $this->id = !empty($page[0]) ? $page[0] : [];
-            
-            if (!method_exists($this->Cmyclass, $this->fun)) {
-                return $this->Err;
-            }
-            call_user_func_array([$this->Cmyclass, $this->fun], $page);
-            $cout = $this->Cmyclass->cout;
+            call_user_func_array([$this->Cmyclass, $fun], $page);
 
-            if (is_array($cout)) {
+            if (is_array($this->Cmyclass->cout)) {
                 ob_start();
                 include($this->V);
                 $Vcontent = ob_get_contents();
                 ob_end_clean();
-                $cout = $this->templateExist($Vcontent);
+                return $this->templateExist($Vcontent, $fun);
             }
-        } elseif (empty($cout)) {
-            return $this->Err;
+            return $this->Cmyclass->cout;
         }
-        return $cout;
+        return $this->Err;
     }
 
     /**
@@ -108,39 +105,29 @@ class load extends tfunction {
      * @param string  $content  视图层生成的 xml 数据
      * @return string
      */
-    private function templateExist($content) {
+    private function templateExist($content, $fun) {
 
-        $menu = $this->templateDBWay();
+        $template = empty($this->Cmyclass->tmp) ? $this->class : $this->Cmyclass->tmp;
 
-        if ($this->class !== 'index') {
-            $Rs = ( $this->conn->query('select ' . $menu[$this->class][$this->fun] . ' as temp from ' . $menu[$this->class]['table'] . ' where id=' . $this->id));
-        } else {
-            $Rs[0]['temp'] = $this->class;
+
+        if ($this->class !== 'index') { 
+            $menu = $this->templateDBWay();
+            $Rs = ( $this->conn->query('select ' . $menu[$this->class][$fun] . ' as temp from ' . $menu[$this->class]['table'] . ' where id=' . $this->id));
+            empty($Rs[0]['temp']) || $template = $Rs[0]['temp'];
         }
-        $template = $this->template($this->class, $Rs);
         $htmlContent = $this->generateHtml($content, $template);
 
+        //清楚xsl 使用php特定的标签信息
         $str = str_replace(' xmlns:php="http://php.net/xsl"', '', $htmlContent);
 
         // 文件压缩
         if ($this->compression === TRUE) {
-            $str = ltrim(rtrim(preg_replace(array("/> *([^ ]*) *</", "//", "'/\*[^*]*\*/'", "/\r\n/", "/\n/", "/\t/", '/>[ ]+</'), array(">\\1<", '', '', '', '', '', '><'), $str)));
+            $str = $this->compressionFile($str);
         }
 
-        $template && $this->cache->set($this->cache->cacheKey, $str);
+        //建立缓存
+        $this->cache->set($this->cache->cacheKey, $str);
         return $str;
-    }
-
-    /**
-     * 获取模版
-     * @param type $tempURL
-     * @param type $tempName
-     * @return type
-     */
-    private function template($tempURL, $tempName) {
-        $this->template = 'template/' . $tempURL . '/' . $tempName[0]['temp'] . ".xsl";
-        $template = tempUrl . $this->template;
-        return is_file($template) ? $template : FALSE;
     }
 
     /**
@@ -150,7 +137,10 @@ class load extends tfunction {
      * @return string
      */
     private function generateHtml($content, $template) {
-        if ($template !== FALSE) {
+
+        $template = tempUrl . 'template/' . $this->class . '/' . $template . '.xsl';
+
+        if (is_file($template) !== FALSE) {
             header('Content-Type:text/html;charset=' . dataCharset);
             $XML = new DOMDocument();
             $XML->loadXML($content);
@@ -183,7 +173,8 @@ class load extends tfunction {
         if (!class_exists('Mmyclass')) {
             return FALSE;
         }
-        $this->Cmyclass = new Cmyclass();
+     
+        $this->Cmyclass = new Cmyclass(new Mmyclass());
         return TRUE;
     }
 
@@ -192,6 +183,8 @@ class load extends tfunction {
      * @return object
      */
     public function content() {
+
+
         $fun = $this->Cmyclass->cout;
         if (!empty($fun)) {
             $cout = $fun;

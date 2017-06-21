@@ -24,31 +24,23 @@
  * THE SOFTWARE.
  */
 
-class Cindex extends controllers {
+class Cquery extends controllers {
 
-    private $index = '';
-    private $loadingModel = null;
+    private $query;
 
-    public function __construct() {
-        parent::__construct();
-        $this->index = new Mindex();
-        $this->loadingModel = $this->loadingModel('news', '');
+    public function __construct($class) {
+       $this->query =  $class;
     }
 
-    public function index($p = '') {
-        $data = [];
-        //$data['news'] = $this->loadingModel->news->json();
-        $data['class'] = $this->index->classifyArray();
-        $data['notice'] = $this->loadingModel->news->noticeNew(32);
+    public function index() {
+        $query = filter_input(INPUT_GET, 'query', FILTER_SANITIZE_STRING);
+        $rs = $this->query->query($query);
+        $this->cout($rs, 'query');
         
-        $DeveloperDynamics =    $this->loadingModel->news->listContentNew(27);
-        $DevelopmentManual =    $this->loadingModel->news->listContentNew(28);
-        $data['DeveloperDynamics'] = $DeveloperDynamics['page'];
-        $data['DevelopmentManual'] = $DevelopmentManual['page'];
-  
-        $data['HTTP_SERVER'] = HTTP_SERVER;
- 
-       $this->cout($data);
+    }
+
+    public function xx() {
+        $this->cout(["1212"], 'tesxt');
     }
 
 }

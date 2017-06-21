@@ -73,7 +73,7 @@ if (!empty($newssubjectClassId) && empty($_SESSION['newssubjectClassId'])) {
     $newssubjectClassId = $_SESSION['newssubjectClassId'];
     $newssubjectId = $_SESSION['newssubjectId'];
 }
-
+//删除以往的保留结果
 if ($delSessionGET) {
     unset($_SESSION['newssubjectClassId'], $_SESSION['newssubjectId']);
     $newssubjectId = NULL;
@@ -153,6 +153,20 @@ $AMNewsAddSpecialContentUrl = function()use($newssubjectId ) {
     return $url;
 };
 
+//一个匿名方法 在处理完信息流程后同步分类表,我希望他不会让整个删除变得缓慢
+$AMNewsClassifySynchro = function()use($conn) {
+    
+    $sql = 'Replace into  `classify` (id,pid,px,className,Content,template,templateContent,url,setting,hide,folder,summary) ' .
+            'select  `a`.id,`a`.pid,`a`.px,`a`.className,`a`.Content,`a`.template,`a`.templateContent,`a`.url,`a`.setting,`a`.hide,`a`.folder,`b`.summary ' .
+            'from  `classify` as a ' .
+            'left  join ' .
+            '( select  count(id) as summary,classifyId  from `news_config`  where isdel=0 and checked=999 and classifyid <>0 group by classifyid) as  b  on ' .
+            'b.classifyid=a.id ';
+
+    $conn->aud($sql);
+};
+
+
 switch ($act) {
     case 1:
 // 添加部分代码
@@ -189,8 +203,12 @@ switch ($act) {
         $AMNewsContent($Rs, $newTextINPUT, $keywordsINPUT, $descriptionINPUT);
 
 // 修改统计文章总数
-        $RsSummary = $conn->select('summary')->where(['id' => $classifyIdINPUT])->get('classify');
-        $conn->where(['id' => $classifyIdINPUT])->update('classify', ['summary' => $RsSummary[0]['summary'] + 1]);
+        //$RsSummary = $conn->select('summary')->where(['id' => $classifyIdINPUT])->get('classify');
+        //$conn->where(['id' => $classifyIdINPUT])->update('classify', ['summary' => $RsSummary[0]['summary'] + 1]);
+        // 用数据模型写太复杂了
+        $sql = 'update `classify` set summary=(select count(id) from `news_config` where isdel=0 and checked=999 and classifyId = ' . $classifyIdINPUT . ') where id = ' . $classifyIdINPUT;
+        $conn->aud($sql);
+
 // 记录此新闻使用过的图片
         $AMNewsImages($Rs, $path);
         empty($updateImgINPUT) or $AMNewsImages($Rs, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
@@ -236,6 +254,8 @@ switch ($act) {
             }
             empty($updateImgINPUT) or $imgRs = $AMNewsImages($id, json_decode('[' . trim($updateImgINPUT, ',') . ']'));
 
+            $sql = 'update `classify` set summary=(select count(id) from `news_config` where isdel=0 and checked=999 and classifyId = ' . $classifyIdINPUT . ') where id = ' . $classifyIdINPUT;
+            $conn->aud($sql);
 
             die($tfunction->message($lang['mesgUpdateContentSuccess'], 'news.php'));
         }
@@ -266,19 +286,17 @@ switch ($act) {
                 //存在则修改文件名
                 rename($file, $file . 'del');
             }
-            $classifyCount[$v['aid']] = $v['summary'];
-            $classifyIdArr[$v['aid']] = empty($classifyIdArr[$v['aid']]) || !isset($classifyIdArr[$v['aid']]) ? 1 : $classifyIdArr[$v['aid']] + 1;
+
             $newidArr[] = $v['bid'];
         }
-        //修改栏目下文章数量''
-        foreach ($classifyIdArr as $k => $v) {
-            $conn->where(['id' => $k])->update('classify', ['summary' => ($classifyCount[$k] - $v)]);
-            //防止操作过于频繁造成的计算过大的问题
-            sleep(0.5);
-        }
-        //假删文章
+
+        //假删事物
         $newidStr = join(',', array_unique($newidArr));
         $conn->where('id in (' . $newidStr . ')')->update('news_config', ['isdel' => 1]);
+
+
+        $AMNewsClassifySynchro();
+
         //防止操作过于频繁造成的计算过大的问题
         sleep(0.5);
 
@@ -299,8 +317,8 @@ switch ($act) {
                 die('false');
             }
         }
-
         $conn->where('id in (' . $ajaxId . ')')->update('news_config', ['checked' => $ajaxT]);
+        $AMNewsClassifySynchro();
 
         die('true');
         break;
@@ -431,8 +449,8 @@ switch ($act) {
                             [<a href='javascript:void(0)' id='retrievedArticles'><?php echo $lang['newsRetrievingArticle']; ?></a>]
                             [<a href='javascript:void(0)' id='column'><?php echo $lang['newsTopicManagement']; ?></a>]
                             <?php if (!isset($newssubjectId)): ?>
-                                [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
-                                [<a href='?cpage=1'><?php echo $lang['newsUpdateDocumentation']; ?></a>]
+                    <!--                                [<a href='?cpage=1'><?php echo $lang['newsUpdateList']; ?></a>]
+                                            [<a href='?cpage=1'><?php echo $lang['newsUpdateDocumentation']; ?></a>]-->
                                 [<a href='newsdustbin.php'><?php echo $lang['newsArticlesRecycling']; ?></a>]
                             <?php endif; ?>  
                         </span>
@@ -535,7 +553,7 @@ switch ($act) {
                     $keywords = '';
                     $description = '';
                     $checked = '';
-                    $style = 0;
+                    $style = (int) !empty($newssubjectId);
                     if (!empty($id)) {
 
                         $Rs = $conn
@@ -572,6 +590,7 @@ switch ($act) {
                         <?php endif; ?>
                         <form method="post"  enctype="multipart/form-data" action="?act=<?php echo $cpage ?><?php !empty($id) && print('&id=' . $id) ?>">
                             <div class="list atable">
+
                                 <?php if ($style <= 0): ?>
                                     <ul class="list a20_80">
                                         <li>
@@ -716,7 +735,7 @@ switch ($act) {
         </div>
         <!--栏目 end-->
 
-    <!--KindEditor-->
+        <!--KindEditor-->
     <link rel="stylesheet" href="../js/KindEditor/themes/default/default.css" />
     <link rel="stylesheet" href="../js/KindEditor/plugins/code/prettify.css" />
     <script charset="utf-8" src="../js/KindEditor/kindeditor-all-min.js"></script>
@@ -766,6 +785,7 @@ switch ($act) {
                                                         if (Boolean(e) === true) {
                                                             history.go(0);
                                                         }
+                                                        
                                                     }
                                                 });
                                             }

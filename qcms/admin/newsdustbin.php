@@ -47,6 +47,18 @@ $AMNClassifyNewContent = function($ajaxId) use($conn) {
     return $classify;
 };
 
+//一个匿名方法 在处理完信息流程后同步分类表,我希望他不会让整个删除变得缓慢
+$AMNewsClassifySynchro = function()use($conn) {
+
+    $sql = 'Replace into  `classify` (id,pid,px,className,Content,template,templateContent,url,setting,hide,folder,summary) ' .
+            'select  `a`.id,`a`.pid,`a`.px,`a`.className,`a`.Content,`a`.template,`a`.templateContent,`a`.url,`a`.setting,`a`.hide,`a`.folder,`b`.summary ' .
+            'from  `classify` as a ' .
+            'left  join ' .
+            '( select  count(id) as summary,classifyId  from `news_config`  where isdel=0 and checked=999 and classifyid <>0 group by classifyid) as  b  on ' .
+            'b.classifyid=a.id ';
+    $conn->aud($sql);
+};
+
 switch ($act) {
     case 1:
         $ajaxId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -68,29 +80,12 @@ switch ($act) {
                 rename($file, mb_substr($file, 0, -4, 'UTF-8'));
                 //rename($file, rtrim($file, '.del'));
             }
-            $classifyCount[$v['aid']] = $v['summary'];
-
-            $classifyIdArr[$v['aid']] = empty($classifyIdArr[$v['aid']]) || !isset($classifyIdArr[$v['aid']]) ? 1 : $classifyIdArr[$v['aid']] + 1;
-
             $newidArr[] = $v['bid'];
         }
-        if (!empty($classifyIdArr)) {
-            foreach ($classifyIdArr as $k => $v) {
-                $conn->where(['id' => $k])->update('classify', ['summary' => ($classifyCount[$k] + $v)]);
-                //防止操作过于频繁造成的计算过大的问题
-                sleep(0.5);
-            }
-            $conn->where('id in (' . $ajaxId . ')')->update('news_config', ['isdel' => 0]);
-            sleep(0.5);
-            $p = filter_input(INPUT_GET, 'p', FILTER_VALIDATE_BOOLEAN);
-            if ($p === true) {
-                die('true');
-            }
-        } else {
-            die($tfunction->message($lang['newsArticlesRestoreFailed'], 'newsSubject.php'));
-        }
-        die($tfunction->message($lang['newsArticlesRestoreSuccess'], 'newsSubject.php'));
 
+        $conn->where('id in (' . $ajaxId . ')')->update('news_config', ['isdel' => 0]);
+        $AMNewsClassifySynchro();
+        die($tfunction->message($lang['newsArticlesRestoreSuccess'], 'newsSubject.php'));
         break;
     case 2:
         //为了避免误差操作，程序会将这些被删除的数据以文本的方式存放在硬盘中,用户可以自行删除此类数据，文件存放在 dustbin 文件夹中（已时间存放）。
@@ -247,81 +242,81 @@ switch ($act) {
     <script type="text/javascript" src="../js/Dialog/dist/dialog-min.js"></script>
     <script type="text/javascript">
 <?php printf('var classifyJson =%s;', json_encode($classifyJson)); ?>
-                    var mesgConfirmDeletion = '<?php echo $lang['mesgConfirmDeletion']; ?>';
-                    $('.atable ul li').each(function (i, p) {
-                        if ($(p).attr('data-id'))
-                        {
-                            $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
-                        }
-                    });
+                        var mesgConfirmDeletion = '<?php echo $lang['mesgConfirmDeletion']; ?>';
+                        $('.atable ul li').each(function (i, p) {
+                            if ($(p).attr('data-id'))
+                            {
+                                $(p).text(classifyJson['classify_' + $(p).attr('data-id')]);
+                            }
+                        });
 
-                    $('#delete').on('click', function () {
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt'] ?>',
-                            content: '<?php echo $lang['mesgIsRemoveSomeContent'] ?>',
-                            okValue: '<?php echo $lang['ok'] ?>',
-                            width: '500px',
-                            ok: function () {
-                                this.title('<?php echo $lang['mesgDeletion'] ?>');
-                                this.content('<?php echo $lang['mesgRemovePleaseWait'] ?>');
-                                var checkboxp = '';
-                                $('input[name=checkid]:checked').each(function (i, p) {
-                                    checkboxp += $(p).val() + ',';
-                                });
-                                if (checkboxp) {
-                                    checkboxp = checkboxp.substr(0, checkboxp.length - 1);
-                                    $.ajax({
-                                        type: "GET",
-                                        data: {'id': checkboxp},
-                                        url: '?p=on&act=2',
-                                        success: function (e) {
-                                            if (Boolean(e) === true) {
-                                                history.go(0);
-                                            }
-                                        }
+                        $('#delete').on('click', function () {
+                            dialog({
+                                backdropBackground: '',
+                                title: '<?php echo $lang['prompt'] ?>',
+                                content: '<?php echo $lang['mesgIsRemoveSomeContent'] ?>',
+                                okValue: '<?php echo $lang['ok'] ?>',
+                                width: '500px',
+                                ok: function () {
+                                    this.title('<?php echo $lang['mesgDeletion'] ?>');
+                                    this.content('<?php echo $lang['mesgRemovePleaseWait'] ?>');
+                                    var checkboxp = '';
+                                    $('input[name=checkid]:checked').each(function (i, p) {
+                                        checkboxp += $(p).val() + ',';
                                     });
-                                }
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel'] ?>',
-                            cancel: function () {}
-                        }).showModal();
-                    });
+                                    if (checkboxp) {
+                                        checkboxp = checkboxp.substr(0, checkboxp.length - 1);
+                                        $.ajax({
+                                            type: "GET",
+                                            data: {'id': checkboxp},
+                                            url: '?p=on&act=2',
+                                            success: function (e) {
+                                                if (Boolean(e) === true) {
+                                                    history.go(0);
+                                                }
+                                            }
+                                        });
+                                    }
+                                    return false;
+                                },
+                                cancelValue: '<?php echo $lang['cancel'] ?>',
+                                cancel: function () {}
+                            }).showModal();
+                        });
 
-                    $('#reduction').on('click', function () {
-                        dialog({
-                            backdropBackground: '',
-                            title: '<?php echo $lang['prompt'] ?>',
-                            content: '<?php echo $lang['mesgIsRestoreSomeContent'] ?>',
-                            okValue: '<?php echo $lang['ok'] ?>',
-                            width: '500px',
-                            ok: function () {
-                                this.title('<?php echo $lang['mesgRestore'] ?>');
-                                this.content('<?php echo $lang['mesgRestorePleaseWait'] ?>');
-                                var checkboxp = '';
-                                $('input[name=checkid]:checked').each(function (i, p) {
-                                    checkboxp += $(p).val() + ',';
-                                });
-                                if (checkboxp) {
-                                    checkboxp = checkboxp.substr(0, checkboxp.length - 1);
-                                    $.ajax({
-                                        type: "GET",
-                                        data: {'id': checkboxp},
-                                        url: '?p=on&act=1',
-                                        success: function (e) {
-                                            if (Boolean(e) === true) {
-                                                history.go(0);
-                                            }
-                                        }
+                        $('#reduction').on('click', function () {
+                            dialog({
+                                backdropBackground: '',
+                                title: '<?php echo $lang['prompt'] ?>',
+                                content: '<?php echo $lang['mesgIsRestoreSomeContent'] ?>',
+                                okValue: '<?php echo $lang['ok'] ?>',
+                                width: '500px',
+                                ok: function () {
+                                    this.title('<?php echo $lang['mesgRestore'] ?>');
+                                    this.content('<?php echo $lang['mesgRestorePleaseWait'] ?>');
+                                    var checkboxp = '';
+                                    $('input[name=checkid]:checked').each(function (i, p) {
+                                        checkboxp += $(p).val() + ',';
                                     });
-                                }
-                                return false;
-                            },
-                            cancelValue: '<?php echo $lang['cancel'] ?>',
-                            cancel: function () {}
-                        }).showModal();
-                    });
+                                    if (checkboxp) {
+                                        checkboxp = checkboxp.substr(0, checkboxp.length - 1);
+                                        $.ajax({
+                                            type: "GET",
+                                            data: {'id': checkboxp},
+                                            url: '?p=on&act=1',
+                                            success: function (e) {
+                                                if (Boolean(e) === true) {
+                                                    history.go(0);
+                                                }
+                                            }
+                                        });
+                                    }
+                                    return false;
+                                },
+                                cancelValue: '<?php echo $lang['cancel'] ?>',
+                                cancel: function () {}
+                            }).showModal();
+                        });
     </script>
     <script src="../js/qmancms.js" type="text/javascript"></script>
 </body>

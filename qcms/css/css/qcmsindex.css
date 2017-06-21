@@ -429,6 +429,9 @@ menu {
   font-size: 14px;
   line-height: 50px;
 }
+.log .content .infolist section a {
+  font-size: 14px;
+}
 .log .content .infolist section span {
   font-size: 12px;
   float: right;
@@ -592,6 +595,9 @@ menu {
   color: #454545;
   margin-top: 30px;
 }
+.newcontent .content a {
+  color: #454545;
+}
 .newcontent .content h2 {
   font-size: 16px;
   font-weight: bolder;
@@ -652,14 +658,18 @@ menu {
   font-weight: bolder;
   text-align: left;
   letter-spacing: 2px;
+  margin-top: 20px;
+  color: #000;
+  text-shadow: 1px 1px 2px #ccc;
 }
 .newcontent .content .infolist content {
   width: 100%;
   display: inline-block;
 }
 .newcontent .content .infolist content time {
-  line-height: 45px;
+  padding: 8px 0 16px 0;
   font-size: 12px;
+  display: inline-block;
   letter-spacing: 2px;
 }
 .newcontent .content .infolist article {
@@ -672,9 +682,26 @@ menu {
   margin-bottom: 14px;
   line-height: 30px;
 }
+.newcontent .content .infolist .info {
+  font-size: 14px;
+}
 .newcontent .content .infolist .info * {
   font-size: 14px;
   line-height: 30px;
+}
+.newcontent .content .page {
+  width: 100%;
+}
+.newcontent .content .page p {
+  display: inline-block;
+}
+.newcontent .content .page p:nth-child(2) {
+  float: right;
+}
+.newcontent .content .page p a {
+  font-size: 14px;
+  line-height: 45px;
+  color: #428bca;
 }
 .newcontent .fool {
   width: 100%;

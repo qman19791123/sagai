@@ -60,7 +60,7 @@ $content = function () {
     }
     $class3 = empty($_AppPathArr [3]) ? [] : $rsArray;
     $load = new load($class1);
-    print( $load->cout($class2, $class3));
+    print( $load->cout(strtolower($class2), $class3));
 };
 
 if ($xhprofTest) {

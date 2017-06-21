@@ -11,98 +11,17 @@
         encoding="UTF-8"
         indent="yes" 
     />
+    <xsl:include href="../public/head.xsl"></xsl:include>
+    <xsl:include href="../public/temp.xsl"></xsl:include>
     <xsl:template match="/">
         <html lang="zh-CN">
             <head>
-                <base href="{xml/HTTP_SERVER}" />
-                <title>Document</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1, user-scalable=no" />
-                <meta content="email=no" name="format-detection" />
-                <meta name="format-detection" content="telephone=no" />
-                <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" type="text/css" />
-                <link rel="stylesheet" href="css/Font-Awesome/css/font-awesome.min.css" type="text/css"/>
-                <link rel="stylesheet" href="css/Swiper/swiper.min.css"  type="text/css"/>
-                <link rel="stylesheet" href="{php:function('load::fun','lessc','qcmsindex.less')}" type="text/css"/>
+                <title>QCMS </title>
+                <xsl:call-template name="header"></xsl:call-template>
             </head>
             <body>
                 <div class="index">
-                    <div class="top">
-                        <div class="header">
-                            <div class="container">
-                                <ul class="row  hidden-xs">
-                                    <li class="col-sm-3">
-                                        <h1 class="logo">qman-cms</h1>
-                                    </li>
-                                    <li class="col-sm-9 link">
-                                        <nav>
-                                            <span class="index">
-                                                <a >首页</a>
-                                            </span>
-                                            <xsl:for-each select="xml/class/node">
-                                                <xsl:if test="hide=1">
-                                                    <span>
-                                                        <xsl:if test="setting=0">
-                                                            <a href="index.php/news/index/{id}">
-                                                                <xsl:value-of select="text"/>
-                                                            </a>
-                                                        </xsl:if>
-                                                        <xsl:if test="setting=1">
-                                                            <a href="{url}">
-                                                                <xsl:value-of select="text"/>
-                                                            </a>
-                                                        </xsl:if>
-                                                        
-                                                    </span>
-                                                </xsl:if>
-                                            </xsl:for-each>
-                                        </nav>
-                                        <form>
-                                            <input placeholder="查询" />
-                                            <button class="fa fa-search"></button>
-                                        </form>
-                                    </li>
-                                </ul>
-                                <ul class="row visible-xs-block ">
-                                    <li class="col-xs-9 moblielogo">
-                                        <h1 class="logo">qman-cms</h1>
-                                    </li>
-                                    <li class="col-xs-3 moblielink">
-                                        <span class="fa fa-bars"></span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="banner">
-                            <p>
-                                <strong>Welcome <span>QMAN-CMS</span></strong>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="notice hidden-xs">
-                        <div class="container">
-                            <ul class="row">
-                                <li class="col-sm-2 ">
-                                    <span class="title">公告</span>
-                                </li>
-                                <li class="col-sm-7">
-                                    <div class="swiper-container">
-                                        <ul class="swiper-wrapper">
-                                            <xsl:for-each select="xml/notice/node">
-                                                <li class="swiper-slide">
-                                                    <a href="index.php/news/content/{classifyId}/{id}">
-                                                        <xsl:value-of select='title'/>
-                                                    </a>
-                                                </li>
-                                            </xsl:for-each>
-                                        </ul>
-                                    </div>
-                                </li>
-                                <li class="col-sm-3">
-                                    <span class="annstati">qman-cms 国内完全开源及免费的cms</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                    <xsl:call-template name="top"></xsl:call-template>
 
                     <div class="content">
                         <div class="container">
@@ -119,13 +38,15 @@
                                                 <xsl:for-each select="xml/DeveloperDynamics/node">
                                                     <li>
                                                         <section>
-                                                            <h3>
-                                                                <xsl:value-of select='title'/>
-                                                            </h3>
+                                                            <a href="index.php/news/content/{classifyId}/{id}">  
+                                                                <h3>
+                                                                    <xsl:value-of select='title'/> 
+                                                                </h3>
+                                                            </a>
                                                             <span class="hidden-xs">[<xsl:value-of select="php:function('date','Y-m-d',string(time))"/>]</span>
                                                             <p>
                                                                 <xsl:value-of select="subtitle"/>
-                                                                <button class="btn btn-primary visible-xs-inline-block">查看</button>
+                                                                <button class="btn btn-primary visible-xs-inline-block"  onclick="window.location.href='index.php/news/content/{classifyId}/{id}'">查看</button>
                                                             </p>
                                                         </section> 
                                                     </li>
@@ -147,13 +68,15 @@
                                                 <xsl:for-each select="xml/DevelopmentManual/node">
                                                     <li>
                                                         <section>
-                                                            <h3>
-                                                                <xsl:value-of select='title'/>
-                                                            </h3>
+                                                            <a href="index.php/news/content/{classifyId}/{id}">  
+                                                                <h3>
+                                                                    <xsl:value-of select='title'/> 
+                                                                </h3>
+                                                            </a>
                                                             <span class="hidden-xs">[<xsl:value-of select="php:function('date','Y-m-d',string(time))"/>]</span>
                                                             <p>
                                                                 <xsl:value-of select="subtitle"/>
-                                                                <button class="btn btn-primary visible-xs-inline-block">查看</button>
+                                                                <button class="btn btn-primary visible-xs-inline-block"  onclick="location.href='index.php/news/content/{classifyId}/{id}'">查看</button>
                                                             </p>
                                                         </section> 
                                                     </li>
@@ -165,18 +88,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="fool">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-sm-4">
-                                    <h1 class="logo">qman-cms</h1>
-                                </div>
-                                <div class="col-sm-8">
-                                    <span class="webinfo">站为开源项目QMAN-CMS技术分享与开发讨论社区平台</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <xsl:call-template name="fool"></xsl:call-template>
                 </div>
                 <script type="text/javascript" src="js/jquery.min.js"></script>
                 <script type="text/javascript" src="js/bootstrap/bootstrap.min.js"></script>

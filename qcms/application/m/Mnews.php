@@ -35,14 +35,24 @@ class Mnews extends models {
         return $this->conn->query($sql);
     }
 
+    /**
+     * 公告
+     * @param type $id
+     * @return boolean
+     */
     public function noticeNew($id = 0) {
         if (empty($id)) {
             return FALSE;
         }
-        $sql = "select news_config.* from classify left join news_config on classify.id = news_config.classifyId where classify.id= " . $id . ' and isdel = 0';
+        $sql = 'select `title`,`id`,`classifyid`,`time` from `news_config`  where `classifyId`= ' . $id . ' and `isdel`=0 and `checked`=999 order by id desc limit 5';
         return $this->conn->query($sql);
     }
 
+    /**
+     * 信息内容
+     * @param type $id
+     * @return boolean
+     */
     public function contentNew($id = 0) {
         if (empty($id)) {
             return FALSE;
@@ -51,11 +61,32 @@ class Mnews extends models {
         return $this->conn->query($sql);
     }
 
-    public function listContentNew($id = 0) {
+    public function lrpage($classid, $id) {
+        $sql = 'select id,classifyId,title from news_config where classifyId = ' . $classid . ' and isdel = 0 and  checked = 999 and id >' . $id . ' order by id asc limit 1 ;';
+        $data['l'] = $this->conn->query($sql);
+        $sql = 'select id,classifyId,title from news_config where classifyId = ' . $classid . ' and isdel = 0 and  checked = 999 and id <' . $id . ' order by id desc limit 1;';
+        $data['r'] = $this->conn->query($sql);
+        return $data;
+    }
+
+    /**
+     * 信息列表
+     * @param type $id
+     * @return boolean
+     */
+    public function listContentNew($id = 0, $limit = [0, 10]) {
         if (empty($id)) {
             return FALSE;
         }
-        $sql = 'select news_config.*,news_content.description,news_content.keywords from news_config left join news_content on news_config.id = news_content.newsId  where news_config.classifyId = ' . $id;
-        return $this->conn->query($sql);
+        $data = [];
+        $sql = 'select `title`,`id`,`classifyid`,`time` ,`subtitle` from news_config  where classifyId = ' . $id . ' and `isdel`=0 and `checked`=999   order by id desc limit ' . join(',', $limit) . ';';
+
+        $data['page'] = $this->conn->query($sql);
+        //其实这个可以交sql 来处理,但是...数据库兼容问题 T_T.
+        $sql = 'select  summary from `classify`  where id = ' . $id;
+        $count = $this->conn->query($sql);
+        $data['count'] =  $this->Page($count[0]['summary'], 1, 10, $limit[0]);
+
+        return $data;
     }
 }

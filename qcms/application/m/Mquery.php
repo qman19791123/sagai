@@ -24,31 +24,34 @@
  * THE SOFTWARE.
  */
 
-class Cindex extends controllers {
+/**
+ * 查询接口，此功能只是为了现实现功能。 使用like 只是现在完成功能。
+ * 
+ * @author qman
+ */
+class Mquery extends models {
 
-    private $index = '';
-    private $loadingModel = null;
+    //put your code here
+    public function query($query) {
+        //因为不会长用，所以直接先拿出来用了再说。那东西蛮消耗的
+        require_once plus . 'phpanalysis2.0/phpanalysis.class.php';
+        $pa = new PhpAnalysis('utf-8', 'utf-8', false);
+        $pa->SetSource($query);
+        $pa->resultType = 1;
+        $pa->differMax = true;
 
-    public function __construct() {
-        parent::__construct();
-        $this->index = new Mindex();
-        $this->loadingModel = $this->loadingModel('news', '');
-    }
+        $pa->StartAnalysis();
 
-    public function index($p = '') {
-        $data = [];
-        //$data['news'] = $this->loadingModel->news->json();
-        $data['class'] = $this->index->classifyArray();
-        $data['notice'] = $this->loadingModel->news->noticeNew(32);
-        
-        $DeveloperDynamics =    $this->loadingModel->news->listContentNew(27);
-        $DevelopmentManual =    $this->loadingModel->news->listContentNew(28);
-        $data['DeveloperDynamics'] = $DeveloperDynamics['page'];
-        $data['DevelopmentManual'] = $DevelopmentManual['page'];
-  
-        $data['HTTP_SERVER'] = HTTP_SERVER;
- 
-       $this->cout($data);
+        $key = array_filter(array_map(function($data) {
+                    if (mb_strlen($data) >= 2) {
+                        return $data;
+                    }
+                }, array_keys($pa->GetFinallyIndex())));
+       
+        $sql = '%' . join('%\' or subtitle like \'%', $key) . '%';
+        $sql = 'select * from news_config where subtitle like \'' . $sql . '\' ';
+        return $this->conn->query($sql);
+       
     }
 
 }

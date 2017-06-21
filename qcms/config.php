@@ -50,9 +50,9 @@ $cacheData = 'cacheData';
 // zip 与 dba 缓存请根据本身空间提供商所提供的 PHP 插件来进行设置
 $cacheDataFun = 'file'; //file //mencache //zip //dba
 //页面是否压缩
-$compression = False;
+$compression = FALSE;
 //是否开启静态
-$StaticOpen = False;
+$StaticOpen = FALSE;
 //静态文件目录
 $staticFloder = 'zp';
 /* * ***********************************************

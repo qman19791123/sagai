@@ -31,8 +31,7 @@
              
             </head>
             <body>
-                aaa  
-                <xsl:value-of select="php:function('date','Y-m-d',string(time))"/>
+                <xsl:value-of select="php:function('date','Y-m-d',string(123456789))"/>
             </body>
         </html>
     </xsl:template>

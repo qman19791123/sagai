@@ -1,6 +1,6 @@
 <?php
 
-/* 
+/*
  * The MIT License
  *
  * Copyright 2017 qman.
@@ -24,7 +24,6 @@
  * THE SOFTWARE.
  */
 
-
 class tcache {
 
     private $isIpFun = '';
@@ -40,8 +39,10 @@ class tcache {
     private $cacheOpen = cacheOpen;
 
     public function __construct() {
-        $this->cacheKey();
-        $this->config();
+        if ($this->cacheOpen) {
+            $this->cacheKey();
+            $this->config();
+        }
     }
 
     /**

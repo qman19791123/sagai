@@ -11,7 +11,12 @@
         encoding="UTF-8"
         indent="yes" 
     />
+    <xsl:include href="../public/head.xsl"></xsl:include>
+    <xsl:include href="../public/temp.xsl"></xsl:include>
     <xsl:template match="/">
+        
+        
+      
         
         <xsl:variable name="pId">
             <xsl:value-of select="xml/pId"></xsl:value-of>
@@ -19,124 +24,44 @@
         
         <html lang="en">
             <head>
-                <base href="{xml/HTTP_SERVER}" />
-                <title>Document</title>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1, user-scalable=no" />
-                <meta content="email=no" name="format-detection" />
-                <meta name="format-detection" content="telephone=no" />
-                <link rel="stylesheet" href="/css/bootstrap/bootstrap.min.css" type="text/css" />
-                <link rel="stylesheet" href="/css/Font-Awesome/css/font-awesome.min.css" type="text/css"/>
-                <link rel="stylesheet" href="/css/Swiper/swiper.min.css"  type="text/css"/>
-                <link rel="stylesheet" href="/{php:function('load::fun','lessc','qcmsindex.less')}" type="text/css"/>
+                <title> 
+                    <xsl:value-of select="xml/content/node/title"/> 
+                </title>
+              
+                <xsl:call-template name="header"></xsl:call-template>
+                <meta name="Keywords" content="{xml/content/node/keywords}"/>
+                <meta name="description" content="{php:function('tfunction::compressionFile',string(xml/content/node/description))}" />
             </head>
             <body>
+
                 <div class="newcontent">
-                    <div class="top">
-                        <div class="header">
-                            <div class="container">
-                                <ul class="row  hidden-xs">
-                                    <li class="col-sm-3">
-                                        <h1 class="logo">qman-cms</h1>
-                                    </li>
-                                    <li class="col-sm-9 link">
-                                        <nav>
-                                            <span >
-                                                <a href="/">首页</a>
-                                            </span>
-
-                                            <xsl:for-each select="xml/class/node">
-                                                <xsl:if test="hide=1">
-                                                   
-                                                    <xsl:variable name="ppId">
-                                                        <xsl:if test="$pId=id">index</xsl:if>
-                                                    </xsl:variable>
-                                                    
-                                                    <span  class="{$ppId}">
-                                                        <xsl:if test="setting=0">
-                                                            <a href="index.php/news/index/{id}">
-                                                                <xsl:value-of select="text"/>
-                                                            </a>
-                                                        </xsl:if>
-                                                        <xsl:if test="setting=1">
-                                                            <a href="{url}">
-                                                                <xsl:value-of select="text"/>
-                                                            </a>
-                                                        </xsl:if>
-                                                    </span>
-                                                    
-                                                </xsl:if>
-                                            </xsl:for-each>
-                                        </nav>
-                                        <form>
-                                            <input placeholder="查询" />
-                                            <button class="fa fa-search"></button>
-                                        </form>
-                                    </li>
-                                </ul>
-                                <ul class="row visible-xs-block ">
-                                    <li class="col-xs-9 moblielogo">
-                                        <h1 class="logo">qman-cms</h1>
-                                    </li>
-                                    <li class="col-xs-3 moblielink">
-                                        <span class="fa fa-bars"></span>
-
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <div class="banner">
-                            <p>
-                                <strong>Welcome <span>QMAN-CMS</span></strong>
-                                <!--  <span>www.gong-z.com</span> -->
-                            </p>
-                        </div>
-                    </div>
-                    <div class="notice hidden-xs">
-                        <div class="container">
-                            <ul class="row">
-                                <li class="col-sm-2 ">
-                                    <span class="title">公告</span>
-                                </li>
-                                <li class="col-sm-7">
-                                    <div class="swiper-container">
-                                        <ul class="swiper-wrapper">
-                                            <xsl:for-each select="xml/notice/node">
-                                                <li class="swiper-slide">
-                                                    <a href="index.php/news/content/{classifyId}/{id}">
-                                                        <xsl:value-of select='title'/>
-                                                    </a>
-                                                </li>
-                                            </xsl:for-each>
-                                        </ul>
-                                    </div>
-                                </li>
-                                <li class="col-sm-3">
-                                    <span class="annstati">qman-cms 国内完全开源及免费的cms</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                    <xsl:call-template name="top"></xsl:call-template>
 
                     <div class="content">
                         <div class="container">
                             <ul class="row">
                                 <li class="col-sm-9">
-                                    
-                                    <xsl:choose>
-                                        <xsl:when test="$pId=27">
-                                            <h2>开发日志</h2>
-                                            <span>Developer dynamics</span>
-                                        </xsl:when>
-                                        <xsl:when test="$pId=28">
-                                            <h2>CMS手册</h2>
-                                            <span>Development Manual</span>
-                                        </xsl:when>
-                                        <xsl:when test="$pId=29">
-                                            <h2>程序下载</h2>
-                                            <span> Program download</span>
-                                        </xsl:when>
-                                    </xsl:choose>
-                                    
+                                    <a href="index.php/news/index/{$pId}">
+                                        <xsl:choose>
+                                            <xsl:when test="$pId=27">
+                                           
+                                                <h2>开发日志</h2>
+                                                <span>Developer dynamics</span>
+                                            
+                                            </xsl:when>
+                                            <xsl:when test="$pId=28">
+                                           
+                                                <h2>CMS手册</h2>
+                                                <span>Development Manual</span>
+                                            
+                                            </xsl:when>
+                                            <xsl:when test="$pId=29">
+                                                <h2>程序下载</h2>
+                                                <span> Program download</span>
+                                            </xsl:when>
+                                        </xsl:choose>
+                                    </a>
+
                                     <div class="infolist">
                                         <h3>
                                             <xsl:value-of select="xml/content/node/title"/>
@@ -152,8 +77,28 @@
                                         <div class="info">
                                             <xsl:value-of select="php:function('tfunction::decode',string(xml/content/node/newText))"  disable-output-escaping="yes"/>
                                         </div>
+                                      
+                                        
                                     </div>
-                                   
+                                    <div class="page">
+                                       
+                                        <p>
+                                            <xsl:if test="xml/lrpage/r/node/title!=''">
+                                                <a href="index.php/news/content/{xml/lrpage/r/node/classifyId}/{xml/lrpage/r/node/id}">
+                                                &lt;&lt;   
+                                                    <xsl:value-of select="xml/lrpage/r/node/title"/> 
+                                                </a>
+                                            </xsl:if>
+                                        </p>
+                                      
+                                        <p>
+                                            <xsl:if test="xml/lrpage/l/node/title!=''">
+                                                <a href="index.php/news/content/{xml/lrpage/l/node/classifyId}/{xml/lrpage/l/node/id}">
+                                                    <xsl:value-of select="xml/lrpage/l/node/title"/>  &gt;&gt;
+                                                </a>
+                                            </xsl:if>
+                                        </p>
+                                    </div>
                                 </li>
                                 <li class="col-sm-3 hidden-xs">
                                     <dl class="classify">

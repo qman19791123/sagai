@@ -390,7 +390,7 @@ class tfunction {
      * @param string $Content 内容
      * @return string
      */
-    public static  function decode($Content) {
+    public static function decode($Content) {
         return html_entity_decode($Content, ENT_QUOTES);
     }
 
@@ -399,6 +399,14 @@ class tfunction {
         $Content = str_replace('"', '', $Content);
         $Content = filter_var($Content, FILTER_SANITIZE_STRING);
         return $Content;
+    }
+    /**
+     * 压缩驱除回车，tab 等符号.
+     * @param type $str
+     * @return type
+     */
+    public static function compressionFile($str) {
+        return ltrim(rtrim(preg_replace(array("/> *([^ ]*) *</", "//", "'/\*[^*]*\*/'", "/\r\n/", "/\n/", "/\t/", '/>[ ]+</'), array(">\\1<", '', '', '', '', '', '><'), $str)));
     }
 
     public function arrayToXml($source, $charset = 'utf8') {
