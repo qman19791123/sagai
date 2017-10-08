@@ -24,8 +24,8 @@
 
 </h2> 3 代码介绍 </h2>
 ### **1 GetFiles.py**
-```python
 
+```
 	#!/usr/bin/python
 	#coding=utf-8
 	#引入包
@@ -92,7 +92,7 @@
 		f.close()
 ```
 ### **2 CollectionDocument.py** 
-```python
+```
 	#!/usr/bin/python
 	#coding=utf-8
 	#引入包		
